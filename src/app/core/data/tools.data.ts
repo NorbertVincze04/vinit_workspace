@@ -46,6 +46,14 @@ export const TOOLS: readonly ToolDefinition[] = [
     status: 'live',
     route: '/tools/marketing',
   },
+  {
+    id: 'appendices',
+    title: 'Appendices',
+    description: 'Supporting files for the plan (PDF, PowerPoint, Excel and more) to upload, download and delete.',
+    icon: 'paperclip',
+    status: 'live',
+    route: '/tools/appendices',
+  },
 ];
 
 export const LIVE_TOOLS = TOOLS.filter((t) => t.status === 'live' && !!t.route);

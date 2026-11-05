@@ -19,7 +19,8 @@ export async function readJsonFile(file: File): Promise<unknown> {
   return JSON.parse(await file.text());
 }
 
-function downloadBlob(blob: Blob, filename: string): void {
+/** Saves any blob (an uploaded file, a generated export) to the user's device. */
+export function downloadBlob(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
@@ -27,5 +28,6 @@ function downloadBlob(blob: Blob, filename: string): void {
   document.body.appendChild(link);
   link.click();
   link.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  // Large files on slower phones need the URL a little longer before it is released.
+  setTimeout(() => URL.revokeObjectURL(url), 30_000);
 }

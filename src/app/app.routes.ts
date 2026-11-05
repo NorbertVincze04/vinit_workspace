@@ -42,6 +42,12 @@ export const routes: Routes = [
       import('./features/tools/marketing/marketing-page.component').then((m) => m.MarketingPageComponent),
   },
   {
+    path: 'tools/appendices',
+    title: 'Appendices · VINIT Workspace',
+    loadComponent: () =>
+      import('./features/tools/appendices/appendices-page.component').then((m) => m.AppendicesPageComponent),
+  },
+  {
     path: '**',
     title: 'Page not found · VINIT Workspace',
     loadComponent: () =>
