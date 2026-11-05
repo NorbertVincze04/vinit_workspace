@@ -1,4 +1,16 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  ElementRef,
+  afterNextRender,
+  computed,
+  inject,
+  input,
+  output,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { formatNumber, formatRon } from '../../../core/utils/format';
 
 export interface ChartSeries {
@@ -45,17 +57,35 @@ export class BarChartComponent {
 
   readonly groupSelect = output<string>();
 
-  // Geometry (SVG user units)
-  protected readonly W = 600;
+  // Geometry (SVG user units). The width follows the rendered width (1 unit = 1 CSS px), so the
+  // axis text stays 11px on phones instead of being scaled down with a fixed viewBox.
+  protected readonly W = signal(600);
   protected readonly H = 230;
-  private readonly L = 56;
-  private readonly R = 8;
+  protected readonly L = 56;
+  protected readonly R = 8;
   protected readonly T = 10;
   private readonly B = 28;
 
   protected readonly hovered = signal<number | null>(null);
 
-  protected readonly plotW = this.W - this.L - this.R;
+  private readonly plot = viewChild.required<ElementRef<HTMLElement>>('plot');
+  private readonly destroyRef = inject(DestroyRef);
+
+  constructor() {
+    afterNextRender(() => {
+      const el = this.plot().nativeElement;
+      const measure = () => {
+        const width = Math.round(el.clientWidth);
+        if (width > 0) this.W.set(width);
+      };
+      measure();
+      const observer = new ResizeObserver(measure);
+      observer.observe(el);
+      this.destroyRef.onDestroy(() => observer.disconnect());
+    });
+  }
+
+  protected readonly plotW = computed(() => this.W() - this.L - this.R);
   protected readonly plotH = this.H - this.T - this.B;
   protected readonly baseline = this.T + this.plotH;
 
@@ -72,12 +102,12 @@ export class BarChartComponent {
     })),
   );
 
-  protected readonly groupWidth = computed(() => this.plotW / Math.max(1, this.groups().length));
+  protected readonly groupWidth = computed(() => this.plotW() / Math.max(1, this.groups().length));
 
   protected readonly layout = computed(() => {
     const gw = this.groupWidth();
     const n = this.series().length;
-    const bw = Math.max(4, Math.min(18, (gw - 22) / n));
+    const bw = Math.max(4, Math.min(18, (gw - Math.min(22, gw * 0.3)) / n));
     const gap = 2;
     return this.groups().map((g, gi) => {
       const gx = this.L + gw * gi;
@@ -96,7 +126,7 @@ export class BarChartComponent {
   protected readonly tipLeft = computed(() => {
     const i = this.hovered();
     if (i === null) return 0;
-    return ((this.layout()[i]?.center ?? 0) / this.W) * 100;
+    return ((this.layout()[i]?.center ?? 0) / this.W()) * 100;
   });
 
   protected readonly tipAlign = computed(() => {

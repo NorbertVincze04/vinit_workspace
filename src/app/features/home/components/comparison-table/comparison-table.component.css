@@ -8,7 +8,10 @@
 }
 
 .scroll {
+  /* position: relative keeps the .sr-only "Yes/No" text inside the scroller (see data-table). */
+  position: relative;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
 }
 
 table {
@@ -44,6 +47,31 @@ tbody th {
 }
 thead .us {
   color: var(--heading);
+}
+
+/* Phones: the feature names stay pinned on the left while the competitors scroll past. */
+@media (max-width: 640px) {
+  table {
+    min-width: 520px;
+  }
+  th,
+  td {
+    padding: 12px 10px;
+  }
+  thead th {
+    font-size: 17px;
+  }
+  tbody th,
+  thead th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    width: 132px;
+    min-width: 132px;
+    font-size: 13.5px;
+    background: var(--surface);
+    box-shadow: 1px 0 0 var(--line);
+  }
 }
 
 .mark {

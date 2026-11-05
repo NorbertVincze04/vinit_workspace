@@ -52,3 +52,22 @@
   align-items: center;
   padding: 2px 0 0 30px;
 }
+
+/* Touch screens: 16px text (no iOS focus zoom) and a thumb-sized details button. */
+@media (pointer: coarse) {
+  .row {
+    grid-template-columns: 22px 1fr 40px;
+    gap: 6px;
+  }
+  .row app-checkbox {
+    margin-top: 6px;
+  }
+  .text {
+    font-size: 16px;
+  }
+  .row > button {
+    width: 40px;
+    height: 40px;
+    margin-top: -4px;
+  }
+}

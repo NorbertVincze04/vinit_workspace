@@ -24,3 +24,16 @@ app-select-field {
   gap: 8px;
   margin-left: auto;
 }
+
+/* Phones: filters share the width evenly; actions sit on their own line, left-aligned. */
+@media (max-width: 560px) {
+  app-select-field {
+    flex: 1 1 140px;
+  }
+  .actions {
+    flex-basis: 100%;
+    margin-left: 0;
+    padding-top: 8px;
+    border-top: 1px solid var(--line);
+  }
+}

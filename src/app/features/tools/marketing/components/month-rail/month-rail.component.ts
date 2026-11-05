@@ -42,6 +42,12 @@ interface RailItem {
     .count { font-variant-numeric: tabular-nums; }
     .count.short { color: var(--tone-warn-fg); font-weight: 600; }
     app-meter { height: 4px; }
+    /* Phones: fixed-width cards (wide enough for "15 / 15 out") in a swipeable strip. */
+    @media (max-width: 760px) {
+      :host { scroll-snap-type: x proximity; overscroll-behavior-x: contain; }
+      .rail { grid-template-columns: repeat(13, 96px); min-width: 0; width: max-content; }
+      .m { scroll-snap-align: start; }
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

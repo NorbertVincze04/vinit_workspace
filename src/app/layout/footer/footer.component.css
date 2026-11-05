@@ -79,3 +79,18 @@ a:hover {
     grid-template-columns: 1fr;
   }
 }
+
+/* Touch screens: give the stacked footer links a finger-sized hit area. */
+@media (pointer: coarse) {
+  ul {
+    gap: 0;
+  }
+  li {
+    padding-block: 4px;
+  }
+  li a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+  }
+}

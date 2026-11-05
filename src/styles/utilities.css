@@ -94,6 +94,15 @@
   outline-offset: 1px;
 }
 
+/* Touch screens: iOS Safari zooms the page into any field under 16px, so fields get 16px
+   text, and controls get a comfortable height. */
+@media (pointer: coarse) {
+  .input {
+    font-size: 16px;
+    min-height: 40px;
+  }
+}
+
 /* Accessibility */
 .sr-only {
   position: absolute;

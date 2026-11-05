@@ -41,6 +41,16 @@ textarea.input {
   border-radius: var(--radius-sm);
 }
 
+/* Tablets / large phones: a 4-column form becomes 2 columns; wide fields take the full row. */
+@media (max-width: 760px) {
+  .grid[data-cols="4"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .grid[data-cols="4"] .field:not([data-span="1"]) {
+    grid-column: 1 / -1 !important;
+  }
+}
+
 @media (max-width: 560px) {
   .field {
     grid-column: 1 / -1 !important;

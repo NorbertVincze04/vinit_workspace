@@ -4,10 +4,10 @@
   }
 </div>
 
-<div class="plot">
-  <svg [attr.viewBox]="'0 0 ' + W + ' ' + H" role="img" [attr.aria-label]="ariaLabel()">
+<div class="plot" #plot>
+  <svg [attr.viewBox]="'0 0 ' + W() + ' ' + H" role="img" [attr.aria-label]="ariaLabel()">
     @for (tick of ticks(); track $index; let first = $first) {
-      <line class="grid" [class.base]="first" [attr.x1]="56" [attr.x2]="W - 8" [attr.y1]="tick.y" [attr.y2]="tick.y" />
+      <line class="grid" [class.base]="first" [attr.x1]="L" [attr.x2]="W() - R" [attr.y1]="tick.y" [attr.y2]="tick.y" />
       <text class="axis" text-anchor="end" [attr.x]="48" [attr.y]="tick.y + 4">{{ tick.label }}</text>
     }
 
@@ -57,7 +57,9 @@
   }
 </div>
 
-<table class="sr-only">
+<!-- Tables ignore width/overflow, so the visually hidden table sits inside a hidden div. -->
+<div class="sr-only">
+<table>
   <caption>{{ ariaLabel() }}</caption>
   <thead>
     <tr>
@@ -78,3 +80,4 @@
     }
   </tbody>
 </table>
+</div>

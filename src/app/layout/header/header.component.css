@@ -89,6 +89,10 @@
     flex-direction: column;
     align-items: stretch;
     padding: 8px var(--gutter) 14px;
+    /* Landscape phones: the open menu scrolls instead of running off the screen. */
+    max-height: calc(100dvh - var(--header-h));
+    overflow-y: auto;
+    overscroll-behavior: contain;
     background: var(--surface);
     border-bottom: 1px solid var(--line);
     box-shadow: var(--shadow-md);

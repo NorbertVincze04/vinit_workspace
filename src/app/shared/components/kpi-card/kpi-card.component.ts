@@ -26,6 +26,7 @@ import { CardComponent, IconComponent, ProgressBarComponent, StatComponent, Stat
     app-card { height: 100%; grid-template-rows: 1fr auto auto; }
     .link { display: inline-flex; align-items: center; gap: 6px; justify-self: start;
       font-size: 13px; font-weight: 600; color: var(--main); text-decoration: none; }
+    @media (pointer: coarse) { .link { min-height: 36px; margin-block: -8px; } }
     .link:hover { text-decoration: underline; }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

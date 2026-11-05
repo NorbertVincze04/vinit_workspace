@@ -1,7 +1,7 @@
 <app-dialog #dialog [heading]="heading()" [subheading]="subheading()" [size]="size()" (closed)="closed.emit()">
-  <form [id]="formId" class="grid" [style.--form-cols]="columns()" novalidate (submit)="submit($event)">
+  <form [id]="formId" class="grid" [style.--form-cols]="columns()" [attr.data-cols]="columns()" novalidate (submit)="submit($event)">
     @for (f of visibleFields(); track f.key) {
-      <div class="field" [style.grid-column]="spanOf(f)">
+      <div class="field" [style.grid-column]="spanOf(f)" [attr.data-span]="f.span ?? 1">
         @switch (f.type) {
           @case ('switch') {
             <span class="label">{{ f.label }}</span>

@@ -8,7 +8,11 @@
 }
 
 .scroll {
+  /* position: relative keeps absolutely positioned .sr-only content inside the scroller,
+     otherwise it escapes and makes the whole page scroll sideways on phones. */
+  position: relative;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
 }
 
 table {

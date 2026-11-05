@@ -11,6 +11,7 @@ import { ButtonComponent, IconComponent, LogoComponent } from '../../shared/ui';
   imports: [RouterLink, RouterLinkActive, ButtonComponent, IconComponent, LogoComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
+  host: { '(document:keydown.escape)': 'closeMenu()' },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
