@@ -1,0 +1,86 @@
+<app-dialog #dialog [heading]="heading()" [subheading]="subheading()" [size]="size()" (closed)="closed.emit()">
+  <form [id]="formId" class="grid" [style.--form-cols]="columns()" novalidate (submit)="submit($event)">
+    @for (f of visibleFields(); track f.key) {
+      <div class="field" [style.grid-column]="spanOf(f)">
+        @switch (f.type) {
+          @case ('switch') {
+            <span class="label">{{ f.label }}</span>
+            <app-segmented [label]="f.label" [options]="optionsOf(f)" [value]="text(f)" (valueChange)="set(f, $event)" />
+          }
+          @case ('check') {
+            <span class="label">{{ f.label }}</span>
+            <app-checkbox [checked]="bool(f)" (checkedChange)="set(f, $event)">{{ f.checkLabel || f.label }}</app-checkbox>
+          }
+          @case ('multi') {
+            <span class="label">{{ f.label }}</span>
+            <div class="multi" role="group" [attr.aria-label]="f.label">
+              @for (option of optionsOf(f); track option.value) {
+                <app-checkbox [checked]="hasOption(f, option.value)" (checkedChange)="toggleOption(f, option.value, $event)">
+                  {{ option.label }}
+                </app-checkbox>
+              }
+            </div>
+          }
+          @case ('select') {
+            <label class="label" [for]="fieldId(f)">{{ f.label }}{{ f.required ? ' *' : '' }}</label>
+            <select class="input" [id]="fieldId(f)" (change)="onInput(f, $event)">
+              @for (option of optionsOf(f); track option.value) {
+                <option [value]="option.value" [selected]="option.value === text(f)">{{ option.label }}</option>
+              }
+            </select>
+          }
+          @case ('textarea') {
+            <label class="label" [for]="fieldId(f)">{{ f.label }}{{ f.required ? ' *' : '' }}</label>
+            <textarea
+              class="input"
+              rows="3"
+              maxlength="4000"
+              [id]="fieldId(f)"
+              [placeholder]="f.placeholder || ''"
+              [value]="text(f)"
+              (input)="onInput(f, $event)"
+            ></textarea>
+          }
+          @case ('number') {
+            <label class="label" [for]="fieldId(f)">{{ f.label }}{{ f.required ? ' *' : '' }}</label>
+            <input
+              class="input"
+              type="text"
+              inputmode="decimal"
+              autocomplete="off"
+              [id]="fieldId(f)"
+              [placeholder]="f.placeholder || '0'"
+              [value]="text(f)"
+              (input)="onInput(f, $event)"
+            />
+          }
+          @default {
+            <label class="label" [for]="fieldId(f)">{{ f.label }}{{ f.required ? ' *' : '' }}</label>
+            <input
+              class="input"
+              autocomplete="off"
+              maxlength="300"
+              [id]="fieldId(f)"
+              [type]="f.type"
+              [placeholder]="f.placeholder || ''"
+              [value]="text(f)"
+              (input)="onInput(f, $event)"
+            />
+          }
+        }
+        @if (f.hint) {
+          <p class="hint">{{ f.hint }}</p>
+        }
+      </div>
+    }
+  </form>
+
+  @if (error()) {
+    <p class="error" role="alert">{{ error() }}</p>
+  }
+
+  <div dialogFooter>
+    <button appButton type="button" (click)="dialog.close()">Cancel</button>
+    <button appButton type="submit" variant="primary" [attr.form]="formId">{{ saveLabel() }}</button>
+  </div>
+</app-dialog>

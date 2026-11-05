@@ -1,0 +1,46 @@
+<app-ledger-row clickable (activate)="edit.emit()">
+  <div>
+    <span class="cell-title">{{ client().salon || 'Untitled salon' }}</span>
+    @if (sub()) {
+      <span class="cell-sub">{{ sub() }}</span>
+    }
+    @if (since()) {
+      <span class="cell-sub">Client since {{ since() }}</span>
+    }
+  </div>
+
+  <div class="contact">
+    @if (client().phone) {
+      <span>{{ client().phone }}</span>
+    }
+    @if (client().email) {
+      <span>{{ client().email }}</span>
+    }
+    @if (domain(); as d) {
+      <a [href]="'https://' + d" target="_blank" rel="noopener noreferrer">{{ d }}</a>
+    } @else if (client().domain) {
+      <span>{{ client().domain }}</span>
+    }
+    @if (!hasContact()) {
+      <span class="cell-sub">No contact details</span>
+    }
+  </div>
+
+  <div>
+    <span class="plan">{{ planLabel() }}</span>
+    <span class="cell-sub">{{ client().price ? (client().price | ron) + ' / month' : 'No monthly fee' }}</span>
+  </div>
+
+  <div>
+    <app-status-pill [tone]="status().tone">{{ status().label }}</app-status-pill>
+  </div>
+
+  <div class="cell-actions">
+    <button appButton variant="ghost" size="sm" type="button" [attr.aria-label]="'Edit ' + client().salon" (click)="edit.emit()">
+      Edit
+    </button>
+    <button appButton variant="ghost" size="sm" type="button" [attr.aria-label]="'Delete ' + client().salon" (click)="remove.emit()">
+      Delete
+    </button>
+  </div>
+</app-ledger-row>

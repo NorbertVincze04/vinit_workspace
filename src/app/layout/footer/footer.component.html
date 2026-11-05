@@ -1,0 +1,42 @@
+<div class="container columns">
+  <div class="brand-col">
+    <app-logo [size]="28" wordmark />
+    <p class="muted small">Internal workspace for {{ company.legalName }}. Not for public distribution.</p>
+  </div>
+
+  <div class="col">
+    <h2 class="eyebrow col-title">Company</h2>
+    <ul>
+      <li>{{ company.legalName }}</li>
+      <li>{{ company.city }} · {{ company.workModel }}</li>
+      <li>Administrator: {{ company.founder }}</li>
+    </ul>
+  </div>
+
+  <div class="col">
+    <h2 class="eyebrow col-title">Workspace</h2>
+    <ul>
+      <li><a routerLink="/">Overview</a></li>
+      @for (tool of tools; track tool.id) {
+        <li><a [routerLink]="tool.route">{{ tool.title }}</a></li>
+      }
+    </ul>
+  </div>
+
+  <div class="col">
+    <h2 class="eyebrow col-title">References</h2>
+    <ul>
+      <li>
+        <a class="ext" [href]="company.website.url" target="_blank" rel="noopener">
+          Public website <app-icon name="external" [size]="14" />
+        </a>
+      </li>
+      <li class="muted">Domain after launch: {{ company.futureDomain }}</li>
+    </ul>
+  </div>
+</div>
+
+<div class="container bottom">
+  <span>© {{ year }} {{ company.legalName }} · Internal use only</span>
+  <span>Workspace data is stored locally in this browser.</span>
+</div>

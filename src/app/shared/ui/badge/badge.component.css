@@ -1,0 +1,42 @@
+:host {
+  display: inline-block;
+  justify-self: start; /* don't stretch when placed in a grid (e.g. inside a card) */
+  max-width: 100%;
+  padding: 2px 8px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  background: var(--main-soft);
+  color: var(--ink);
+}
+
+:host([data-variant="solid"]) {
+  background: var(--main);
+  color: var(--on-main);
+}
+:host([data-variant="second"]) {
+  background: var(--second-soft);
+  color: var(--heading);
+}
+:host([data-variant="outline"]) {
+  background: transparent;
+  border-color: var(--line);
+  color: var(--muted);
+}
+:host([data-variant="muted"]) {
+  background: var(--surface-2);
+  border-color: var(--line);
+  color: var(--muted);
+}
+:host([data-variant="danger"]) {
+  background: transparent;
+  border-color: var(--red);
+  color: var(--red);
+}

@@ -1,0 +1,32 @@
+<button
+  appButton
+  iconOnly
+  size="lg"
+  type="button"
+  [attr.aria-label]="'Decrease ' + label()"
+  [disabled]="value() <= min()"
+  (click)="step(-1)"
+>
+  −
+</button>
+<input
+  class="value"
+  type="number"
+  inputmode="numeric"
+  [min]="min()"
+  [max]="max()"
+  [value]="value()"
+  [attr.aria-label]="label()"
+  (change)="onInput($event)"
+/>
+<button
+  appButton
+  iconOnly
+  size="lg"
+  type="button"
+  [attr.aria-label]="'Increase ' + label()"
+  [disabled]="value() >= max()"
+  (click)="step(1)"
+>
+  +
+</button>

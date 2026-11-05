@@ -1,0 +1,14 @@
+<dialog #dialog [attr.aria-labelledby]="titleId" [attr.data-size]="size()" (close)="closed.emit()">
+  <div class="head">
+    <h2 [id]="titleId">{{ heading() }}</h2>
+    @if (subheading()) {
+      <p>{{ subheading() }}</p>
+    }
+  </div>
+  <div class="body">
+    <ng-content />
+  </div>
+  <div class="foot">
+    <ng-content select="[dialogFooter]" />
+  </div>
+</dialog>

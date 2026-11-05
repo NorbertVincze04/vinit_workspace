@@ -1,0 +1,80 @@
+<div class="legend" aria-hidden="true">
+  @for (s of series(); track s.key) {
+    <span><i class="swatch" [style.background]="s.color"></i>{{ s.label }}</span>
+  }
+</div>
+
+<div class="plot">
+  <svg [attr.viewBox]="'0 0 ' + W + ' ' + H" role="img" [attr.aria-label]="ariaLabel()">
+    @for (tick of ticks(); track $index; let first = $first) {
+      <line class="grid" [class.base]="first" [attr.x1]="56" [attr.x2]="W - 8" [attr.y1]="tick.y" [attr.y2]="tick.y" />
+      <text class="axis" text-anchor="end" [attr.x]="48" [attr.y]="tick.y + 4">{{ tick.label }}</text>
+    }
+
+    @for (col of layout(); track col.group.key; let i = $index) {
+      <g
+        class="col"
+        tabindex="0"
+        role="button"
+        [attr.aria-label]="col.group.title"
+        (mouseenter)="hovered.set(i)"
+        (mouseleave)="hovered.set(null)"
+        (focus)="hovered.set(i)"
+        (blur)="hovered.set(null)"
+        (click)="groupSelect.emit(col.group.key)"
+        (keydown.enter)="groupSelect.emit(col.group.key)"
+      >
+        <rect class="hit" [class.on]="hovered() === i" [attr.x]="col.x + 2" [attr.y]="T" [attr.width]="groupWidth() - 4" [attr.height]="plotH" rx="6" />
+        @for (bar of col.bars; track bar.key) {
+          @if (bar.path) {
+            <path [attr.d]="bar.path" [attr.fill]="bar.color" pointer-events="none" />
+          }
+        }
+        <text class="axis" text-anchor="middle" [class.sel]="col.group.selected" [attr.x]="col.center" [attr.y]="H - 8">
+          {{ col.group.label }}
+        </text>
+      </g>
+    }
+  </svg>
+
+  @if (hovered() !== null) {
+    @let g = layout()[hovered()!].group;
+    <div class="tip" [attr.data-align]="tipAlign()" [style.left.%]="tipLeft()" aria-hidden="true">
+      <b>{{ g.title }}</b>
+      @for (s of series(); track s.key) {
+        <div class="row">
+          <span><i class="swatch" [style.background]="s.color"></i>{{ s.label }}</span>
+          <span>{{ valueOf(g, s.key) }}</span>
+        </div>
+      }
+      @for (line of g.extra ?? []; track line.label) {
+        <div class="row">
+          <span>{{ line.label }}</span>
+          <span>{{ line.value }}</span>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<table class="sr-only">
+  <caption>{{ ariaLabel() }}</caption>
+  <thead>
+    <tr>
+      <th scope="col">Period</th>
+      @for (s of series(); track s.key) {
+        <th scope="col">{{ s.label }}</th>
+      }
+    </tr>
+  </thead>
+  <tbody>
+    @for (g of groups(); track g.key) {
+      <tr>
+        <th scope="row">{{ g.title }}</th>
+        @for (s of series(); track s.key) {
+          <td>{{ valueOf(g, s.key) }}</td>
+        }
+      </tr>
+    }
+  </tbody>
+</table>

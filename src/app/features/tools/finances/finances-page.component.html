@@ -1,0 +1,122 @@
+<div class="container">
+  <app-page-header
+    eyebrow="VINIT SaaS Solutions"
+    title="Finances"
+    lede="Money in, money out and money put to work — for VINIT and, where needed, personal. Amounts in EUR or USD are converted to RON with the saved rates."
+  >
+    <div pageActions>
+      <app-month-switcher [value]="store.month()" (valueChange)="store.month.set($event)" />
+      <button appButton size="sm" type="button" (click)="ratesOpen.set(true)">Rates</button>
+      <app-backup-actions (exportBackup)="exportBackup()" (importBackup)="importBackup($event)" />
+      <button appButton variant="primary" type="button" (click)="openForm(store.tab())">
+        <app-icon name="plus" [size]="16" /> Add {{ meta(store.tab()).noun }}
+      </button>
+    </div>
+  </app-page-header>
+
+  <app-finance-overview
+    [netWorth]="store.netWorth()"
+    [totals]="store.monthTotals()"
+    [previous]="store.prevTotals()"
+    [previousLabel]="previousLabel()"
+  />
+
+  <app-grid min="320px" class="panels">
+    <app-card>
+      <h2 class="title-sm">Cash flow, last 6 months</h2>
+      <app-bar-chart
+        ariaLabel="Income, expenses and investments per month for the last six months"
+        [series]="series"
+        [groups]="store.chartGroups()"
+        (groupSelect)="store.month.set($event)"
+      />
+    </app-card>
+    <app-card>
+      <div class="panel-head">
+        <h2 class="title-sm">Spending by category</h2>
+        <span class="eyebrow">{{ monthLabel() }}</span>
+      </div>
+      <app-category-spending [rows]="store.categorySpend().rows" [hidden]="store.categorySpend().hidden" />
+    </app-card>
+  </app-grid>
+
+  <app-tabs label="Ledger sections" [options]="store.tabOptions()" [value]="store.tab()" (valueChange)="setTab($event)" />
+
+  <div class="tab-panel" role="tabpanel">
+    @switch (store.tab()) {
+      @case ('transactions') {
+        <app-transactions-panel
+          (add)="openForm('transactions')"
+          (edit)="openForm('transactions', $event)"
+          (remove)="askDelete('transactions', $event)"
+          (exportCsv)="exportCsv()"
+        />
+      }
+      @case ('recurring') {
+        <app-recurring-panel
+          (add)="openForm('recurring')"
+          (edit)="openForm('recurring', $event)"
+          (remove)="askDelete('recurring', $event)"
+          (log)="logRecurring($event)"
+        />
+      }
+      @case ('holdings') {
+        <app-holdings-panel
+          (add)="openForm('holdings')"
+          (edit)="openForm('holdings', $event)"
+          (remove)="askDelete('holdings', $event)"
+        />
+      }
+      @case ('accounts') {
+        <app-accounts-panel
+          (add)="openForm('accounts')"
+          (edit)="openForm('accounts', $event)"
+          (remove)="askDelete('accounts', $event)"
+        />
+      }
+      @case ('budgets') {
+        <app-budgets-panel
+          (add)="openForm('budgets')"
+          (edit)="openForm('budgets', $event)"
+          (remove)="askDelete('budgets', $event)"
+        />
+      }
+    }
+  </div>
+
+  <app-save-status message="Saved automatically in this browser. Use Export backup to keep a copy." />
+</div>
+
+@if (form(); as f) {
+  <app-form-dialog
+    [heading]="formHeading()"
+    [subheading]="meta(f.collection).sub"
+    [fields]="fields[f.collection]"
+    [initial]="f.values"
+    [saveLabel]="f.id ? 'Save changes' : 'Add ' + meta(f.collection).noun"
+    (saved)="save($event)"
+    (closed)="form.set(null)"
+  />
+}
+
+@if (ratesOpen()) {
+  <app-form-dialog
+    size="sm"
+    heading="Exchange rates"
+    subheading="Used to convert EUR and USD entries into RON for every total."
+    [fields]="rateFields"
+    [initial]="{ eur: store.rates().eur, usd: store.rates().usd }"
+    saveLabel="Save rates"
+    (saved)="saveRates($event)"
+    (closed)="ratesOpen.set(false)"
+  />
+}
+
+@if (deleting(); as d) {
+  <app-confirm-dialog
+    [heading]="'Delete ' + meta(d.collection).noun + '?'"
+    [message]="deleteMessage(d)"
+    (confirmed)="confirmDelete(d)"
+    (closed)="deleting.set(null)"
+  />
+}

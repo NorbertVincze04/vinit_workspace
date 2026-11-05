@@ -1,0 +1,54 @@
+:host {
+  display: block;
+  padding: 7px 6px;
+  margin-inline: -6px;
+  border-radius: var(--radius-md);
+}
+:host:hover {
+  background: var(--main-soft);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 22px 1fr 30px;
+  gap: 8px;
+  align-items: start;
+}
+.row app-checkbox {
+  margin-top: 5px;
+}
+
+.text {
+  display: block;
+  width: 100%;
+  padding: 4px 6px;
+  font-size: 14.5px;
+  line-height: 1.4;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  resize: none;
+  overflow: hidden;
+}
+.text:hover {
+  border-color: var(--line);
+}
+.text:focus {
+  background: var(--surface);
+  border-color: var(--main);
+  outline: none;
+}
+.text.is-done {
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--line);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding: 2px 0 0 30px;
+}

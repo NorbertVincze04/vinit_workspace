@@ -1,0 +1,1046 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <style>
+      :root {
+        color-scheme: light;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      html {
+        scroll-padding-top: env(safe-area-inset-top, 0px);
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        font:
+          14px -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: #fff;
+        color: #000;
+      }
+      img {
+        max-width: 100%;
+      }
+      [hidden]:not([hidden="until-found" i]) {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <title>VINIT Roadmap</title>
+    <meta name="claude:viewport-fit-sides" content="cover" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap"
+    />
+    <style>
+      /* Layout: a barber-pole progress bar up top, a 12-month rail, four phase columns with checklists, then a salon counter that tracks the break-even line. */
+      :root {
+        --bg: #edf0f5;
+        --surface: #ffffff;
+        --ink: #0e1a2e;
+        --muted: #566277;
+        --line: #d3dae5;
+        --main: #0e9899;
+        --main-soft: #d9f0f0;
+        --second: #35398c;
+        --heading: #35398c;
+        --red: #c93636;
+        --pole-w: #ffffff;
+        --good: #0b7f80;
+        --on-main: #05181d;
+        --font-display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif;
+        --font-body:
+          "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+        --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #0a111f;
+          --surface: #131c2e;
+          --ink: #e8edf6;
+          --muted: #97a3b8;
+          --line: #25314a;
+          --main: #1fb5b6;
+          --main-soft: #0f3238;
+          --second: #5b60c4;
+          --heading: #e8edf6;
+          --red: #ef5e5d;
+          --pole-w: #dde4f2;
+          --good: #3fd0d1;
+          --on-main: #05181d;
+          color-scheme: dark;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #0a111f;
+        --surface: #131c2e;
+        --ink: #e8edf6;
+        --muted: #97a3b8;
+        --line: #25314a;
+        --main: #1fb5b6;
+        --main-soft: #0f3238;
+        --second: #5b60c4;
+        --heading: #e8edf6;
+        --red: #ef5e5d;
+        --pole-w: #dde4f2;
+        --good: #3fd0d1;
+        --on-main: #05181d;
+        color-scheme: dark;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--font-body);
+        font-size: 15px;
+        line-height: 1.5;
+        padding-block: 0 56px;
+        padding-left: max(16px, env(safe-area-inset-left, 0px));
+        padding-right: max(16px, env(safe-area-inset-right, 0px));
+      }
+      .wrap {
+        max-width: 1160px;
+        margin: 0 auto;
+      }
+      .pole {
+        background: repeating-linear-gradient(
+          -45deg,
+          var(--main) 0 9px,
+          var(--pole-w) 9px 18px,
+          var(--second) 18px 27px
+        );
+        background-size: 38.18px 38.18px;
+      }
+      .topstrip {
+        height: 8px;
+        margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+      }
+      .label {
+        font-family: var(--font-mono);
+        font-size: 11.5px;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      header {
+        padding-block: 36px 28px;
+        display: grid;
+        gap: 16px;
+      }
+      h1 {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: clamp(44px, 9vw, 84px);
+        line-height: 0.95;
+        text-transform: uppercase;
+        letter-spacing: 0.005em;
+        margin: 0;
+        text-wrap: balance;
+        color: var(--heading);
+      }
+      .lede {
+        margin: 0;
+        max-width: 56ch;
+        color: var(--muted);
+        font-size: 16px;
+      }
+
+      .overall {
+        display: grid;
+        gap: 10px;
+        margin-top: 8px;
+      }
+      .overall-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .overall-pct {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 34px;
+        line-height: 1;
+      }
+      .bar {
+        height: 22px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 11px;
+        overflow: hidden;
+      }
+      .bar-fill {
+        height: 100%;
+        width: 0;
+        transition: width 0.5s ease;
+        border-radius: 11px;
+        animation: slide 2.4s linear infinite;
+      }
+      @keyframes slide {
+        to {
+          background-position: 38.18px 0;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .bar-fill {
+          animation: none;
+          transition: none;
+        }
+      }
+
+      .rail {
+        display: grid;
+        gap: 8px;
+        margin-block: 8px 20px;
+      }
+      .rail-months {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        text-align: center;
+      }
+      .rail-months span {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .rail-bands {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+      }
+      .band {
+        min-width: 0;
+      }
+      .band-name {
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 18px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .band-track {
+        height: 6px;
+        border-radius: 3px;
+        background: var(--main-soft);
+        overflow: hidden;
+        margin-top: 4px;
+      }
+      .band-fill {
+        height: 100%;
+        width: 0;
+        background: var(--main);
+        transition: width 0.4s ease;
+      }
+
+      .phases {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+        align-items: start;
+      }
+      .phase {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 20px 18px 18px;
+        display: grid;
+        gap: 12px;
+        min-width: 0;
+      }
+      .phase.is-current {
+        border-color: var(--main);
+        box-shadow: 0 0 0 1px var(--main);
+      }
+      .phase-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+      }
+      .here {
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        background: var(--main);
+        color: var(--on-main);
+        padding: 3px 8px;
+        border-radius: 99px;
+      }
+      .phase h2 {
+        color: var(--heading);
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 34px;
+        line-height: 1;
+        text-transform: uppercase;
+        margin: 0;
+      }
+      .goal {
+        margin: 0;
+        color: var(--muted);
+      }
+      .count {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .tasks {
+        display: grid;
+        gap: 4px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .task {
+        position: relative;
+        display: grid;
+        grid-template-columns: 22px 1fr;
+        gap: 10px;
+        padding: 8px 8px;
+        margin-inline: -8px;
+        border-radius: 8px;
+        cursor: pointer;
+        align-items: start;
+      }
+      .task:hover {
+        background: var(--main-soft);
+      }
+      .task input {
+        position: absolute;
+        opacity: 0;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        cursor: pointer;
+      }
+      .box {
+        width: 20px;
+        height: 20px;
+        border-radius: 6px;
+        border: 2px solid var(--muted);
+        margin-top: 1px;
+        display: grid;
+        place-items: center;
+        background: transparent;
+      }
+      .box::after {
+        content: "";
+        width: 10px;
+        height: 5px;
+        border-left: 2.5px solid var(--on-main);
+        border-bottom: 2.5px solid var(--on-main);
+        transform: rotate(-45deg) translate(1px, -1px);
+        opacity: 0;
+      }
+      .task input:checked + .box {
+        background: var(--main);
+        border-color: var(--main);
+      }
+      .task input:checked + .box::after {
+        opacity: 1;
+      }
+      .task input:focus-visible + .box {
+        outline: 3px solid var(--main);
+        outline-offset: 2px;
+      }
+      .task.is-done .txt {
+        color: var(--muted);
+        text-decoration: line-through;
+        text-decoration-color: var(--line);
+      }
+      .milestone {
+        border-top: 1px dashed var(--line);
+        padding-top: 12px;
+        display: grid;
+        gap: 4px;
+      }
+      .milestone strong {
+        font-weight: 600;
+      }
+
+      .section-title {
+        color: var(--heading);
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 30px;
+        text-transform: uppercase;
+        margin: 0;
+      }
+      .counter {
+        margin-top: 28px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 22px 20px 26px;
+        display: grid;
+        gap: 20px;
+      }
+      .counter-top {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 20px;
+        align-items: flex-end;
+      }
+      .stepper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .stepper button {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: var(--bg);
+        color: var(--ink);
+        font-size: 22px;
+        font-family: var(--font-body);
+        cursor: pointer;
+      }
+      .stepper button:hover {
+        border-color: var(--main);
+      }
+      .stepper button:focus-visible,
+      .stepper input:focus-visible {
+        outline: 3px solid var(--main);
+        outline-offset: 2px;
+      }
+      .stepper input {
+        width: 96px;
+        height: 56px;
+        text-align: center;
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 44px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--bg);
+        color: var(--ink);
+        -moz-appearance: textfield;
+        appearance: textfield;
+        padding: 0;
+      }
+      .stepper input::-webkit-outer-spin-button,
+      .stepper input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      .stat-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+      }
+      .stat {
+        display: grid;
+        gap: 2px;
+        min-width: 0;
+      }
+      .stat b {
+        font-family: var(--font-display);
+        font-size: 28px;
+        line-height: 1.05;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+      }
+      .stat b.pos {
+        color: var(--good);
+      }
+      .stat b.neg {
+        color: var(--red);
+      }
+
+      .track-wrap {
+        position: relative;
+        padding-top: 22px;
+        padding-bottom: 26px;
+      }
+      .track {
+        height: 16px;
+        border-radius: 8px;
+        background: var(--main-soft);
+        position: relative;
+        overflow: hidden;
+      }
+      .track-fill {
+        height: 100%;
+        width: 0;
+        transition: width 0.4s ease;
+      }
+      .mark {
+        position: absolute;
+        transform: translateX(-50%);
+        white-space: nowrap;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .mark.top {
+        top: 0;
+        color: var(--ink);
+      }
+      .mark.bottom {
+        bottom: 0;
+      }
+      .mark.right {
+        transform: translateX(-100%);
+      }
+      .tick {
+        position: absolute;
+        top: 22px;
+        width: 2px;
+        height: 16px;
+        background: var(--ink);
+        opacity: 0.55;
+        transform: translateX(-1px);
+      }
+      .note {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13.5px;
+      }
+
+      .two {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 16px;
+        margin-top: 16px;
+        align-items: start;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 20px 20px 22px;
+        display: grid;
+        gap: 14px;
+        min-width: 0;
+      }
+      .rhythm {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+      .rhythm div {
+        display: grid;
+        gap: 0;
+      }
+      .rhythm b {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 44px;
+        line-height: 1;
+      }
+      .card p {
+        margin: 0;
+      }
+      .save {
+        margin-top: 24px;
+        text-align: center;
+      }
+    </style>
+
+    <div class="wrap">
+      <!-- <div class="topstrip pole"></div> -->
+
+      <header>
+        <div class="label">VINIT SaaS Solutions · Year 1</div>
+        <h1>From first salon to fifty</h1>
+        <p class="lede">
+          Four phases, one number to watch. Tick each step when it is done and
+          the bar fills. Your brand. Your app. No limits.
+        </p>
+        <div class="overall">
+          <div class="overall-row">
+            <span class="label" id="overall-label">0 of 0 steps</span>
+            <span class="overall-pct" id="overall-pct">0%</span>
+          </div>
+          <div
+            class="bar"
+            role="progressbar"
+            aria-label="Overall progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+            id="overall-bar"
+          >
+            <div class="bar-fill pole" id="overall-fill"></div>
+          </div>
+        </div>
+      </header>
+
+      <div class="rail" aria-hidden="true">
+        <div class="rail-months" id="rail-months"></div>
+        <div class="rail-bands" id="rail-bands"></div>
+      </div>
+
+      <main>
+        <section
+          class="phases"
+          id="phases"
+          aria-label="Roadmap phases"
+        ></section>
+
+        <section class="counter" aria-labelledby="counter-title">
+          <div class="counter-top">
+            <div>
+              <h2 class="section-title" id="counter-title">
+                Salons on the platform
+              </h2>
+              <p class="note">
+                Paying salons only. Update this when a salon signs.
+              </p>
+            </div>
+            <div class="stepper">
+              <button type="button" id="minus" aria-label="One salon fewer">
+                −
+              </button>
+              <input
+                id="salons"
+                type="number"
+                inputmode="numeric"
+                min="0"
+                max="500"
+                value="0"
+                aria-label="Number of paying salons"
+              />
+              <button type="button" id="plus" aria-label="One salon more">
+                +
+              </button>
+            </div>
+          </div>
+
+          <div class="track-wrap">
+            <div class="mark top" id="mark-be" style="left: 86%">
+              Break-even · 43
+            </div>
+            <div class="tick" style="left: 86%"></div>
+            <div class="track">
+              <div class="track-fill pole" id="track-fill"></div>
+            </div>
+            <div class="mark bottom" style="left: 10%">5 beta</div>
+            <div class="mark bottom" style="left: 40%">20</div>
+            <div class="mark bottom right" style="left: 100%">Goal · 50</div>
+          </div>
+
+          <div class="stat-row">
+            <div class="stat">
+              <span class="label">Monthly income</span><b id="mrr">0 RON</b>
+            </div>
+            <div class="stat">
+              <span class="label">Monthly costs</span><b>6.380 RON</b>
+            </div>
+            <div class="stat">
+              <span class="label" id="net-label">Result per month</span
+              ><b id="net">−6.380 RON</b>
+            </div>
+          </div>
+          <p class="note" id="be-note"></p>
+        </section>
+
+        <section class="two">
+          <div class="card">
+            <h2 class="section-title">Weekly rhythm</h2>
+            <div class="rhythm">
+              <div><b>10</b><span class="label">Outreach messages</span></div>
+              <div><b>2</b><span class="label">Demos</span></div>
+              <div><b>2</b><span class="label">Posts</span></div>
+              <div>
+                <b>1</b><span class="label">Check-in with a live salon</span>
+              </div>
+            </div>
+            <p class="note">
+              Suggested pace. Direct outreach costs time, not money, so it comes
+              first.
+            </p>
+          </div>
+          <div class="card">
+            <h2 class="section-title">If sales run slow</h2>
+            <p>
+              Check the count at the end of Month 9. Under 20 salons means it is
+              time for Plan B: offer multi-location management to 5 to 10 salon
+              chains at 1.000 RON a month or more, instead of 150 RON plans for
+              many small salons.
+            </p>
+            <p class="note">
+              Income is counted at the 150 RON Standard price. Every Premium
+              salon (200 RON) lowers the number you need.
+            </p>
+          </div>
+        </section>
+      </main>
+
+      <p class="label save" id="save-note">Progress saves automatically.</p>
+    </div>
+
+    <script>
+      (function () {
+        var PHASES = [
+          {
+            id: "build",
+            name: "Build",
+            months: [1, 3],
+            goal: "Ship a version you can show.",
+            tasks: [
+              [
+                "b1",
+                "Finish the multi-tenant app and the JSON template for new salons",
+              ],
+              [
+                "b2",
+                "Write a one-page onboarding sheet that lists every feature",
+              ],
+              ["b3", "Register the SRL and cover GDPR basics"],
+              ["b4", "List 30 barbershops in Cluj-Napoca to approach"],
+              [
+                "b5",
+                "Start posting on Instagram and announce Early Bird (3 months free)",
+              ],
+              [
+                "b6",
+                "Prepare the Start-Up Nation 2026 and Innovation Labs applications",
+              ],
+            ],
+            milestone: "MVP is live and one salon runs on its own domain.",
+          },
+          {
+            id: "prove",
+            name: "Prove",
+            months: [4, 6],
+            goal: "Get five salons using it for real.",
+            tasks: [
+              [
+                "p1",
+                "Onboard 5 beta salons in Cluj, each live in under 48 hours",
+              ],
+              ["p2", "Ship SMS reminders and the waitlist (Twilio)"],
+              [
+                "p3",
+                "Hold a feedback call with each beta salon after two weeks",
+              ],
+              ["p4", "Turn feedback into 3 testimonials and short Reels"],
+              ["p5", "Fix the top 5 issues the beta salons report"],
+              ["p6", "Launch the Premium Brand upgrade offer"],
+            ],
+            milestone: "5 salons book weekly and 3 testimonials are in hand.",
+          },
+          {
+            id: "sell",
+            name: "Sell",
+            months: [7, 9],
+            goal: "Turn demos and beta users into paying salons.",
+            tasks: [
+              ["s1", "Switch on the paid Standard and Premium packages"],
+              [
+                "s2",
+                "Run Instagram, TikTok and Facebook ads (500 RON a month)",
+              ],
+              ["s3", "Sponsor or attend a local barbering course"],
+              ["s4", "Send outreach to larger salons (3+ chairs) outside Cluj"],
+              ["s5", "Keep every new salon's setup under 48 hours"],
+            ],
+            milestone: "20 paying salons by the end of Month 9.",
+          },
+          {
+            id: "scale",
+            name: "Scale",
+            months: [10, 12],
+            goal: "Cross break-even and keep your customers.",
+            tasks: [
+              [
+                "c1",
+                "Launch the referral offer: bring a salon, get 3 months free",
+              ],
+              [
+                "c2",
+                "Publish a year in review with hours saved by automations",
+              ],
+              [
+                "c3",
+                "Check in with every salon to keep retention at 70% or more",
+              ],
+              ["c4", "Reach 43 salons (break-even), then 50"],
+              [
+                "c5",
+                "Plan next year's add-ons: online payments, stock, reports",
+              ],
+            ],
+            milestone: "50 salons and 7.500 RON of monthly recurring income.",
+          },
+        ];
+        var KEY = "vinit-roadmap-v1";
+        var state = { done: {}, salons: 0 };
+        var refs = {};
+        var total = 0;
+        PHASES.forEach(function (p) {
+          total += p.tasks.length;
+        });
+
+        function el(tag, cls, text) {
+          var n = document.createElement(tag);
+          if (cls) n.className = cls;
+          if (text != null) n.textContent = text;
+          return n;
+        }
+        function fmt(n) {
+          return Math.round(n).toLocaleString("ro-RO");
+        }
+
+        /* month rail */
+        var rm = document.getElementById("rail-months");
+        for (var m = 1; m <= 12; m++) rm.appendChild(el("span", "", String(m)));
+        var rb = document.getElementById("rail-bands");
+
+        /* phases */
+        var host = document.getElementById("phases");
+        PHASES.forEach(function (p) {
+          var band = el("div", "band");
+          band.appendChild(el("div", "band-name", p.name));
+          var track = el("div", "band-track");
+          var fill = el("div", "band-fill");
+          track.appendChild(fill);
+          band.appendChild(track);
+          rb.appendChild(band);
+
+          var card = el("article", "phase");
+          var head = el("div", "phase-head");
+          head.appendChild(
+            el("span", "label", "Months " + p.months[0] + "–" + p.months[1]),
+          );
+          var here = el("span", "here", "You are here");
+          here.hidden = true;
+          head.appendChild(here);
+          card.appendChild(head);
+          card.appendChild(el("h2", "", p.name));
+          card.appendChild(el("p", "goal", p.goal));
+          var count = el("div", "count", "");
+          card.appendChild(count);
+          var ul = el("ul", "tasks");
+          p.tasks.forEach(function (t) {
+            var li = el("li");
+            var lab = el("label", "task");
+            var inp = document.createElement("input");
+            inp.type = "checkbox";
+            inp.id = "t-" + t[0];
+            inp.addEventListener("change", function () {
+              if (inp.checked) state.done[t[0]] = true;
+              else delete state.done[t[0]];
+              update();
+              persist(false);
+            });
+            lab.appendChild(inp);
+            lab.appendChild(el("span", "box"));
+            lab.appendChild(el("span", "txt", t[1]));
+            li.appendChild(lab);
+            ul.appendChild(li);
+            refs[t[0]] = { input: inp, label: lab };
+          });
+          card.appendChild(ul);
+          var ms = el("div", "milestone");
+          ms.appendChild(el("span", "label", "Done when"));
+          ms.appendChild(el("strong", "", p.milestone));
+          card.appendChild(ms);
+          host.appendChild(card);
+          p.ui = { card: card, here: here, count: count, fill: fill };
+        });
+
+        /* salons */
+        var salonsInput = document.getElementById("salons");
+        function setSalons(v) {
+          v = parseInt(v, 10);
+          if (isNaN(v) || v < 0) v = 0;
+          if (v > 500) v = 500;
+          state.salons = v;
+          update();
+          persist(true);
+        }
+        document.getElementById("plus").addEventListener("click", function () {
+          setSalons(state.salons + 1);
+        });
+        document.getElementById("minus").addEventListener("click", function () {
+          setSalons(state.salons - 1);
+        });
+        salonsInput.addEventListener("change", function () {
+          setSalons(salonsInput.value);
+        });
+
+        function update() {
+          var done = 0,
+            currentSet = false;
+          PHASES.forEach(function (p) {
+            var d = 0;
+            p.tasks.forEach(function (t) {
+              var on = !!state.done[t[0]];
+              refs[t[0]].input.checked = on;
+              refs[t[0]].label.classList.toggle("is-done", on);
+              if (on) d++;
+            });
+            done += d;
+            var pct = Math.round((d / p.tasks.length) * 100);
+            p.ui.count.textContent = d + " of " + p.tasks.length + " steps";
+            p.ui.fill.style.width = pct + "%";
+            var current = !currentSet && d < p.tasks.length;
+            if (current) currentSet = true;
+            p.ui.card.classList.toggle("is-current", current);
+            p.ui.here.hidden = !current;
+          });
+          var pct = Math.round((done / total) * 100);
+          document.getElementById("overall-label").textContent =
+            done + " of " + total + " steps";
+          document.getElementById("overall-pct").textContent = pct + "%";
+          document.getElementById("overall-fill").style.width = pct + "%";
+          document
+            .getElementById("overall-bar")
+            .setAttribute("aria-valuenow", String(pct));
+
+          var n = state.salons;
+          if (document.activeElement !== salonsInput) salonsInput.value = n;
+          document.getElementById("track-fill").style.width =
+            Math.min(100, (n / 50) * 100) + "%";
+          var mrr = n * 150,
+            net = mrr - 6380;
+          document.getElementById("mrr").textContent = fmt(mrr) + " RON";
+          var netEl = document.getElementById("net");
+          netEl.textContent =
+            (net < 0 ? "−" : net > 0 ? "+" : "") + fmt(Math.abs(net)) + " RON";
+          netEl.className = net > 0 ? "pos" : net < 0 ? "neg" : "";
+          var note = document.getElementById("be-note");
+          if (n < 43)
+            note.textContent =
+              43 -
+              n +
+              " more " +
+              (43 - n === 1 ? "salon" : "salons") +
+              " to cover your monthly costs.";
+          else if (n < 50)
+            note.textContent =
+              "Costs are covered. " +
+              (50 - n) +
+              " more to reach the Year 1 goal of 50.";
+          else
+            note.textContent =
+              "Year 1 goal reached. Every extra salon is profit.";
+        }
+
+        /* saving: shared page data when available, this browser otherwise */
+        var dbDoc = null,
+          writing = false,
+          queued = false,
+          timer = null;
+        var saveNote = document.getElementById("save-note");
+        function saveLocal() {
+          try {
+            localStorage.setItem(KEY, JSON.stringify(state));
+          } catch (e) {}
+        }
+        function loadLocal() {
+          try {
+            var raw = localStorage.getItem(KEY);
+            if (raw) {
+              var d = JSON.parse(raw);
+              state.done = d.done || {};
+              state.salons = d.salons || 0;
+            }
+          } catch (e) {}
+        }
+        function flush() {
+          if (!dbDoc) {
+            saveLocal();
+            return;
+          }
+          if (writing) {
+            queued = true;
+            return;
+          }
+          writing = true;
+          dbDoc.set({ done: state.done, salons: state.salons }).then(
+            function () {
+              writing = false;
+              if (queued) {
+                queued = false;
+                flush();
+              }
+            },
+            function () {
+              writing = false;
+              dbDoc = null;
+              saveNote.textContent = "Saved in this browser only.";
+              saveLocal();
+            },
+          );
+        }
+        function persist(debounce) {
+          saveLocal();
+          if (timer) clearTimeout(timer);
+          if (debounce) {
+            timer = setTimeout(function () {
+              timer = null;
+              flush();
+            }, 500);
+          } else {
+            timer = null;
+            flush();
+          }
+        }
+
+        loadLocal();
+        update();
+
+        try {
+          if (window.claude && window.claude.use) {
+            window.claude.use("db").then(
+              function (db) {
+                if (!db) {
+                  saveNote.textContent = "Saved in this browser only.";
+                  return;
+                }
+                dbDoc = db.doc("roadmap/progress");
+                dbDoc.onSnapshot(
+                  function (snap) {
+                    if (writing || queued || timer) return;
+                    if (snap.exists) {
+                      var d = snap.data() || {};
+                      state.done = Object.assign({}, d.done || {});
+                      state.salons = d.salons || 0;
+                      saveLocal();
+                      update();
+                    } else if (Object.keys(state.done).length || state.salons) {
+                      flush();
+                    }
+                  },
+                  function () {
+                    dbDoc = null;
+                    saveNote.textContent = "Saved in this browser only.";
+                  },
+                );
+              },
+              function () {
+                saveNote.textContent = "Saved in this browser only.";
+              },
+            );
+          } else {
+            saveNote.textContent = "Saved in this browser only.";
+          }
+        } catch (e) {
+          saveNote.textContent = "Saved in this browser only.";
+        }
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,44 @@
+:host {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  align-content: start;
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.value {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+:host([data-size="lg"]) .value {
+  font-size: clamp(32px, 4vw, 42px);
+}
+
+.hint {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+:host([data-tone="positive"]) .value {
+  color: var(--good);
+}
+:host([data-tone="negative"]) .value {
+  color: var(--red);
+}
+:host([data-tone="brand"]) .value {
+  color: var(--main);
+}
+:host([data-tone="inverse"]) .label,
+:host([data-tone="inverse"]) .hint {
+  color: rgb(255 255 255 / 0.75);
+}

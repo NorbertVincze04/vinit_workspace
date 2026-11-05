@@ -1,1 +1,4 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global styles entry. Order matters: tokens → element defaults → helpers. */
+@import "./styles/tokens.css";
+@import "./styles/base.css";
+@import "./styles/utilities.css";

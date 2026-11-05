@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>VINIT Task Roadmap</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root {
+  --bg:#EDF0F5; --surface:#FFFFFF; --ink:#0E1A2E; --muted:#566277; --line:#D3DAE5;
+  --main:#0E9899; --main-soft:#D9F0F0; --second:#35398C; --heading:#35398C;
+  --red:#C93636; --amber:#B7791F; --pole-w:#FFFFFF; --good:#0B7F80; --on-main:#05181D;
+  --font-display:"Barlow Condensed","Arial Narrow",Impact,sans-serif;
+  --font-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:#0A111F; --surface:#131C2E; --ink:#E8EDF6; --muted:#97A3B8; --line:#25314A;
+    --main:#1FB5B6; --main-soft:#0F3238; --second:#5B60C4; --heading:#E8EDF6;
+    --red:#EF5E5D; --amber:#E0A93E; --pole-w:#DDE4F2; --good:#3FD0D1; color-scheme:dark;
+  }
+}
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--font-body); font-size:15px; line-height:1.5;
+  padding:0 16px 64px; }
+.wrap { max-width:1500px; margin:0 auto; }
+.pole { background:repeating-linear-gradient(-45deg,var(--main) 0 9px,var(--pole-w) 9px 18px,var(--second) 18px 27px); background-size:38.18px 38.18px; }
+.topstrip { height:8px; margin-inline:-16px; }
+.label { font-family:var(--font-mono); font-size:11.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--muted); }
+header { padding-block:34px 22px; display:grid; gap:14px; }
+h1 { font-family:var(--font-display); font-weight:700; font-size:clamp(40px,8vw,76px); line-height:.95; text-transform:uppercase; margin:0; color:var(--heading); text-wrap:balance; }
+.lede { margin:0; max-width:70ch; color:var(--muted); font-size:16px; }
+.overall { display:grid; gap:10px; margin-top:6px; }
+.overall-row { display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; }
+.overall-pct { font-family:var(--font-display); font-weight:700; font-size:34px; line-height:1; }
+.bar { height:22px; background:var(--surface); border:1px solid var(--line); border-radius:11px; overflow:hidden; }
+.bar-fill { height:100%; width:0; transition:width .5s ease; border-radius:11px; animation:slide 2.4s linear infinite; }
+@keyframes slide { to { background-position:38.18px 0; } }
+@media (prefers-reduced-motion: reduce) { .bar-fill { animation:none; transition:none; } }
+
+.rail { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-block:6px 18px; }
+.band-name { font-family:var(--font-display); font-weight:600; font-size:18px; text-transform:uppercase; letter-spacing:.04em; }
+.band-track { height:6px; border-radius:3px; background:var(--main-soft); overflow:hidden; margin-top:4px; }
+.band-fill { height:100%; width:0; background:var(--main); transition:width .4s ease; }
+
+.toolbar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:12px 14px; margin-bottom:16px; }
+.toolbar .grow { flex:1 1 200px; }
+input[type=text], input[type=search], input[type=number], input[type=month], select, textarea {
+  font:inherit; font-size:14px; color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:7px 9px; min-width:0; }
+select { padding-right:4px; }
+input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible { outline:3px solid var(--main); outline-offset:1px; }
+.btn { font:inherit; font-size:13.5px; font-weight:600; padding:8px 12px; border-radius:8px; border:1px solid var(--line); background:var(--bg); color:var(--ink); cursor:pointer; white-space:nowrap; }
+.btn:hover { border-color:var(--main); }
+.btn.primary { background:var(--main); border-color:var(--main); color:var(--on-main); }
+.btn.danger.armed { background:var(--red); border-color:var(--red); color:#fff; }
+.chk { display:flex; align-items:center; gap:6px; font-size:13.5px; color:var(--muted); cursor:pointer; }
+.hint { color:var(--muted); font-size:13px; margin:0 0 16px; }
+
+.phases { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; align-items:start; }
+.phase { background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 16px 16px; display:grid; gap:10px; min-width:0; }
+.phase.is-current { border-color:var(--main); box-shadow:0 0 0 1px var(--main); }
+.phase-head { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.here { font-family:var(--font-mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; background:var(--main); color:var(--on-main); padding:3px 8px; border-radius:99px; }
+.phase h2 { color:var(--heading); font-family:var(--font-display); font-weight:700; font-size:34px; line-height:1; text-transform:uppercase; margin:0; }
+.goalline { margin:0; color:var(--muted); font-size:14px; }
+.count { font-family:var(--font-mono); font-size:12px; color:var(--muted); }
+.tasks { display:grid; gap:2px; margin:0; padding:0; list-style:none; }
+.task { border-radius:10px; padding:7px 6px; margin-inline:-6px; }
+.task:hover { background:var(--main-soft); }
+.task-row { display:grid; grid-template-columns:22px 1fr 30px; gap:8px; align-items:start; }
+.cb { position:relative; width:22px; height:22px; margin-top:6px; }
+.cb input { position:absolute; opacity:0; inset:0; width:100%; height:100%; margin:0; cursor:pointer; }
+.box { width:20px; height:20px; border-radius:6px; border:2px solid var(--muted); display:grid; place-items:center; }
+.box::after { content:""; width:10px; height:5px; border-left:2.5px solid var(--on-main); border-bottom:2.5px solid var(--on-main); transform:rotate(-45deg) translate(1px,-1px); opacity:0; }
+.cb input:checked + .box { background:var(--main); border-color:var(--main); }
+.cb input:checked + .box::after { opacity:1; }
+.cb input:focus-visible + .box { outline:3px solid var(--main); outline-offset:2px; }
+.ttext { width:100%; resize:none; overflow:hidden; border:1px solid transparent; background:transparent; padding:4px 6px; border-radius:6px; line-height:1.4; display:block; }
+.ttext:hover { border-color:var(--line); }
+.ttext:focus { background:var(--surface); border-color:var(--main); }
+.task.is-done .ttext { color:var(--muted); text-decoration:line-through; text-decoration-color:var(--line); }
+.more { width:30px; height:30px; margin-top:2px; border:1px solid transparent; background:transparent; color:var(--muted); border-radius:8px; cursor:pointer; font-size:18px; line-height:1; }
+.more:hover { border-color:var(--line); color:var(--ink); }
+.meta { display:flex; flex-wrap:wrap; gap:6px; align-items:center; padding:2px 0 0 30px; }
+.tag { font-family:var(--font-mono); font-size:10.5px; letter-spacing:.04em; text-transform:uppercase; padding:2px 7px; border-radius:99px; background:var(--main-soft); color:var(--ink); max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.tag.due { background:transparent; border:1px solid var(--line); color:var(--muted); }
+.tag.over { border-color:var(--red); color:var(--red); }
+.tag.high { background:transparent; border:1px solid var(--red); color:var(--red); }
+.tag.low { background:transparent; border:1px solid var(--line); color:var(--muted); }
+.detail { margin:8px 0 4px 30px; padding:10px; border:1px dashed var(--line); border-radius:10px; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 10px; background:var(--surface); }
+.detail label { display:grid; gap:2px; font-size:11.5px; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); min-width:0; }
+.detail label.full { grid-column:1 / -1; }
+.detail select, .detail input { width:100%; }
+.detail .actions { grid-column:1 / -1; display:flex; justify-content:flex-end; }
+.add { margin-top:6px; width:100%; border-style:dashed; color:var(--muted); }
+.empty { color:var(--muted); font-size:14px; padding:6px 0; }
+
+.section-title { color:var(--heading); font-family:var(--font-display); font-weight:700; font-size:30px; text-transform:uppercase; margin:0; }
+.goals { margin-top:28px; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:20px 18px; display:grid; gap:14px; }
+.goal-row { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,2fr) 190px 34px; gap:10px; align-items:center; }
+.goal-row input { width:100%; }
+.gprog { display:grid; gap:4px; }
+.gprog .count { text-align:right; }
+.goal-head { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,2fr) 190px 34px; gap:10px; }
+@media (max-width:760px) {
+  .goal-row, .goal-head { grid-template-columns:1fr; }
+  .goal-head { display:none; }
+  .rail { grid-template-columns:repeat(4,minmax(0,1fr)); }
+  .band-name { font-size:13px; }
+}
+.foot { margin-top:22px; text-align:center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topstrip pole"></div>
+  <header>
+    <div class="label">VINIT SaaS Solutions · Year 1 task worksheet</div>
+    <h1>Every goal, one task at a time</h1>
+    <p class="lede">Your first-year goals split into small tasks (12 months). Tick tasks off, click the text to rename, use <b>⋯</b> to change goal, owner, phase or due month, and <b>+ Add task</b> to add more. Everything saves in this browser.</p>
+    <div class="overall">
+      <div class="overall-row">
+        <span class="label" id="overall-label">0 of 0 tasks</span>
+        <span class="overall-pct" id="overall-pct">0%</span>
+      </div>
+      <div class="bar" role="progressbar" aria-label="Overall progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="overall-bar"><div class="bar-fill pole" id="overall-fill"></div></div>
+    </div>
+  </header>
+
+  <div class="rail" id="rail" aria-hidden="true"></div>
+
+  <div class="toolbar">
+    <input type="search" id="q" class="grow" placeholder="Search tasks…" aria-label="Search tasks">
+    <select id="fgoal" aria-label="Filter by goal"></select>
+    <select id="fowner" aria-label="Filter by owner"></select>
+    <label class="chk"><input type="checkbox" id="hide"> Hide done</label>
+    <label class="chk">Month 1 = <input type="month" id="start" aria-label="Month 1 of the plan"></label>
+    <button class="btn" id="export" type="button">Export backup</button>
+    <button class="btn" id="import" type="button">Import</button>
+    <button class="btn danger" id="reset" type="button">Reset</button>
+    <input type="file" id="file" accept="application/json,.json" hidden>
+  </div>
+  <p class="hint" id="hint"></p>
+
+  <main>
+    <section class="phases" id="phases" aria-label="Task phases"></section>
+
+    <section class="goals" aria-labelledby="goals-title">
+      <div>
+        <h2 class="section-title" id="goals-title">Goals</h2>
+        <p class="goalline">Edit goal names and targets, add new goals, or remove ones you no longer need (their tasks become “No goal”).</p>
+      </div>
+      <div class="goal-head label"><span>Goal</span><span>Target</span><span>Progress</span><span></span></div>
+      <div id="goal-list" style="display:grid;gap:10px"></div>
+      <div><button class="btn primary" id="add-goal" type="button">+ Add goal</button></div>
+    </section>
+  </main>
+  <p class="label foot" id="save-note">Saved automatically in this browser. Use Export backup to keep a copy.</p>
+</div>
+
+<script type="application/json" id="seed">{"goals": [{"id": "g1", "name": "S1 – Company setup & funding", "target": "SRL registered, legal docs ready, funding applications submitted (target ~100,000 RON)"}, {"id": "g2", "name": "G1 – MVP & beta salons", "target": "MVP live by month 3; 5 beta salons onboarded and giving feedback"}, {"id": "g3", "name": "G2 – 50 paying salons & break-even", "target": "50 paying salons, MRR >= 7,500 RON; break-even at 43 Standard salons by month 12"}, {"id": "g4", "name": "G3 – Retention & fast onboarding", "target": "Retention ≥ 70%; new salon configured in < 48 h"}, {"id": "g8", "name": "S2 – Sustainability (3D print, paperless)", "target": "3D-printed eco promo items; paperless operations for partner salons"}], "tasks": [{"id": "t001", "text": "Register VINIT SaaS Solutions SRL at ONRC (CAEN 6201 main; 6202, 6311 secondary)", "goal": "g1", "owner": "Founder", "prio": "High", "due": 1, "phase": "build", "done": false, "notes": "Share capital 1,000 RON; fees ~400 RON"}, {"id": "t002", "text": "Open business bank account and get e-signature", "goal": "g1", "owner": "Founder", "prio": "High", "due": 1, "phase": "build", "done": false, "notes": ""}, {"id": "t003", "text": "Engage accountant and set up bookkeeping", "goal": "g1", "owner": "Founder", "prio": "High", "due": 1, "phase": "build", "done": false, "notes": "Budget 500 RON/month"}, {"id": "t004", "text": "Prepare legal documents: GDPR policy, terms of service, SaaS contract template", "goal": "g1", "owner": "Founder", "prio": "High", "due": 2, "phase": "build", "done": false, "notes": "Budget 1,000 RON"}, {"id": "t005", "text": "Register domain (vinit.ro) and create Vercel, Railway and GitHub accounts", "goal": "g1", "owner": "Founder", "prio": "High", "due": 1, "phase": "build", "done": false, "notes": "Domain ~100 RON/year"}, {"id": "t006", "text": "Buy equipment (laptop, monitor, phone, router, ergonomic desk and chair)", "goal": "g1", "owner": "Founder", "prio": "Medium", "due": 1, "phase": "build", "done": false, "notes": "See plan section 5.1"}, {"id": "t007", "text": "Check Start-Up Nation 2026 call dates, eligibility and required documents", "goal": "g1", "owner": "Founder", "prio": "High", "due": 1, "phase": "build", "done": false, "notes": ""}, {"id": "t008", "text": "Prepare and submit Start-Up Nation 2026 application", "goal": "g1", "owner": "Founder", "prio": "High", "due": 3, "phase": "build", "done": false, "notes": "Target ~100,000 RON (20,000 EUR)"}, {"id": "t009", "text": "Apply to Innovation Labs accelerator (Plan B funding)", "goal": "g1", "owner": "Founder", "prio": "Medium", "due": 4, "phase": "build", "done": false, "notes": ""}, {"id": "t010", "text": "Prepare investor pitch deck and practice pitching", "goal": "g1", "owner": "Founder", "prio": "Medium", "due": 5, "phase": "build", "done": false, "notes": ""}, {"id": "t011", "text": "Define role, base salary and per-salon bonus for the Marketing & Sales hire", "goal": "g1", "owner": "Founder", "prio": "Medium", "due": 5, "phase": "prove", "done": false, "notes": ""}, {"id": "t012", "text": "Recruit and onboard Marketing & Sales specialist", "goal": "g1", "owner": "Founder", "prio": "High", "due": 6, "phase": "prove", "done": false, "notes": ""}, {"id": "t013", "text": "Monthly cash-flow review against 6,380 RON monthly costs", "goal": "g1", "owner": "Founder", "prio": "Medium", "due": 12, "phase": "build", "done": false, "notes": "Recurring – repeat monthly"}, {"id": "t014", "text": "Design multi-tenant PostgreSQL schema (tenants, users, services, appointments)", "goal": "g2", "owner": "Founder", "prio": "High", "due": 1, "phase": "build", "done": false, "notes": ""}, {"id": "t015", "text": "Create UI/UX designs in Figma (client, employee, owner portals)", "goal": "g2", "owner": "Founder", "prio": "High", "due": 2, "phase": "build", "done": false, "notes": ""}, {"id": "t016", "text": "Build backend (Express): authentication and role-based access (Client, Employee, Owner, Admin)", "goal": "g2", "owner": "Founder", "prio": "High", "due": 2, "phase": "build", "done": false, "notes": ""}, {"id": "t017", "text": "Build client booking flow (choose service, barber, time slot)", "goal": "g2", "owner": "Founder", "prio": "High", "due": 2, "phase": "build", "done": false, "notes": ""}, {"id": "t018", "text": "Build employee calendar and schedule management", "goal": "g2", "owner": "Founder", "prio": "High", "due": 3, "phase": "build", "done": false, "notes": ""}, {"id": "t019", "text": "Build owner portal: services, staff and basic reports", "goal": "g2", "owner": "Founder", "prio": "High", "due": 3, "phase": "build", "done": false, "notes": ""}, {"id": "t020", "text": "Build VINIT admin panel to configure each salon's website content", "goal": "g2", "owner": "Founder", "prio": "Medium", "due": 3, "phase": "build", "done": false, "notes": ""}, {"id": "t021", "text": "Implement white-label theming per salon (logo, colors, custom domain)", "goal": "g2", "owner": "Founder", "prio": "High", "due": 3, "phase": "build", "done": false, "notes": ""}, {"id": "t022", "text": "Set up PWA (installable, mobile-first)", "goal": "g2", "owner": "Founder", "prio": "Medium", "due": 3, "phase": "build", "done": false, "notes": ""}, {"id": "t023", "text": "Set up automatic daily PostgreSQL backups and uptime monitoring", "goal": "g2", "owner": "Founder", "prio": "High", "due": 3, "phase": "build", "done": false, "notes": ""}, {"id": "t024", "text": "Test (functional, mobile, basic security) and fix bugs", "goal": "g2", "owner": "Founder", "prio": "High", "due": 3, "phase": "build", "done": false, "notes": ""}, {"id": "t025", "text": "Deploy to production and release MVP", "goal": "g2", "owner": "Founder", "prio": "High", "due": 3, "phase": "build", "done": false, "notes": "Milestone – MVP by end of month 3"}, {"id": "t026", "text": "Shortlist and contact beta salons in Cluj-Napoca (target 5)", "goal": "g2", "owner": "Founder", "prio": "High", "due": 3, "phase": "build", "done": false, "notes": ""}, {"id": "t027", "text": "Onboard 5 beta salons free of charge (configure site, train staff)", "goal": "g2", "owner": "Founder", "prio": "High", "due": 4, "phase": "build", "done": false, "notes": ""}, {"id": "t028", "text": "Run feedback sessions with beta salons", "goal": "g2", "owner": "Founder", "prio": "Medium", "due": 6, "phase": "prove", "done": false, "notes": ""}, {"id": "t029", "text": "Prioritize and fix issues from beta feedback", "goal": "g2", "owner": "Founder", "prio": "High", "due": 6, "phase": "prove", "done": false, "notes": ""}, {"id": "t030", "text": "Build Premium features: SMS/WhatsApp reminders (Twilio) and automatic waitlist", "goal": "g2", "owner": "Founder", "prio": "High", "due": 5, "phase": "prove", "done": false, "notes": "SMS budget ~300 RON/month"}, {"id": "t031", "text": "Build Premium features: digital punch-card loyalty and private client notes", "goal": "g2", "owner": "Founder", "prio": "Medium", "due": 6, "phase": "prove", "done": false, "notes": ""}, {"id": "t032", "text": "Build landing page (vinit.ro) with demo request form", "goal": "g3", "owner": "Founder", "prio": "High", "due": 3, "phase": "build", "done": false, "notes": ""}, {"id": "t033", "text": "Create Instagram, TikTok and Facebook business pages", "goal": "g3", "owner": "Founder", "prio": "Medium", "due": 1, "phase": "build", "done": false, "notes": ""}, {"id": "t034", "text": "Prepare 10-minute demo script and demo salon", "goal": "g3", "owner": "Founder", "prio": "High", "due": 2, "phase": "build", "done": false, "notes": ""}, {"id": "t035", "text": "Build lead list of barbershops (Cluj, București, Timișoara, Brașov) and track in a CRM sheet", "goal": "g3", "owner": "Founder", "prio": "Medium", "due": 3, "phase": "build", "done": false, "notes": ""}, {"id": "t036", "text": "Month 1 campaign: 'Marketplace vs own brand' education posts (8)", "goal": "g3", "owner": "Founder", "prio": "Medium", "due": 1, "phase": "build", "done": false, "notes": "Instagram Ads + organic"}, {"id": "t037", "text": "Month 2 campaign: 'Early Bird' – free demo + 3 free months (15 contacts)", "goal": "g3", "owner": "Founder", "prio": "High", "due": 2, "phase": "build", "done": false, "notes": "Instagram DM, WhatsApp, visits"}, {"id": "t038", "text": "Month 3 campaign: waitlist and SMS reminder feature ads (4)", "goal": "g3", "owner": "Founder", "prio": "Medium", "due": 3, "phase": "build", "done": false, "notes": "Instagram, Facebook Ads"}, {"id": "t039", "text": "Month 4 campaign: testimonials from beta salons (4)", "goal": "g3", "owner": "Founder", "prio": "Medium", "due": 4, "phase": "prove", "done": false, "notes": "Reels, TikTok"}, {"id": "t040", "text": "Month 5 campaign: 'true cost of a marketplace per chair' content (6)", "goal": "g3", "owner": "Founder", "prio": "Medium", "due": 5, "phase": "prove", "done": false, "notes": "LinkedIn, Instagram carousel"}, {"id": "t041", "text": "Define paid-launch details: pricing, contract, invoicing process", "goal": "g3", "owner": "Founder", "prio": "High", "due": 6, "phase": "prove", "done": false, "notes": ""}, {"id": "t042", "text": "Month 6 campaign: Premium Brand summer upgrade offer (4)", "goal": "g3", "owner": "Marketing & Sales", "prio": "Medium", "due": 6, "phase": "prove", "done": false, "notes": "Facebook Ads, email"}, {"id": "t043", "text": "Launch paid plans officially (Standard 150 RON, Premium 200 RON)", "goal": "g3", "owner": "Founder", "prio": "High", "due": 7, "phase": "sell", "done": false, "notes": "Milestone"}, {"id": "t044", "text": "Month 7: sponsor / attend a local barbering course (2 events)", "goal": "g3", "owner": "Marketing & Sales", "prio": "Low", "due": 7, "phase": "sell", "done": false, "notes": "Instagram Live"}, {"id": "t045", "text": "Month 8 campaign: UX focus – how easy booking is for clients (5)", "goal": "g3", "owner": "Marketing & Sales", "prio": "Medium", "due": 8, "phase": "sell", "done": false, "notes": "TikTok Ads, Reels"}, {"id": "t046", "text": "Month 9: cold outreach to larger salons (3+ chairs) outside Cluj (20)", "goal": "g3", "owner": "Marketing & Sales", "prio": "High", "due": 9, "phase": "sell", "done": false, "notes": "Cold email, LinkedIn"}, {"id": "t047", "text": "Month 10: launch referral program ('bring a salon, get 3 months free')", "goal": "g3", "owner": "Marketing & Sales", "prio": "Medium", "due": 10, "phase": "scale", "done": false, "notes": "In-app, email"}, {"id": "t048", "text": "Month 11 campaign: year retrospective – hours saved by automations (6)", "goal": "g3", "owner": "Marketing & Sales", "prio": "Medium", "due": 11, "phase": "scale", "done": false, "notes": ""}, {"id": "t049", "text": "Month 12 campaign: holiday offer – 'independence' (8)", "goal": "g3", "owner": "Marketing & Sales", "prio": "Medium", "due": 12, "phase": "scale", "done": false, "notes": "All platforms"}, {"id": "t050", "text": "Set and track Ads budget (500 RON/month) and cost per lead", "goal": "g3", "owner": "Marketing & Sales", "prio": "Medium", "due": 12, "phase": "build", "done": false, "notes": "Recurring – monthly"}, {"id": "t051", "text": "Milestone: 10 paying salons", "goal": "g3", "owner": "Marketing & Sales", "prio": "High", "due": 8, "phase": "sell", "done": false, "notes": "Suggested interim milestone"}, {"id": "t052", "text": "Milestone: 25 paying salons", "goal": "g3", "owner": "Marketing & Sales", "prio": "High", "due": 10, "phase": "scale", "done": false, "notes": "Suggested interim milestone"}, {"id": "t053", "text": "Decision checkpoint: if adoption is slow, evaluate Plan B (chains / Enterprise offer)", "goal": "g3", "owner": "Founder", "prio": "Medium", "due": 10, "phase": "scale", "done": false, "notes": ""}, {"id": "t054", "text": "Milestone: 43 salons = break-even (6,450 RON/month on Standard)", "goal": "g3", "owner": "Marketing & Sales", "prio": "High", "due": 12, "phase": "scale", "done": false, "notes": ""}, {"id": "t055", "text": "Milestone: 50 paying salons, MRR ≥ 7,500 RON", "goal": "g3", "owner": "Marketing & Sales", "prio": "High", "due": 12, "phase": "scale", "done": false, "notes": ""}, {"id": "t056", "text": "Write onboarding fact sheet describing all features", "goal": "g4", "owner": "Founder", "prio": "Medium", "due": 3, "phase": "build", "done": false, "notes": ""}, {"id": "t057", "text": "Create onboarding checklist: salon live in under 48 h after signing", "goal": "g4", "owner": "Founder", "prio": "High", "due": 4, "phase": "build", "done": false, "notes": ""}, {"id": "t058", "text": "Set up support ticket workflow and response times", "goal": "g4", "owner": "Founder", "prio": "Medium", "due": 5, "phase": "prove", "done": false, "notes": ""}, {"id": "t059", "text": "Track retention monthly (target ≥ 70%)", "goal": "g4", "owner": "Founder", "prio": "High", "due": 12, "phase": "sell", "done": false, "notes": "Recurring – monthly"}, {"id": "t060", "text": "30-day check-in with each new paying salon", "goal": "g4", "owner": "Marketing & Sales", "prio": "Medium", "due": 12, "phase": "sell", "done": false, "notes": "Recurring"}, {"id": "t061", "text": "Send satisfaction survey (NPS) to active salons", "goal": "g4", "owner": "Marketing & Sales", "prio": "Medium", "due": 10, "phase": "scale", "done": false, "notes": ""}, {"id": "t062", "text": "Interview salons that cancel to learn why", "goal": "g4", "owner": "Marketing & Sales", "prio": "Medium", "due": 12, "phase": "scale", "done": false, "notes": ""}, {"id": "t063", "text": "Set up KPI dashboard: salons, MRR, churn, ARPU", "goal": "g3", "owner": "Founder", "prio": "Medium", "due": 8, "phase": "prove", "done": false, "notes": ""}, {"id": "t068", "text": "Build partnerships with barbering schools and professional-supply distributors", "goal": "g3", "owner": "Marketing & Sales", "prio": "Medium", "due": 12, "phase": "sell", "done": false, "notes": ""}, {"id": "t084", "text": "Add paperless / green-computing messaging to website and sales material", "goal": "g8", "owner": "Marketing & Sales", "prio": "Low", "due": 4, "phase": "build", "done": false, "notes": ""}, {"id": "t085", "text": "Buy 3D printer", "goal": "g8", "owner": "Founder", "prio": "Medium", "due": 4, "phase": "prove", "done": false, "notes": "Not in initial 24,585 RON budget – add cost"}, {"id": "t086", "text": "Source biodegradable PLA / recycled rPET filament", "goal": "g8", "owner": "Founder", "prio": "Medium", "due": 4, "phase": "prove", "done": false, "notes": ""}, {"id": "t087", "text": "Design keychains (scissors, trimmer, brush) and QR-code stands", "goal": "g8", "owner": "Founder", "prio": "Medium", "due": 5, "phase": "prove", "done": false, "notes": ""}, {"id": "t088", "text": "Print and deliver QR stands and phone holders to partner salons", "goal": "g8", "owner": "Founder", "prio": "Low", "due": 7, "phase": "prove", "done": false, "notes": ""}, {"id": "t089", "text": "Track paper and CO2 saved per salon for marketing", "goal": "g8", "owner": "Founder", "prio": "Low", "due": 12, "phase": "scale", "done": false, "notes": ""}], "start": "2026-12"}</script>
+<script>
+(function () {
+  var SEED = JSON.parse(document.getElementById("seed").textContent);
+  var KEY = "vinit-task-roadmap-year1-v1";
+  var PHASES = [
+    { id:"build", name:"Build", range:"Months 1–3", lo:1, hi:3, goal:"Set up the company and ship a version you can show." },
+    { id:"prove", name:"Prove", range:"Months 4–6", lo:4, hi:6, goal:"Get five salons using it for real." },
+    { id:"sell", name:"Sell", range:"Months 7–9", lo:7, hi:9, goal:"Turn demos and beta users into paying salons." },
+    { id:"scale", name:"Scale", range:"Months 10–12", lo:10, hi:12, goal:"Cross break-even and keep your customers." }
+  ];
+  var OWNERS = ["Founder", "Marketing & Sales", "Both", "Unassigned"];
+  var PRIOS = ["High", "Medium", "Low"];
+  var MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+  var state = load() || clone(SEED);
+  var filters = { q:"", goal:"", owner:"", hide:false };
+  var open = {};
+  var focusId = null;
+  var armed = {};
+
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function uid(p) { return p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
+  function $(id) { return document.getElementById(id); }
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (!raw) return null;
+      var d = JSON.parse(raw);
+      if (d && d.tasks && d.goals) return d;
+    } catch (e) {}
+    return null;
+  }
+  var saveFailed = false;
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); }
+    catch (e) {
+      if (!saveFailed) { saveFailed = true; $("save-note").textContent = "Could not save in this browser. Use Export backup to keep your work."; }
+    }
+  }
+
+  function startParts() {
+    var p = (state.start || "2026-12").split("-");
+    return { y: parseInt(p[0], 10) || 2026, m: parseInt(p[1], 10) || 12 };
+  }
+  function monthLabel(n) {
+    var s = startParts();
+    var idx = s.y * 12 + (s.m - 1) + (n - 1);
+    return MONTHS[idx % 12] + " " + Math.floor(idx / 12);
+  }
+  function currentMonthNo() {
+    var s = startParts(), now = new Date();
+    return (now.getFullYear() * 12 + now.getMonth()) - (s.y * 12 + (s.m - 1)) + 1;
+  }
+  function goalById(id) {
+    for (var i = 0; i < state.goals.length; i++) if (state.goals[i].id === id) return state.goals[i];
+    return null;
+  }
+  function phaseOf(id) { for (var i = 0; i < PHASES.length; i++) if (PHASES[i].id === id) return PHASES[i]; return PHASES[0]; }
+
+  function visible(t) {
+    if (filters.hide && t.done) return false;
+    if (filters.goal === "__none") { if (goalById(t.goal)) return false; }
+    else if (filters.goal && t.goal !== filters.goal) return false;
+    if (filters.owner && t.owner !== filters.owner) return false;
+    if (filters.q) {
+      var hay = (t.text + " " + (t.notes || "")).toLowerCase();
+      if (hay.indexOf(filters.q.toLowerCase()) < 0) return false;
+    }
+    return true;
+  }
+
+  function fillSelect(sel, opts, value) {
+    sel.innerHTML = "";
+    opts.forEach(function (o) {
+      var op = document.createElement("option");
+      op.value = o[0]; op.textContent = o[1];
+      sel.appendChild(op);
+    });
+    sel.value = value;
+    if (sel.value !== value) sel.selectedIndex = 0;
+  }
+
+  function buildFilters() {
+    var go = [["", "All goals"]].concat(state.goals.map(function (g) { return [g.id, g.name]; })).concat([["__none", "No goal"]]);
+    fillSelect($("fgoal"), go, filters.goal);
+    fillSelect($("fowner"), [["", "All owners"]].concat(OWNERS.map(function (o) { return [o, o]; })), filters.owner);
+  }
+
+  function autosize(ta) { ta.style.height = "auto"; ta.style.height = (ta.scrollHeight + 2) + "px"; }
+
+  function detailSelect(labelText, opts, value, onchange, full) {
+    var lab = el("label", full ? "full" : "", labelText);
+    var sel = document.createElement("select");
+    fillSelect(sel, opts, value);
+    sel.addEventListener("change", function () { onchange(sel.value); });
+    lab.appendChild(sel);
+    return lab;
+  }
+
+  function taskNode(t) {
+    var li = el("li");
+    var wrap = el("div", "task" + (t.done ? " is-done" : ""));
+    var row = el("div", "task-row");
+
+    var cb = el("label", "cb");
+    var inp = document.createElement("input");
+    inp.type = "checkbox"; inp.checked = !!t.done;
+    inp.setAttribute("aria-label", "Done");
+    inp.addEventListener("change", function () { t.done = inp.checked; save(); render(); });
+    cb.appendChild(inp); cb.appendChild(el("span", "box"));
+    row.appendChild(cb);
+
+    var ta = document.createElement("textarea");
+    ta.className = "ttext"; ta.rows = 1; ta.value = t.text; ta.id = "tx-" + t.id;
+    ta.placeholder = "Describe the task…";
+    ta.setAttribute("aria-label", "Task");
+    ta.addEventListener("input", function () { t.text = ta.value; autosize(ta); save(); });
+    ta.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); ta.blur(); } });
+    row.appendChild(ta);
+
+    var more = el("button", "more", "⋯");
+    more.type = "button";
+    more.setAttribute("aria-label", "Task details");
+    more.setAttribute("aria-expanded", open[t.id] ? "true" : "false");
+    more.addEventListener("click", function () { open[t.id] = !open[t.id]; render(); });
+    row.appendChild(more);
+    wrap.appendChild(row);
+
+    var meta = el("div", "meta");
+    var g = goalById(t.goal);
+    meta.appendChild(el("span", "tag", g ? g.name.split(" – ")[0] : "No goal"));
+    var over = !t.done && t.due < currentMonthNo();
+    meta.appendChild(el("span", "tag due" + (over ? " over" : ""), "Due M" + t.due + " · " + monthLabel(t.due) + (over ? " · overdue" : "")));
+    if (t.prio === "High") meta.appendChild(el("span", "tag high", "High"));
+    if (t.prio === "Low") meta.appendChild(el("span", "tag low", "Low"));
+    if (t.owner && t.owner !== "Unassigned") meta.appendChild(el("span", "tag due", t.owner));
+    wrap.appendChild(meta);
+
+    if (open[t.id]) {
+      var d = el("div", "detail");
+      d.appendChild(detailSelect("Goal", state.goals.map(function (x) { return [x.id, x.name]; }).concat([["", "No goal"]]), t.goal || "", function (v) { t.goal = v; save(); render(); }, true));
+      d.appendChild(detailSelect("Owner", OWNERS.map(function (o) { return [o, o]; }), t.owner || "Unassigned", function (v) { t.owner = v; save(); render(); }));
+      d.appendChild(detailSelect("Priority", PRIOS.map(function (o) { return [o, o]; }), t.prio || "Medium", function (v) { t.prio = v; save(); render(); }));
+      d.appendChild(detailSelect("Phase", PHASES.map(function (p) { return [p.id, p.name]; }), t.phase, function (v) { t.phase = v; save(); render(); }));
+      var dl = el("label", "", "Due month no.");
+      var dn = document.createElement("input");
+      dn.type = "number"; dn.min = "1"; dn.max = "12"; dn.value = t.due;
+      dn.addEventListener("change", function () {
+        var v = parseInt(dn.value, 10);
+        if (isNaN(v) || v < 1) v = 1; if (v > 12) v = 12;
+        t.due = v; save(); render();
+      });
+      dl.appendChild(dn); d.appendChild(dl);
+      var nl = el("label", "full", "Notes");
+      var nt = document.createElement("input");
+      nt.type = "text"; nt.value = t.notes || "";
+      nt.addEventListener("input", function () { t.notes = nt.value; save(); });
+      nl.appendChild(nt); d.appendChild(nl);
+      var act = el("div", "actions");
+      var del = el("button", "btn danger" + (armed[t.id] ? " armed" : ""), armed[t.id] ? "Click again to delete" : "Delete task");
+      del.type = "button";
+      del.addEventListener("click", function () {
+        if (armed[t.id]) {
+          state.tasks = state.tasks.filter(function (x) { return x.id !== t.id; });
+          delete open[t.id]; delete armed[t.id]; save(); render();
+        } else {
+          armed[t.id] = true; render();
+          setTimeout(function () { if (armed[t.id]) { delete armed[t.id]; render(); } }, 3500);
+        }
+      });
+      act.appendChild(del); d.appendChild(act);
+      wrap.appendChild(d);
+    }
+    li.appendChild(wrap);
+    return { li: li, ta: ta };
+  }
+
+  function render() {
+    var scrollY = window.scrollY;
+    buildFilters();
+    var host = $("phases"); host.innerHTML = "";
+    var currentSet = false, totalAll = 0, doneAll = 0;
+    var rail = $("rail"); rail.innerHTML = "";
+    var shown = 0;
+
+    PHASES.forEach(function (p) {
+      var all = state.tasks.filter(function (t) { return t.phase === p.id; });
+      var done = all.filter(function (t) { return t.done; }).length;
+      totalAll += all.length; doneAll += done;
+      var pct = all.length ? Math.round(done / all.length * 100) : 0;
+
+      var band = el("div", "band");
+      band.appendChild(el("div", "band-name", p.name));
+      var tr = el("div", "band-track"); var bf = el("div", "band-fill"); bf.style.width = pct + "%"; tr.appendChild(bf);
+      band.appendChild(tr); rail.appendChild(band);
+
+      var card = el("article", "phase");
+      var isCur = !currentSet && done < all.length;
+      if (isCur) currentSet = true;
+      if (isCur) card.classList.add("is-current");
+      var head = el("div", "phase-head");
+      head.appendChild(el("span", "label", p.range));
+      if (isCur) head.appendChild(el("span", "here", "You are here"));
+      card.appendChild(head);
+      card.appendChild(el("h2", "", p.name));
+      card.appendChild(el("p", "goalline", p.goal));
+      card.appendChild(el("div", "count", done + " of " + all.length + " tasks done"));
+
+      var ul = el("ul", "tasks");
+      var vis = all.filter(visible).sort(function (a, b) { return a.due - b.due; });
+      shown += vis.length;
+      vis.forEach(function (t) {
+        var n = taskNode(t);
+        ul.appendChild(n.li);
+        if (focusId === t.id) { setTimeout(function () { n.ta.focus(); }, 0); }
+        setTimeout(function () { autosize(n.ta); }, 0);
+      });
+      card.appendChild(ul);
+      if (!vis.length) card.appendChild(el("div", "empty", all.length ? "No tasks match the filters." : "No tasks yet."));
+      var add = el("button", "btn add", "+ Add task");
+      add.type = "button";
+      add.addEventListener("click", function () {
+        var id = uid("t");
+        state.tasks.push({ id: id, text: "", goal: filters.goal && filters.goal !== "__none" ? filters.goal : "", owner: filters.owner || "Founder", prio: "Medium", due: p.hi, phase: p.id, done: false, notes: "" });
+        open[id] = true; focusId = id; save(); render();
+      });
+      card.appendChild(add);
+      host.appendChild(card);
+    });
+    focusId = null;
+
+    var pct = totalAll ? Math.round(doneAll / totalAll * 100) : 0;
+    $("overall-label").textContent = doneAll + " of " + totalAll + " tasks";
+    $("overall-pct").textContent = pct + "%";
+    $("overall-fill").style.width = pct + "%";
+    $("overall-bar").setAttribute("aria-valuenow", String(pct));
+    var overdue = state.tasks.filter(function (t) { return !t.done && t.due < currentMonthNo(); }).length;
+    $("hint").textContent = "Month 1 = " + monthLabel(1) + ". " + (overdue ? overdue + " overdue. " : "") + "Showing " + shown + " of " + totalAll + " tasks.";
+    $("start").value = state.start;
+    renderGoals();
+    window.scrollTo(0, scrollY);
+  }
+
+  function renderGoals() {
+    var list = $("goal-list"); list.innerHTML = "";
+    state.goals.forEach(function (g) {
+      var row = el("div", "goal-row");
+      var n = document.createElement("input"); n.type = "text"; n.value = g.name; n.setAttribute("aria-label", "Goal name");
+      n.addEventListener("input", function () { g.name = n.value; save(); });
+      n.addEventListener("change", function () { render(); });
+      var tg = document.createElement("input"); tg.type = "text"; tg.value = g.target || ""; tg.setAttribute("aria-label", "Goal target");
+      tg.addEventListener("input", function () { g.target = tg.value; save(); });
+      var mine = state.tasks.filter(function (t) { return t.goal === g.id; });
+      var done = mine.filter(function (t) { return t.done; }).length;
+      var prog = el("div", "gprog");
+      var bar = el("div", "bar"); bar.style.height = "10px";
+      var f = el("div", "bar-fill pole"); f.style.width = (mine.length ? Math.round(done / mine.length * 100) : 0) + "%"; bar.appendChild(f);
+      prog.appendChild(bar); prog.appendChild(el("div", "count", done + " of " + mine.length + " tasks"));
+      var del = el("button", "btn danger" + (armed[g.id] ? " armed" : ""), armed[g.id] ? "?" : "✕");
+      del.type = "button"; del.setAttribute("aria-label", armed[g.id] ? "Click again to delete goal" : "Delete goal");
+      del.addEventListener("click", function () {
+        if (armed[g.id]) {
+          state.goals = state.goals.filter(function (x) { return x.id !== g.id; });
+          state.tasks.forEach(function (t) { if (t.goal === g.id) t.goal = ""; });
+          if (filters.goal === g.id) filters.goal = "";
+          delete armed[g.id]; save(); render();
+        } else {
+          armed[g.id] = true; renderGoals();
+          setTimeout(function () { if (armed[g.id]) { delete armed[g.id]; renderGoals(); } }, 3500);
+        }
+      });
+      row.appendChild(n); row.appendChild(tg); row.appendChild(prog); row.appendChild(del);
+      list.appendChild(row);
+    });
+  }
+
+  $("add-goal").addEventListener("click", function () {
+    state.goals.push({ id: uid("g"), name: "New goal", target: "" });
+    save(); render();
+  });
+  $("q").addEventListener("input", function () { filters.q = this.value; render(); });
+  $("fgoal").addEventListener("change", function () { filters.goal = this.value; render(); });
+  $("fowner").addEventListener("change", function () { filters.owner = this.value; render(); });
+  $("hide").addEventListener("change", function () { filters.hide = this.checked; render(); });
+  $("start").addEventListener("change", function () { if (this.value) { state.start = this.value; save(); render(); } });
+
+  $("export").addEventListener("click", function () {
+    var blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "vinit-tasks-backup.json";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  });
+  $("import").addEventListener("click", function () { $("file").click(); });
+  $("file").addEventListener("change", function () {
+    var f = this.files && this.files[0]; if (!f) return;
+    var r = new FileReader();
+    r.onload = function () {
+      try {
+        var d = JSON.parse(r.result);
+        if (!d || !Array.isArray(d.tasks) || !Array.isArray(d.goals)) throw new Error("bad");
+        state = d; if (!state.start) state.start = "2026-12";
+        save(); render();
+      } catch (e) { $("save-note").textContent = "That file is not a valid VINIT backup."; }
+    };
+    r.readAsText(f);
+    this.value = "";
+  });
+  $("reset").addEventListener("click", function () {
+    var b = this;
+    if (armed.reset) {
+      armed.reset = false; state = clone(SEED); open = {}; save(); render();
+      b.textContent = "Reset"; b.classList.remove("armed");
+    } else {
+      armed.reset = true; b.textContent = "Click again: erase my changes"; b.classList.add("armed");
+      setTimeout(function () { if (armed.reset) { armed.reset = false; b.textContent = "Reset"; b.classList.remove("armed"); } }, 3500);
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

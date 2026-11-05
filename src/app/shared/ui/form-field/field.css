@@ -1,0 +1,37 @@
+/* Shared by <app-text-field> and <app-select-field>. */
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.field {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.field-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.field[data-label="inline"] {
+  grid-auto-flow: column;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 8px;
+}
+.field[data-label="inline"] .field-label {
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+select.input {
+  padding-right: 4px;
+}

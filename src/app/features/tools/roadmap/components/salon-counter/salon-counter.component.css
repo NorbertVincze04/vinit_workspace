@@ -1,0 +1,62 @@
+:host {
+  display: block;
+  margin-top: 28px;
+}
+
+app-card {
+  --card-gap: 22px;
+}
+
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+}
+.intro {
+  display: grid;
+  gap: 6px;
+}
+
+.track {
+  position: relative;
+  padding-block: 22px 24px;
+}
+
+.mark {
+  position: absolute;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+.mark.be {
+  top: 0;
+  color: var(--ink);
+}
+.mark.below {
+  bottom: 0;
+}
+.mark.end {
+  right: 0;
+  transform: none;
+}
+
+.tick {
+  position: absolute;
+  top: 22px;
+  z-index: 1;
+  width: 2px;
+  height: 16px;
+  background: var(--ink);
+  opacity: 0.55;
+  transform: translateX(-1px);
+}
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px 36px;
+}

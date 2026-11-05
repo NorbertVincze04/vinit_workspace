@@ -1,0 +1,161 @@
+/*
+ * Design tokens — the only place colours, fonts, radii and spacing are defined.
+ * Components read these variables; change a value here and the whole app follows.
+ */
+:root {
+  /* Brand */
+  --main: #0e9899;
+  --main-soft: #d9f0f0;
+  --second: #35398c;
+  --second-soft: #e4e5f4;
+  --on-main: #05181d;
+  --on-second: #ffffff;
+
+  /* Surfaces & text */
+  --bg: #edf0f5;
+  --surface: #ffffff;
+  --surface-2: #f6f8fb;
+  --ink: #0e1a2e;
+  --muted: #566277;
+  --line: #d3dae5;
+  --heading: #35398c;
+
+  /* Progress bars & meters: simple neutral */
+  --progress-track: #dde3ec;
+  --progress-fill: #66738a;
+
+  /* Status */
+  --good: #0b7f80;
+  --red: #c93636;
+  --amber: #b7791f;
+
+  /* Status pills (tinted background + readable text) */
+  --tone-neutral-bg: #e8edf2;
+  --tone-neutral-fg: #44516a;
+  --tone-info-bg: #e4e5f6;
+  --tone-info-fg: #35398c;
+  --tone-warn-bg: #fbefd2;
+  --tone-warn-fg: #7a5200;
+  --tone-ok-bg: #ddf3ea;
+  --tone-ok-fg: #0b6b47;
+  --tone-teal-bg: #d9f0f0;
+  --tone-teal-fg: #075e5f;
+  --tone-bad-bg: #f6e1e1;
+  --tone-bad-fg: #8a3a3a;
+
+  /* Chart series (validated for colour-blind separation, light surface) */
+  --chart-1: #0e9899; /* income */
+  --chart-2: #d0702a; /* expenses */
+  --chart-3: #5157b8; /* invested */
+
+  /* Logo */
+  --logo-left: var(--main);
+  --logo-right: var(--second);
+
+  /* Typography */
+  --font-display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif;
+  --font-body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+
+  /* Shape */
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+  --shadow-sm: 0 1px 2px rgb(14 26 46 / 0.06);
+  --shadow-md: 0 10px 30px rgb(14 26 46 / 0.08);
+  --shadow-lg: 0 1px 2px rgb(14 26 46 / 0.06), 0 16px 40px rgb(14 26 46 / 0.16);
+
+  /* Layout */
+  --container: 1200px;
+  --gutter: 16px;
+  --header-h: 64px;
+  --section-pad: clamp(32px, 4.5vw, 52px);
+
+  color-scheme: light;
+}
+
+@media (min-width: 760px) {
+  :root {
+    --gutter: 24px;
+  }
+}
+
+/* Dark theme: follows the OS unless the user picked "light" in the header. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --main: #1fb5b6;
+    --main-soft: #0f3238;
+    --second: #5b60c4;
+    --second-soft: #1d2150;
+    --bg: #0a111f;
+    --surface: #131c2e;
+    --surface-2: #0f1727;
+    --ink: #e8edf6;
+    --muted: #97a3b8;
+    --line: #25314a;
+    --heading: #e8edf6;
+    --progress-track: #25314a;
+    --progress-fill: #97a3b8;
+    --good: #3fd0d1;
+    --red: #ef5e5d;
+    --amber: #e0a93e;
+    --tone-neutral-bg: #1c2638;
+    --tone-neutral-fg: #a9b4c6;
+    --tone-info-bg: #1f2250;
+    --tone-info-fg: #b3b6f5;
+    --tone-warn-bg: #3a2d0f;
+    --tone-warn-fg: #ebc25e;
+    --tone-ok-bg: #12362b;
+    --tone-ok-fg: #6fd6a5;
+    --tone-teal-bg: #0f3238;
+    --tone-teal-fg: #7ee0e0;
+    --tone-bad-bg: #3a2020;
+    --tone-bad-fg: #f0a8a8;
+    --chart-1: #1fa8a9;
+    --chart-2: #c97a38;
+    --chart-3: #7c82de;
+    --logo-right: var(--ink);
+    --shadow-md: 0 10px 30px rgb(0 0 0 / 0.35);
+    --shadow-lg: 0 1px 2px rgb(0 0 0 / 0.4), 0 16px 40px rgb(0 0 0 / 0.5);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --main: #1fb5b6;
+  --main-soft: #0f3238;
+  --second: #5b60c4;
+  --second-soft: #1d2150;
+  --bg: #0a111f;
+  --surface: #131c2e;
+  --surface-2: #0f1727;
+  --ink: #e8edf6;
+  --muted: #97a3b8;
+  --line: #25314a;
+  --heading: #e8edf6;
+  --progress-track: #25314a;
+  --progress-fill: #97a3b8;
+  --good: #3fd0d1;
+  --red: #ef5e5d;
+  --amber: #e0a93e;
+  --tone-neutral-bg: #1c2638;
+  --tone-neutral-fg: #a9b4c6;
+  --tone-info-bg: #1f2250;
+  --tone-info-fg: #b3b6f5;
+  --tone-warn-bg: #3a2d0f;
+  --tone-warn-fg: #ebc25e;
+  --tone-ok-bg: #12362b;
+  --tone-ok-fg: #6fd6a5;
+  --tone-teal-bg: #0f3238;
+  --tone-teal-fg: #7ee0e0;
+  --tone-bad-bg: #3a2020;
+  --tone-bad-fg: #f0a8a8;
+  --chart-1: #1fa8a9;
+  --chart-2: #c97a38;
+  --chart-3: #7c82de;
+  --logo-right: var(--ink);
+  --shadow-md: 0 10px 30px rgb(0 0 0 / 0.35);
+  --shadow-lg: 0 1px 2px rgb(0 0 0 / 0.4), 0 16px 40px rgb(0 0 0 / 0.5);
+  color-scheme: dark;
+}

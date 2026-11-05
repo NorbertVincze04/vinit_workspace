@@ -1,0 +1,26 @@
+<app-card>
+  <div class="grid">
+    <div class="stats">
+      <app-stat label="Content items" [value]="format(totals().items)" />
+      <app-stat
+        label="Appearances"
+        [value]="format(totals().appearances) + ' / ' + format(totals().planned)"
+        hint="planned in Annex 3"
+      />
+      <app-stat label="Published" [value]="format(totals().published)" />
+      <app-stat label="Ad budget used" [value]="format(totals().adSpend) + ' RON'" [hint]="'of ' + adBudgetYear + ' RON'" />
+    </div>
+
+    <div class="mix">
+      <span class="eyebrow">Communication mix</span>
+      @for (m of mix(); track m.value) {
+        <div class="mix-row">
+          <span class="lbl">{{ m.label }}</span>
+          <app-meter [value]="m.share" [marker]="m.target" [label]="m.label + ': ' + m.share + '% of appearances, target ' + m.target + '%'" />
+          <span class="pct"><b>{{ m.share }}%</b> / {{ m.target }}%</span>
+        </div>
+      }
+      <p class="note"><i class="mark"></i>Target share from the business plan. Bars count appearances.</p>
+    </div>
+  </div>
+</app-card>

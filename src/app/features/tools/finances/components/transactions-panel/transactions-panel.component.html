@@ -1,0 +1,59 @@
+<div class="toolbar">
+  <app-text-field
+    class="grow"
+    type="search"
+    label="Search transactions"
+    labelMode="hidden"
+    placeholder="Search description, category, reference"
+    [value]="store.txFilters().q"
+    (valueChange)="store.setTxFilters({ q: $event })"
+  />
+  <app-chip-group label="Filter by type" [options]="typeChips" [value]="store.txFilters().type" (valueChange)="store.setTxFilters({ type: $event })" />
+  <app-select-field label="Business or personal" labelMode="hidden" [options]="scopeOptions" [value]="store.txFilters().scope" (valueChange)="store.setTxFilters({ scope: $event })" />
+  <app-select-field label="Period" labelMode="hidden" [options]="periodOptions()" [value]="store.txFilters().period" (valueChange)="setPeriod($event)" />
+  <button appButton size="sm" type="button" (click)="exportCsv.emit()">Export CSV</button>
+  <button appButton size="sm" variant="primary" type="button" (click)="add.emit()">New entry</button>
+</div>
+
+@if (!store.transactions.items().length) {
+  <app-empty-state
+    heading="No transactions yet"
+    text="Log every payment, invoice, salary or money moved into investments. The totals, the chart and the budgets all come from these entries."
+  >
+    <button appButton variant="primary" type="button" (click)="add.emit()">Add the first entry</button>
+  </app-empty-state>
+} @else if (!store.txRows().length) {
+  <app-empty-state [heading]="emptyHeading()" text="Try another month, type or search, or add what's missing.">
+    <button appButton variant="primary" type="button" (click)="add.emit()">New entry</button>
+  </app-empty-state>
+} @else {
+  <app-inline-stats [items]="store.txSummary()" />
+  <app-ledger
+    [headers]="['Date', 'Description', 'Type', 'Amount', '']"
+    [numeric]="[3]"
+    columns="56px minmax(0, 1fr) auto 150px auto"
+  >
+    @for (row of store.txRows(); track row.tx.id) {
+      <app-ledger-row clickable (activate)="edit.emit(row.tx)">
+        <div class="date"><strong>{{ row.day }}</strong>{{ row.monthText }}</div>
+        <div>
+          <span class="cell-title">{{ row.tx.description || 'Untitled' }}</span>
+          @if (row.sub) {
+            <span class="cell-sub">{{ row.sub }}</span>
+          }
+        </div>
+        <div class="pills">
+          <app-status-pill [tone]="row.typeTone">{{ row.typeLabel }}</app-status-pill>
+          @if (row.business) {
+            <app-badge variant="second">VINIT</app-badge>
+          }
+        </div>
+        <app-amount [text]="row.amountText" [sub]="row.ronText" [kind]="row.amountClass" />
+        <div class="cell-actions">
+          <button appButton variant="ghost" size="sm" type="button" (click)="edit.emit(row.tx)">Edit</button>
+          <button appButton variant="ghost" size="sm" type="button" (click)="remove.emit(row.tx)">Delete</button>
+        </div>
+      </app-ledger-row>
+    }
+  </app-ledger>
+}

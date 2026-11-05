@@ -1,0 +1,12 @@
+<label class="cb" [class.cb--row]="variant() === 'row'" [class.is-struck]="strike() && checked()">
+  <input
+    type="checkbox"
+    class="sr-only"
+    [checked]="checked()"
+    [disabled]="disabled()"
+    [attr.aria-label]="ariaLabel() || null"
+    (change)="onChange($event)"
+  />
+  <span class="box" aria-hidden="true"></span>
+  <span class="text"><ng-content /></span>
+</label>

@@ -1,0 +1,30 @@
+<app-card>
+  <div class="band">
+    <div class="nw">
+      <span class="eyebrow">Net worth</span>
+      <b class="nw-value">{{ ron(netWorth().total, true) }}</b>
+      <div class="parts">
+        <span>Accounts {{ ron(netWorth().assets) }}</span>
+        <span>Investments {{ ron(netWorth().invested) }}</span>
+        @if (netWorth().debts) {
+          <span>Debts −{{ ron(netWorth().debts) }}</span>
+        }
+      </div>
+    </div>
+
+    <div class="stats">
+      @for (s of stats(); track s.label) {
+        <div class="stat">
+          <span class="eyebrow"><i class="swatch" [style.background]="s.color"></i>{{ s.label }}</span>
+          <b>{{ s.value }}</b>
+          <span class="delta" [attr.data-tone]="s.delta.tone">{{ s.delta.text }}</span>
+        </div>
+      }
+      <div class="stat">
+        <span class="eyebrow">Left over</span>
+        <b [class.neg]="left() < 0">{{ ron(left(), true) }}</b>
+        <span class="delta" [attr.data-tone]="savingsRate().tone">{{ savingsRate().text }}</span>
+      </div>
+    </div>
+  </div>
+</app-card>

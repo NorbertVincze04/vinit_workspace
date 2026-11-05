@@ -1,0 +1,36 @@
+<div class="scroll">
+  <table>
+    @if (caption()) {
+      <caption class="sr-only">{{ caption() }}</caption>
+    }
+    <thead>
+      <tr>
+        @for (header of table().headers; track $index) {
+          <th scope="col" [class.num]="isNumeric($index)">{{ header }}</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of table().rows; track $index) {
+        <tr>
+          @for (cell of row; track $index; let col = $index) {
+            @if (col === 0) {
+              <th scope="row">{{ cell }}</th>
+            } @else {
+              <td [class.num]="isNumeric(col)">{{ cell }}</td>
+            }
+          }
+        </tr>
+      }
+    </tbody>
+    @if (table().footer; as footer) {
+      <tfoot>
+        <tr>
+          @for (cell of footer; track $index; let col = $index) {
+            <td [class.num]="isNumeric(col)">{{ cell }}</td>
+          }
+        </tr>
+      </tfoot>
+    }
+  </table>
+</div>

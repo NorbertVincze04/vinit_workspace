@@ -1,0 +1,15 @@
+<app-select-field
+  class="full"
+  label="Goal"
+  [options]="goalOptions()"
+  [value]="task().goal"
+  (valueChange)="changed.emit({ goal: $event })"
+/>
+<app-select-field label="Owner" [options]="ownerOptions" [value]="task().owner" (valueChange)="setOwner($event)" />
+<app-select-field label="Priority" [options]="priorityOptions" [value]="task().prio" (valueChange)="setPriority($event)" />
+<app-select-field label="Phase" [options]="phaseOptions" [value]="task().phase" (valueChange)="setPhase($event)" />
+<app-select-field label="Due month" [options]="monthOptions()" [value]="'' + task().due" (valueChange)="setDue($event)" />
+<app-text-field class="full" label="Notes" [value]="task().notes" (valueChange)="changed.emit({ notes: $event })" />
+<div class="actions">
+  <app-confirm-button label="Delete task" confirmLabel="Click again to delete" size="sm" (confirmed)="removed.emit()" />
+</div>

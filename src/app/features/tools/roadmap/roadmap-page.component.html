@@ -1,0 +1,47 @@
+<div class="container">
+  <app-page-header
+    eyebrow="VINIT SaaS Solutions · Year 1"
+    title="From first salon to fifty"
+    lede="Four phases, one number to watch. Tick each step when it is done; the overview page picks up the progress."
+  >
+    <app-progress-summary
+      [label]="store.overall().done + ' of ' + store.overall().total + ' steps'"
+      [percent]="store.overall().percent"
+    />
+  </app-page-header>
+
+  <app-phase-rail [bands]="store.bands()" [months]="12" />
+
+  <app-grid min="240px">
+    @for (view of store.phases(); track view.phase.id) {
+      <app-phase-card [phase]="view.phase" [count]="view.done + ' of ' + view.total + ' steps'" [current]="view.current">
+        <ul class="steps">
+          @for (step of view.steps; track step.id) {
+            <li>
+              <app-checkbox variant="row" strike [checked]="step.done" (checkedChange)="store.setStep(step.id, $event)">
+                {{ step.text }}
+              </app-checkbox>
+            </li>
+          }
+        </ul>
+        <div class="milestone">
+          <span class="eyebrow">Done when</span>
+          <strong>{{ view.milestone }}</strong>
+        </div>
+      </app-phase-card>
+    }
+  </app-grid>
+
+  <app-salon-counter [count]="store.salons()" (countChange)="store.setSalons($event)" />
+
+  <app-grid min="280px" align="stretch" class="extras">
+    <app-weekly-rhythm />
+    <app-card padding="lg">
+      <h2 class="title-md">{{ planB.title }}</h2>
+      <p>{{ planB.text }}</p>
+      <p class="muted small">{{ planB.note }}</p>
+    </app-card>
+  </app-grid>
+
+  <app-save-status message="Progress saves automatically in this browser." />
+</div>

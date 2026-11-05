@@ -1,0 +1,64 @@
+dialog {
+  width: min(660px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+dialog[data-size="sm"] {
+  width: min(440px, calc(100vw - 32px));
+}
+dialog[data-size="lg"] {
+  width: min(760px, calc(100vw - 32px));
+}
+dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+dialog::backdrop {
+  background: rgb(6 14 24 / 0.55);
+}
+
+.head {
+  padding: 20px 22px 0;
+}
+.head h2 {
+  font-size: 26px;
+}
+.head p {
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.body {
+  min-height: 0;
+  padding: 18px 22px;
+  overflow: auto;
+}
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 22px 18px;
+  border-top: 1px solid var(--line);
+}
+.foot:empty {
+  display: none;
+}
+::ng-deep [dialogFooter] {
+  display: contents;
+}
+
+@media (max-width: 560px) {
+  .head,
+  .body,
+  .foot {
+    padding-inline: 18px;
+  }
+}

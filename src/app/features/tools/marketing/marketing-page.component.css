@@ -1,0 +1,26 @@
+.group {
+  margin-bottom: 20px;
+}
+
+.ghead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 14px;
+  margin: 0 2px 8px;
+}
+.ghead h3 {
+  font-size: 20px;
+  text-transform: none;
+  color: var(--ink);
+}
+.ghead h3 span {
+  font-weight: 600;
+  color: var(--muted);
+}
+.ghead p {
+  font-size: 13px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}

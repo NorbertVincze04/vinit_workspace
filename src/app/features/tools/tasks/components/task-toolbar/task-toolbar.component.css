@@ -1,0 +1,26 @@
+:host {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.search {
+  flex: 1 1 220px;
+}
+
+app-select-field {
+  flex: 0 1 220px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-left: auto;
+}

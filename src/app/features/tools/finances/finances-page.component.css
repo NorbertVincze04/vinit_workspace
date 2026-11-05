@@ -1,0 +1,15 @@
+.panels {
+  margin-bottom: 22px;
+}
+
+.panel-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px 12px;
+}
+
+.tab-panel {
+  padding-top: 16px;
+}

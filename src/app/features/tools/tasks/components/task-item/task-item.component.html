@@ -1,0 +1,52 @@
+<div class="row">
+  <app-checkbox ariaLabel="Done" [checked]="task().done" (checkedChange)="changed.emit({ done: $event })" />
+  <textarea
+    #textBox
+    class="text"
+    rows="1"
+    placeholder="Describe the task…"
+    aria-label="Task"
+    [class.is-done]="task().done"
+    [value]="task().text"
+    [appAutosize]="task().text"
+    (input)="onText($event)"
+    (keydown.enter)="onEnter($event)"
+  ></textarea>
+  <button
+    appButton
+    variant="ghost"
+    size="sm"
+    iconOnly
+    type="button"
+    aria-label="Task details"
+    [attr.aria-expanded]="expanded()"
+    (click)="expandedChange.emit(!expanded())"
+  >
+    <app-icon name="more" [size]="18" [stroke]="3" />
+  </button>
+</div>
+
+<div class="meta">
+  <app-badge>{{ view().goalTag }}</app-badge>
+  <app-badge [variant]="view().overdue ? 'danger' : 'outline'">
+    Due M{{ task().due }} · {{ view().dueLabel }}{{ view().overdue ? ' · overdue' : '' }}
+  </app-badge>
+  @if (task().prio === 'High') {
+    <app-badge variant="danger">High</app-badge>
+  } @else if (task().prio === 'Low') {
+    <app-badge variant="outline">Low</app-badge>
+  }
+  @if (task().owner !== 'Unassigned') {
+    <app-badge variant="outline">{{ task().owner }}</app-badge>
+  }
+</div>
+
+@if (expanded()) {
+  <app-task-details
+    [task]="task()"
+    [goalOptions]="goalOptions()"
+    [monthOptions]="monthOptions()"
+    (changed)="changed.emit($event)"
+    (removed)="removed.emit()"
+  />
+}

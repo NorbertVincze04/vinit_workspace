@@ -1,0 +1,92 @@
+<div class="container">
+  <app-page-header
+    eyebrow="VINIT SaaS Solutions"
+    title="Clients"
+    lede="Every salon from first contact to paying customer: contact details, package, domain and status. Active clients count toward MRR."
+  >
+    <div pageActions>
+      <app-backup-actions (exportBackup)="exportBackup()" (importBackup)="importBackup($event)" />
+      <button appButton variant="primary" type="button" (click)="openNew()">
+        <app-icon name="plus" [size]="16" /> New client
+      </button>
+    </div>
+  </app-page-header>
+
+  <app-clients-overview
+    [total]="store.clients().length"
+    [active]="store.active().length"
+    [mrr]="store.mrr()"
+    [breakEvenPercent]="store.breakEvenPercent()"
+  />
+
+  <div class="toolbar">
+    <app-text-field
+      class="grow"
+      type="search"
+      label="Search clients"
+      labelMode="hidden"
+      placeholder="Search salon, owner, city, domain, phone"
+      [value]="store.filters().q"
+      (valueChange)="store.setFilters({ q: $event })"
+    />
+    <app-select-field
+      label="Sort"
+      labelMode="inline"
+      [options]="sortOptions"
+      [value]="store.filters().sort"
+      (valueChange)="setSort($event)"
+    />
+    <app-chip-group
+      label="Filter by status"
+      [options]="store.statusChips()"
+      [value]="store.filters().status"
+      (valueChange)="store.setFilters({ status: $event })"
+    />
+  </div>
+
+  @if (!store.clients().length) {
+    <app-empty-state
+      heading="No clients yet"
+      text="Add the first salon you onboard. Each client keeps its contact details, package, domain and status here."
+    >
+      <button appButton variant="primary" type="button" (click)="openNew()">Add your first client</button>
+    </app-empty-state>
+  } @else if (!store.visible().length) {
+    <app-empty-state heading="No clients match" text="Try a different search or status filter.">
+      <button appButton type="button" (click)="store.clearFilters()">Clear filters</button>
+    </app-empty-state>
+  } @else {
+    <app-ledger
+      [headers]="['Salon', 'Contact', 'Package', 'Status', '']"
+      columns="minmax(0, 2fr) minmax(0, 1.7fr) minmax(0, 1.1fr) 140px auto"
+    >
+      @for (client of store.visible(); track client.id) {
+        <app-client-row [client]="client" (edit)="openEdit(client)" (remove)="deleting.set(client)" />
+      }
+    </app-ledger>
+  }
+
+  <app-save-status message="Saved automatically in this browser. Use Export backup to keep a copy." />
+</div>
+
+@if (form(); as f) {
+  <app-form-dialog
+    [heading]="f.client ? 'Edit client' : 'New client'"
+    [subheading]="f.client ? 'Changes are saved to the client list.' : 'Salon details, package and status.'"
+    [fields]="fields"
+    [initial]="f.values"
+    saveLabel="Save client"
+    (saved)="save($event)"
+    (closed)="form.set(null)"
+  />
+}
+
+@if (deleting(); as client) {
+  <app-confirm-dialog
+    heading="Delete client?"
+    [message]="'“' + (client.salon || 'This client') + '” and all of its details will be removed. This can’t be undone.'"
+    cancelLabel="Keep client"
+    (confirmed)="confirmDelete(client)"
+    (closed)="deleting.set(null)"
+  />
+}

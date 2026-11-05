@@ -1,0 +1,63 @@
+:host {
+  display: block;
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.scroll {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 14px 16px;
+  text-align: center;
+  border-bottom: 1px solid var(--line);
+}
+tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+thead th {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+tbody th {
+  text-align: left;
+  font-weight: 600;
+}
+
+.us {
+  background: var(--main-soft);
+}
+thead .us {
+  color: var(--heading);
+}
+
+.mark {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+.mark.yes {
+  background: var(--main);
+  color: var(--on-main);
+}
+.mark.no {
+  border: 1px solid var(--line);
+  color: var(--muted);
+}

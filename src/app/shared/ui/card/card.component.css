@@ -1,0 +1,31 @@
+:host {
+  display: grid;
+  gap: var(--card-gap, 14px);
+  align-content: start;
+  min-width: 0;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+
+:host([data-padding="sm"]) {
+  padding: 12px 14px;
+}
+:host([data-padding="lg"]) {
+  padding: 26px 24px;
+}
+
+:host([data-tone="soft"]) {
+  background: var(--surface-2);
+}
+:host([data-tone="inverse"]) {
+  background: var(--second);
+  border-color: var(--second);
+  color: var(--on-second);
+}
+
+:host(.is-highlight) {
+  border-color: var(--main);
+  box-shadow: 0 0 0 1px var(--main);
+}

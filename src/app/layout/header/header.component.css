@@ -1,0 +1,102 @@
+:host {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: block;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter: saturate(1.4) blur(10px);
+  -webkit-backdrop-filter: saturate(1.4) blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+
+.bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: var(--header-h);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+}
+.brand-tag {
+  padding-left: 12px;
+  border-left: 1px solid var(--line);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+.nav-link:hover {
+  color: var(--ink);
+  background: var(--main-soft);
+}
+.nav-link.is-active {
+  color: var(--heading);
+  background: var(--second-soft);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.menu-toggle {
+  display: none;
+}
+
+/* Phones: navigation collapses into a dropdown panel. */
+@media (max-width: 1100px) {
+  .brand-tag {
+    display: none;
+  }
+  .actions {
+    margin-left: auto;
+  }
+  .menu-toggle {
+    display: inline-flex;
+  }
+  .nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 8px var(--gutter) 14px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+    box-shadow: var(--shadow-md);
+  }
+  .nav.is-open {
+    display: flex;
+  }
+  .nav-link {
+    padding: 12px;
+  }
+}

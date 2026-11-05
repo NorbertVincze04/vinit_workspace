@@ -1,0 +1,20 @@
+/* Side rail + content column. The rail is sticky (see section-nav) so it stays visible while scrolling. */
+.layout {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 0 8px;
+  max-width: 1480px;
+  margin-inline: auto;
+  padding: 24px var(--gutter) 0;
+}
+
+.content {
+  min-width: 0;
+}
+
+@media (max-width: 960px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0;
+  }
+}
