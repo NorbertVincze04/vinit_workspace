@@ -6,6 +6,13 @@ import { NavLink, ToolDefinition } from '../models';
  */
 export const TOOLS: readonly ToolDefinition[] = [
   {
+    id: 'kpis',
+    title: 'KPIs',
+    description: 'Paying salons, MRR, retention, trial → paid and onboarding time vs. the plan.',
+    icon: 'trending',
+    route: '/tools/kpis',
+  },
+  {
     id: 'tasks',
     title: 'Tasks',
     description: 'Year 1 goals split into tasks with owners and due months.',

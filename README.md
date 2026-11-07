@@ -79,6 +79,7 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 | Onboarding | `POST /salons/:id/onboarding`, `GET /onboardings?open=`, `GET/PATCH/DELETE /onboardings/:id`, `POST /onboardings/:id/steps`, `POST /onboardings/:id/go-live`, `PATCH/DELETE /onboarding-steps/:id`, `GET/PUT /onboarding-template` |
 | Support | `GET/POST /tickets`, `GET/PATCH/DELETE /tickets/:id`, `GET/POST /time-entries`, `PATCH/DELETE /time-entries/:id`, `GET /salons/:id/sessions`, `POST /salons/:id/bill-extra-work` |
 | Team | `GET /users` (names for pickers) |
+| KPIs | `GET /kpis?month=` (+ targets), `GET /kpis/history?from=&to=`, `PUT /kpis/snapshots/:month` (recompute a closed month) |
 | Import | `POST /import/legacy-clients` {records} (old browser Clients list → leads / salons; skips records moved before) |
 | Plans, promotions | `GET /plans`, `PATCH /plans/:id`, `GET/POST /promotions`, `PATCH /promotions/:id` (seeded by the migrations) |
 
@@ -87,6 +88,7 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 | Tool | Route | What it does |
 |---|---|---|
 | Overview | `/` | Tool launcher, live figures from every tool, salons needing attention (overdue payments, trials ending, onboardings over 48h, urgent tickets, lead follow-ups due), tasks due now, payments due in 14 days |
+| KPIs | `/tools/kpis` | Any month vs. the plan: paying salons (43 break-even, 50 goal), MRR (7.500 RON goal), retention month and year (≥ 70%), trial → paid, onboarding hours (48h), new/churned, leads; 12-month charts and table. Closed months are frozen snapshots |
 | Tasks | `/tools/tasks` | Year 1 goals split into tasks, owners, due months, goals editor |
 | Leads | `/tools/leads` | Sales pipeline: board (drag cards between stages) or list, contact log with follow-ups, CSV import (e.g. the prospect list saved as CSV), convert into client + salon |
 | Salons | `/tools/salons` | Every salon (tenant) with client, plan, status and domains; `/tools/salons/:id` is its whole story (overview, status history, timeline) |

@@ -1,0 +1,71 @@
+<app-page-header title="KPIs" description="The business against the plan: 43 salons to break-even, 50 and 7.500 RON MRR by year end, retention ≥ 70%, live within 48h.">
+  <div pageActions>
+    <app-month-switcher [(value)]="month" />
+    @if (!isCurrent()) {
+      <app-menu ariaLabel="More KPI actions">
+        <button appMenuItem type="button" (click)="store.rebuild(month())">Recompute {{ monthName(month()) }}</button>
+      </app-menu>
+    }
+  </div>
+</app-page-header>
+
+@if (store.current(); as k) {
+  <div class="cards">
+    @for (c of cards(); track c.label) {
+      <app-kpi-card [label]="c.label" [value]="c.value" [hint]="c.hint" [tone]="c.tone" [percent]="c.percent" [route]="c.route" />
+    }
+  </div>
+  <p class="note">
+    @if (k.snapshot) {
+      {{ monthName(k.month) }} is closed: these figures were frozen when it ended (⋯ › Recompute after fixing old data).
+    } @else {
+      Live figures, computed from the history. Retention = salons still with us ÷ salons paying at the start of the period.
+    }
+  </p>
+
+  @if (isCurrent()) {
+    <app-panel class="page-section" heading="Pipeline now" [meta]="'leads by stage'">
+      <a panelAction routerLink="/tools/leads">Leads</a>
+      <div class="pipeline">
+        @for (s of pipeline(); track s.label) {
+          <span>{{ s.label }} <strong>{{ s.count }}</strong></span>
+        }
+      </div>
+    </app-panel>
+  }
+
+  <div class="charts page-section">
+    <app-panel heading="MRR" meta="end of each month">
+      @if (mrrGroups().length) {
+        <app-bar-chart [series]="mrrSeries" [groups]="mrrGroups()" ariaLabel="MRR by month" />
+      }
+    </app-panel>
+    <app-panel heading="Salons won and lost" meta="per month">
+      @if (salonGroups().length) {
+        <app-bar-chart [series]="salonSeries" [groups]="salonGroups()" [formatValue]="count" [integer]="true" ariaLabel="New paying and churned salons by month" />
+      }
+    </app-panel>
+  </div>
+
+  <app-panel class="page-section" heading="Month by month" [flush]="true">
+    <app-ledger
+      [headers]="['Month', 'Paying', 'MRR', 'New / lost', 'Retention', 'Trial → paid', 'Onboarding']"
+      [numeric]="[1, 2, 4, 5, 6]"
+      columns="minmax(0, 1.3fr) 70px 110px 100px 90px 100px 100px"
+    >
+      @for (m of rows(); track m.month) {
+        <app-ledger-row>
+          <span class="cell-title">{{ monthName(m.month) }}</span>
+          <span class="cell-num">{{ m.paying }}</span>
+          <span class="cell-num">{{ ron(m.mrrBani) }}</span>
+          <span>+{{ m.newPaying }} / −{{ m.churned }}</span>
+          <span class="cell-num">{{ pct(m.retentionPct) }}</span>
+          <span class="cell-num">{{ pct(m.trialToPaidPct) }}</span>
+          <span class="cell-num">{{ m.avgOnboardingHours === null ? '—' : m.avgOnboardingHours + 'h' }}</span>
+        </app-ledger-row>
+      }
+    </app-ledger>
+  </app-panel>
+} @else {
+  <app-empty-state heading="Loading the KPIs…" text="Reading the history from the VINIT server." />
+}

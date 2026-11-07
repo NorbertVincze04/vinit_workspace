@@ -54,6 +54,8 @@ export class BarChartComponent {
   readonly groups = input.required<readonly ChartGroup[]>();
   readonly ariaLabel = input('Bar chart');
   readonly formatValue = input<(value: number) => string>((v) => formatRon(v));
+  /** The values are whole counts: axis steps are whole numbers too. */
+  readonly integer = input(false);
 
   readonly groupSelect = output<string>();
 
@@ -92,7 +94,8 @@ export class BarChartComponent {
   protected readonly max = computed(() => {
     let top = 0;
     for (const g of this.groups()) for (const s of this.series()) top = Math.max(top, g.values[s.key] ?? 0);
-    return niceMax(top);
+    // Counts (salons, people): a top that splits into 4 whole steps, so the axis reads 0, 1, 2…
+    return this.integer() ? Math.max(4, Math.ceil((top > 0 ? niceMax(top) : 4) / 4) * 4) : niceMax(top);
   });
 
   protected readonly ticks = computed(() =>
@@ -102,7 +105,9 @@ export class BarChartComponent {
     })),
   );
 
-  protected readonly groupWidth = computed(() => this.plotW() / Math.max(1, this.groups().length));
+  protected readonly groupWidth = computed(() => Math.max(0, this.plotW()) / Math.max(1, this.groups().length));
+  /** Hover area of a group; never negative while the chart is still being measured. */
+  protected readonly hitWidth = computed(() => Math.max(0, this.groupWidth() - 4));
 
   protected readonly layout = computed(() => {
     const gw = this.groupWidth();

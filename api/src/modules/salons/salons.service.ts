@@ -95,6 +95,9 @@ export async function setSalonStatus(
     changedBy: input.userId ?? null,
     reason,
   });
+  // A backdated change (e.g. a subscription that started in January, entered today): the salon
+  // existed by then, so its creation entry moves back too and the history stays in order.
+  await trx('salonStatusHistory').where({ salonId }).whereNull('fromStatus').where('changedOn', '>', on).update({ changedOn: on });
   await logActivity(trx, {
     userId: input.userId,
     entityType: 'salons',

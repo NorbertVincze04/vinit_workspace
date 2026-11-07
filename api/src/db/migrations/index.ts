@@ -6,6 +6,7 @@ import * as m004 from './004_leads.js';
 import * as m005 from './005_subscriptions.js';
 import * as m006 from './006_onboarding.js';
 import * as m007 from './007_support.js';
+import * as m008 from './008_kpis.js';
 
 interface Migration {
   name: string;
@@ -25,6 +26,7 @@ const MIGRATIONS: readonly Migration[] = [
   { name: '005_subscriptions', module: m005 },
   { name: '006_onboarding', module: m006 },
   { name: '007_support', module: m007 },
+  { name: '008_kpis', module: m008 },
 ];
 
 export const migrationSource: Knex.MigrationSource<Migration> = {

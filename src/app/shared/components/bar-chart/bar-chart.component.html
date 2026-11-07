@@ -24,7 +24,7 @@
         (click)="groupSelect.emit(col.group.key)"
         (keydown.enter)="groupSelect.emit(col.group.key)"
       >
-        <rect class="hit" [class.on]="hovered() === i" [attr.x]="col.x + 2" [attr.y]="T" [attr.width]="groupWidth() - 4" [attr.height]="plotH" rx="6" />
+        <rect class="hit" [class.on]="hovered() === i" [attr.x]="col.x + 2" [attr.y]="T" [attr.width]="hitWidth()" [attr.height]="plotH" rx="6" />
         @for (bar of col.bars; track bar.key) {
           @if (bar.path) {
             <path [attr.d]="bar.path" [attr.fill]="bar.color" pointer-events="none" />
