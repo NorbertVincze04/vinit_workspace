@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { PHASES } from '../../core/data/phases.data';
-import { TOOLS } from '../../core/data/tools.data';
+import { TOOL_GROUPS } from '../../core/data/tools.data';
 import { PlanCalendarService } from '../../core/services/plan-calendar.service';
 import { PageHeaderComponent } from '../../shared/ui';
 import { DuePaymentsComponent } from './components/due-payments/due-payments.component';
@@ -31,7 +31,7 @@ import { ToolTileComponent } from './components/tool-tile/tool-tile.component';
 })
 export class DashboardComponent {
   private readonly plan = inject(PlanCalendarService);
-  protected readonly tools = TOOLS;
+  protected readonly groups = TOOL_GROUPS;
 
   protected readonly today = new Date().toLocaleDateString('en-GB', {
     weekday: 'long',

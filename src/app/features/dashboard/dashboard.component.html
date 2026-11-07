@@ -5,11 +5,16 @@
 
 <section aria-labelledby="tools-heading">
   <h2 id="tools-heading" class="section-title">Tools</h2>
-  <div class="tools">
-    @for (tool of tools; track tool.id) {
-      <app-tool-tile [tool]="tool" />
-    }
-  </div>
+  @for (group of groups; track group.id) {
+    <div class="tool-group">
+      <h3 class="group-title">{{ group.title }} <span class="group-who">{{ group.who }}</span></h3>
+      <div class="tools">
+        @for (tool of group.tools; track tool.id) {
+          <app-tool-tile [tool]="tool" />
+        }
+      </div>
+    </div>
+  }
 </section>
 
 <section class="page-section" aria-labelledby="status-heading">

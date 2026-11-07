@@ -5,6 +5,21 @@
   color: var(--muted);
 }
 
+.tool-group + .tool-group {
+  margin-top: 16px;
+}
+.group-title {
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.group-who {
+  margin-left: 6px;
+  font-size: 12.5px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
 .tools {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));

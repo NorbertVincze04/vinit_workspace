@@ -90,6 +90,11 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 
 ## Tools
 
+The sidebar and the Overview group the tools by what they are for, so each role finds its tools together:
+**Sales & marketing** (Leads, Marketing, Clients) · **Salons & support** (Salons, Onboarding, Support, Feature requests,
+Contracts) · **Money** (Subscriptions, Finances, KPIs) · **Planning** (Tasks, Roadmap, Calendar) · **Operations** (Infra,
+Wiki, Files).
+
 | Tool | Route | What it does |
 |---|---|---|
 | Overview | `/` | Tool launcher, live figures from every tool, salons needing attention (overdue payments, trials ending, onboardings over 48h, urgent tickets, lead follow-ups due), tasks due now, payments due in 14 days |
@@ -208,5 +213,6 @@ docker-compose.yml        db (Postgres 16) + api + web (nginx serving the build,
 2. Create `features/tools/<name>/` with a page component and a store using `apiCollection(path, FIELD_MAP)`
    (add `snapshot()` / `importState()` to get the backup menu for free).
 3. Add a lazy route inside the signed-in group in `app.routes.ts`.
-4. Add its entry in `core/data/tools.data.ts` — the sidebar and the overview launcher update automatically.
+4. Add its entry to the right group in `core/data/tools.data.ts` (`TOOL_GROUPS`: Sales & marketing, Salons & support, Money,
+   Planning, Operations) — the sidebar and the overview launcher update automatically.
 5. Optional: add a figure for it in `features/dashboard/components/status-grid/status-grid.component.ts`.

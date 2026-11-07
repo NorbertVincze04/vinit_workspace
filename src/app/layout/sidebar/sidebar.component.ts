@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, output } from '@angular/core';
 import { ApiService } from '../../core/api/api.service';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { OVERVIEW_LINK, TOOL_LINKS } from '../../core/data/tools.data';
+import { OVERVIEW_LINK, TOOL_GROUPS, toNavLink } from '../../core/data/tools.data';
 import { AuthService } from '../../core/auth/auth.service';
 import { StorageService } from '../../core/services/storage.service';
 import { ThemeService } from '../../core/services/theme.service';
@@ -25,7 +25,7 @@ export class SidebarComponent {
   protected readonly auth = inject(AuthService);
   private readonly api = inject(ApiService);
 
-  /** Server writes, plus Clients (still saved in this browser until Phase 2). */
+  /** Server writes, plus the per-device settings kept in this browser. */
   protected readonly save = computed(() => {
     const status = this.api.status();
     if (status === 'saving') return { text: 'Saving…', failed: false, detail: '' };
@@ -34,7 +34,7 @@ export class SidebarComponent {
     return { text: 'All changes saved', failed: false, detail: '' };
   });
   protected readonly overview = OVERVIEW_LINK;
-  protected readonly tools = TOOL_LINKS;
+  protected readonly groups = TOOL_GROUPS.map((g) => ({ id: g.id, title: g.title, links: g.tools.map(toNavLink) }));
 
   readonly navigate = output<void>();
 }

@@ -16,23 +16,25 @@
     {{ overview.label }}
   </a>
 
-  <p class="group" id="nav-tools">Tools</p>
-  <ul aria-labelledby="nav-tools">
-    @for (link of tools; track link.route) {
-      <li>
-        <a
-          class="link"
-          [routerLink]="link.route"
-          routerLinkActive="is-active"
-          ariaCurrentWhenActive="page"
-          (click)="navigate.emit()"
-        >
-          <app-icon [name]="link.icon" [size]="18" />
-          {{ link.label }}
-        </a>
-      </li>
-    }
-  </ul>
+  @for (group of groups; track group.id) {
+    <p class="group" [id]="'nav-' + group.id">{{ group.title }}</p>
+    <ul [attr.aria-labelledby]="'nav-' + group.id">
+      @for (link of group.links; track link.route) {
+        <li>
+          <a
+            class="link"
+            [routerLink]="link.route"
+            routerLinkActive="is-active"
+            ariaCurrentWhenActive="page"
+            (click)="navigate.emit()"
+          >
+            <app-icon [name]="link.icon" [size]="18" />
+            {{ link.label }}
+          </a>
+        </li>
+      }
+    </ul>
+  }
 </nav>
 
 <div class="foot">
