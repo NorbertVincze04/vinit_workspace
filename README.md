@@ -99,6 +99,7 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 | Notifications | `GET /notifications` (own; brings them up to date first), `GET /notifications/count`, `POST /notifications/:id/read`, `POST /notifications/:id/dismiss`, `POST /notifications/read-all`, `POST /notifications/refresh` |
 | Search | `GET /search?q=` → salons (also by owner name, email, phone), leads, tickets (`T-12`), contracts, feature requests, wiki pages (every word must match; accents ignored) |
 | Integrations | `GET /integrations/status` (variable names only, never values), `POST /integrations/uptime/check`, `POST /integrations/invoices` {paymentId} (409 when no provider, 501 while the provider is a stub) |
+| Year plans | `GET /plan/years`, `GET /plan/years/:year/results`, `POST /plan/years`, `PATCH/DELETE /plan/years/:year`, `POST /plan/years/:year/phases`, `PATCH/DELETE /plan/phases/:id`, `POST /plan/phases/:id/steps`, `PATCH/DELETE /plan/steps/:id` (ticks: `PUT /roadmap/steps/:id`) |
 | Import | `POST /import/legacy-clients` {records} (old browser Clients list → leads / salons; skips records moved before) |
 | Plans, promotions | `GET /plans`, `PATCH /plans/:id`, `GET/POST /promotions`, `PATCH /promotions/:id` (seeded by the migrations) |
 
@@ -128,7 +129,7 @@ Wiki, Files).
 | Infra | `/tools/infra` | Services and their monthly cost (from the linked Finances payment, decision G, or an estimate), SMS against the 1.500 budget, backups and restore tests (`npm run db:backup` records itself), storage; renewals go to the Calendar |
 | Finances | `/tools/finances` | Transactions, recurring payments, investments, accounts, budgets, cash-flow chart, CSV export |
 | Marketing | `/tools/marketing` | 12-month content calendar, communication mix vs. target, copy & hashtags |
-| Roadmap | `/tools/roadmap` | Four phase checklists, live paying salons and MRR vs. break-even |
+| Roadmap | `/tools/roadmap` | One plan per year (Year 1 = Dec 2026 – Nov 2027, from the plan start): its goals (salons, money, quality, operations) against what actually happened, and its phases with steps. Edit goals; Edit roadmap to add, rename or remove phases and steps; Add Year for the next one. Past years show Reached / Missed. The current year's goals drive the Overview, Subscriptions, KPIs, Infra and alerts |
 | Files | `/tools/files` | Upload shared documents (PDF, PowerPoint, Excel, Word, images…), filter, download, delete |
 
 Files are stored in PostgreSQL (metadata in `files`, bytes in `file_blobs`), up to 50 MB per file.

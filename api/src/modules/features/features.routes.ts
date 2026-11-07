@@ -33,10 +33,12 @@ const voteSchema = z
 function requestRows(k: Db): Knex.QueryBuilder {
   return k('featureRequests as f')
     .leftJoin('roadmapSteps as rs', 'rs.id', 'f.roadmapStepId')
+    .leftJoin('roadmapPhases as rp', 'rp.id', 'rs.phaseId')
     .select(
       'f.*',
       'rs.text as roadmapStepText',
-      'rs.phase as roadmapPhase',
+      'rp.name as roadmapPhase',
+      'rp.year as roadmapYear',
       k.raw('(SELECT count(*)::int FROM feature_votes v WHERE v.feature_request_id = f.id) as votes'),
       k.raw('(SELECT count(*)::int FROM feature_votes v WHERE v.feature_request_id = f.id AND v.salon_id IS NOT NULL) as salon_votes'),
       k.raw(
@@ -82,7 +84,13 @@ export function featuresRouter(): Router {
   const router = Router();
 
   router.get('/roadmap-steps', async (_req, res) => {
-    res.json({ items: await db('roadmapSteps').orderBy('position') });
+    // Every year's steps, in roadmap order, with their year and phase.
+    res.json({
+      items: await db('roadmapSteps as s')
+        .join('roadmapPhases as p', 'p.id', 's.phaseId')
+        .orderBy([{ column: 'p.year' }, { column: 'p.position' }, { column: 's.position' }])
+        .select('s.id', 's.text', 's.position', 'p.year', 'p.name as phase'),
+    });
   });
 
   router.get('/feature-requests', async (req, res) => {

@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { BREAK_EVEN_SALONS, FINANCE } from '../../../../core/data/finance.data';
 import { formatRon, percent } from '../../../../core/utils/format';
 import { KpiCardComponent } from '../../../../shared/components';
 import { StatTone } from '../../../../shared/ui';
@@ -59,8 +58,12 @@ export class StatusGridComponent {
   protected readonly kpis = computed<Kpi[]>(() => {
     const active = this.salons.active().length;
     const mrr = this.billing.mrr();
-    const costsPercent = percent(mrr, FINANCE.monthlyCosts);
-    const goal = FINANCE.year1Salons;
+    const goals = this.roadmap.goals();
+    const year = this.roadmap.currentYear();
+    const monthlyCosts = Math.round((goals.monthlyCostsBani ?? 0) / 100);
+    const breakEven = goals.breakEvenSalons ?? 0;
+    const costsPercent = percent(mrr, monthlyCosts);
+    const goal = goals.payingSalons ?? 0;
     const business = this.finances.businessThisMonth();
     const tasks = this.tasks.overall();
     const overdue = this.tasks.overdueCount();
@@ -73,18 +76,18 @@ export class StatusGridComponent {
         label: 'Active salons',
         value: `${active} / ${goal}`,
         hint:
-          active < BREAK_EVEN_SALONS
-            ? `${BREAK_EVEN_SALONS - active} more to break-even`
+          active < breakEven
+            ? `${breakEven - active} more to break-even`
             : active < goal
               ? `Break-even reached · ${goal - active} to goal`
-              : 'Year 1 goal reached',
+              : `Year ${year} goal reached`,
         percent: percent(active, goal),
         route: '/tools/salons',
       }),
       kpi({
         label: 'Monthly recurring revenue',
         value: formatRon(mrr),
-        hint: `${costsPercent}% of ${formatRon(FINANCE.monthlyCosts)} costs`,
+        hint: `${costsPercent}% of ${formatRon(monthlyCosts)} costs`,
         percent: costsPercent,
         route: '/tools/subscriptions',
       }),
@@ -111,7 +114,7 @@ export class StatusGridComponent {
         route: '/tools/marketing',
       }),
       kpi({
-        label: 'Roadmap steps',
+        label: `Year ${year} roadmap`,
         value: `${roadmap.done} / ${roadmap.total}`,
         hint: phase ? `Current phase: ${phase.phase.name}` : 'All phases complete',
         percent: roadmap.percent,

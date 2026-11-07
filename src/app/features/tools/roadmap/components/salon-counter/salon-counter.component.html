@@ -22,18 +22,18 @@
   </div>
 
   <div class="track">
-    <span class="mark be" [style.left.%]="breakEvenPct">Break-even · {{ breakEven }}</span>
-    <span class="tick" [style.left.%]="breakEvenPct" aria-hidden="true"></span>
-    <app-progress-bar size="md" [value]="progress()" label="Paying salons towards the Year 1 goal" />
-    @for (mark of marks; track mark.label) {
+    <span class="mark be" [style.left.%]="breakEvenPct()">Break-even · {{ breakEven() }}</span>
+    <span class="tick" [style.left.%]="breakEvenPct()" aria-hidden="true"></span>
+    <app-progress-bar size="md" [value]="progress()" [label]="'Paying salons towards the Year ' + year() + ' goal'" />
+    @for (mark of marks(); track mark.label) {
       <span class="mark below" [style.left.%]="mark.pct">{{ mark.label }}</span>
     }
-    <span class="mark below end">Goal · {{ goal }}</span>
+    <span class="mark below end">Goal · {{ goal() }}</span>
   </div>
 
   <div class="stats">
     <app-stat label="Monthly income" [value]="income() | ron" />
-    <app-stat label="Monthly costs" [value]="costs | ron" />
+    <app-stat label="Monthly costs" [value]="costs() | ron" />
     <app-stat label="Result per month" [value]="net() | ron: 'signed'" [tone]="netTone()" />
   </div>
 

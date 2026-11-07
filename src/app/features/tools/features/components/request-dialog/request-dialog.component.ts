@@ -33,7 +33,7 @@ import { FeaturesStore } from '../../features.store';
             <select class="input" (change)="setStep($any($event.target).value)">
               <option value="" [selected]="!r.roadmapStepId">None</option>
               @for (s of store.steps(); track s.id) {
-                <option [value]="s.id" [selected]="s.id === r.roadmapStepId">{{ s.id }} · {{ s.text }}</option>
+                <option [value]="s.id" [selected]="s.id === r.roadmapStepId">Year {{ s.year }} · {{ s.phase }} · {{ s.text }}</option>
               }
             </select>
           </label>

@@ -8,6 +8,6 @@ export const PHASES: readonly Phase[] = [
   { id: 'scale', name: 'Scale', months: [10, 12], goal: 'Cross break-even and keep your customers.' },
 ];
 
-export function phaseRange(phase: Phase): string {
+export function phaseRange(phase: Pick<Phase, 'months'>): string {
   return `Months ${phase.months[0]}–${phase.months[1]}`;
 }

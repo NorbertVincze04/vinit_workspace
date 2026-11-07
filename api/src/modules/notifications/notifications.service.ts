@@ -1,6 +1,6 @@
 import type { Knex } from 'knex';
 import { addDays, bucharestTime, monthOf, today } from '../../lib/dates.js';
-import { TARGETS } from '../../lib/targets.js';
+import { targetsFor } from '../../lib/targets.js';
 import { billingWarnings } from '../billing/billing.service.js';
 
 type Db = Knex | Knex.Transaction;
@@ -41,6 +41,7 @@ export function dueText(daysLeft: number, time: string | null, dueOn: string): s
 export async function candidates(k: Db): Promise<Candidate[]> {
   const now = today();
   const out: Candidate[] = [];
+  const goals = await targetsFor(k);
 
   // Money: overdue payments, trials ending or over, past due, salons without a subscription, Early Bird.
   for (const w of await billingWarnings(k)) {
@@ -66,11 +67,11 @@ export async function candidates(k: Db): Promise<Candidate[]> {
       'o.status',
       'o.blockedReason',
       's.name as salonName',
-      k.raw(`(o.materials_received_at IS NOT NULL AND now() > o.materials_received_at + interval '${TARGETS.onboardingHours} hours') as late`),
+      k.raw(`(o.materials_received_at IS NOT NULL AND now() > o.materials_received_at + interval '${goals.onboardingHours} hours') as late`),
     );
   for (const o of obs) {
     const link = `/tools/salons/${o.salonId}?tab=onboarding`;
-    if (o.late) out.push({ key: `onboarding-late:${o.id}`, kind: 'onboarding_late', severity: 'bad', title: `${o.salonName}: onboarding is over ${TARGETS.onboardingHours}h`, link, salonId: o.salonId });
+    if (o.late) out.push({ key: `onboarding-late:${o.id}`, kind: 'onboarding_late', severity: 'bad', title: `${o.salonName}: onboarding is over ${goals.onboardingHours}h`, link, salonId: o.salonId });
     if (o.status === 'blocked') {
       out.push({ key: `onboarding-blocked:${o.id}:${String(o.blockedReason).slice(0, 60)}`, kind: 'onboarding_blocked', severity: 'warn', title: `${o.salonName}: onboarding blocked`, body: o.blockedReason, link, salonId: o.salonId });
     }
@@ -138,10 +139,10 @@ export async function candidates(k: Db): Promise<Candidate[]> {
   // SMS budget: once at 80% and once at 100% each month.
   const month = monthOf(now);
   const [{ sent }] = await k('smsUsage').where({ month }).select(k.raw('coalesce(sum(sent), 0)::int as sent'));
-  const pct = Math.round((Number(sent) / TARGETS.smsMonthlyBudget) * 100);
+  const pct = goals.smsMonthlyBudget ? Math.round((Number(sent) / goals.smsMonthlyBudget) * 100) : 0;
   for (const level of [100, 80]) {
     if (pct >= level) {
-      out.push({ key: `sms:${month}:${level}`, kind: 'sms_budget', severity: level === 100 ? 'bad' : 'warn', title: `SMS: ${pct}% of the monthly budget used`, body: `${sent} of ${TARGETS.smsMonthlyBudget} SMS`, link: '/tools/infra' });
+      out.push({ key: `sms:${month}:${level}`, kind: 'sms_budget', severity: level === 100 ? 'bad' : 'warn', title: `SMS: ${pct}% of the monthly budget used`, body: `${sent} of ${goals.smsMonthlyBudget} SMS`, link: '/tools/infra' });
       break;
     }
   }

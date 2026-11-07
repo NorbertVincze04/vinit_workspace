@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, Component, booleanAttribute, computed, input } from '@angular/core';
 import { phaseRange } from '../../../core/data/phases.data';
-import { Phase } from '../../../core/models';
 import { BadgeComponent, ProgressBarComponent } from '../../ui';
 
 /**
- * Column for one Year-1 phase: name, months, goal and progress. The list inside is projected,
+ * Column for one phase (any plan year): name, months, goal and progress. The list inside is projected,
  * so Roadmap and Tasks each render their own items.
  *   <app-phase-card [phase]="phase" [done]="2" [total]="6" unit="steps" current> <ul>…</ul> </app-phase-card>
  */
@@ -46,7 +45,7 @@ import { BadgeComponent, ProgressBarComponent } from '../../ui';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PhaseCardComponent {
-  readonly phase = input.required<Phase>();
+  readonly phase = input.required<{ name: string; months: readonly [number, number]; goal: string }>();
   readonly done = input(0);
   readonly total = input(0);
   /** What is being counted ("tasks", "steps"). */

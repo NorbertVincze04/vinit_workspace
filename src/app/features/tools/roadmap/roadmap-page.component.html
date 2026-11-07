@@ -1,36 +1,167 @@
-<app-page-header title="Roadmap" description="Year 1 phases, step by step, and paying salons against break-even.">
+<app-page-header title="Roadmap" description="Each year's goals and roadmap. Past years show how they went.">
   <div pageActions>
     <app-backup-menu [store]="store" name="roadmap" />
+    <button appButton type="button" (click)="addYear()"><app-icon name="plus" [size]="16" /> Add Year {{ nextYear() }}</button>
   </div>
-  <app-progress-summary
-    [label]="store.overall().done + ' of ' + store.overall().total + ' steps done'"
-    [percent]="store.overall().percent"
-  />
+  @if (year(); as y) {
+    <app-progress-summary [label]="'Year ' + y.year + ': ' + overall().done + ' of ' + overall().total + ' steps done'" [percent]="overall().percent" />
+  }
 </app-page-header>
 
-<div class="phases">
-  @for (view of store.phases(); track view.phase.id) {
-    <app-phase-card [phase]="view.phase" [done]="view.done" [total]="view.total" unit="steps" [current]="view.current">
-      <ul class="steps">
-        @for (step of view.steps; track step.id) {
-          <li>
-            <app-checkbox variant="row" strike [checked]="step.done" (checkedChange)="store.setStep(step.id, $event)">
-              {{ step.text }}
-            </app-checkbox>
-          </li>
-        }
-      </ul>
-      <p class="milestone"><span>Done when</span> {{ view.milestone }}</p>
-    </app-phase-card>
-  }
-</div>
+@if (year(); as y) {
+  <div class="toolbar">
+    <app-chip-group label="Year" [options]="yearOptions()" [value]="yearValue()" (valueChange)="picked.set($event)" />
+    <span class="range">{{ label(y) }} · {{ statusText(y) }}</span>
+  </div>
 
-<app-salon-counter class="page-section" [count]="billing.paying()" [mrr]="billing.mrr()" [live]="true" />
-
-<div class="extras page-section">
-  <app-weekly-rhythm />
-  <app-panel [heading]="planB.title">
-    <p>{{ planB.text }}</p>
-    <p class="muted small">{{ planB.note }}</p>
+  <!-- Goals: what was set, and what actually happened (so far). -->
+  <app-panel [heading]="'Year ' + y.year + ' goals'" [meta]="goalsMeta(y)">
+    <button panelAction appButton variant="ghost" size="sm" type="button" (click)="form.set({ kind: 'goals', year: y })">Edit goals</button>
+    <div class="goal-groups">
+      @for (group of groups; track group) {
+        <section class="goal-group">
+          <h3>{{ group }}</h3>
+          <ul>
+            @for (r of rowsOf(group); track r.def.key) {
+              <li>
+                <div class="goal-head">
+                  <span class="goal-label" [title]="r.def.hint">{{ r.def.label }}</span>
+                  @if (r.status) {
+                    <app-status-pill [tone]="r.status.tone">{{ r.status.text }}</app-status-pill>
+                  }
+                </div>
+                <div class="goal-nums">
+                  <span>
+                    <span class="muted">{{ r.def.atMost ? 'At most' : 'Goal' }}</span>
+                    @if (r.value !== null) {
+                      <strong>{{ value(r.def.kind, r.value) }}</strong>
+                      @if (r.set === null) {
+                        <span class="muted small">(from before)</span>
+                      }
+                    } @else {
+                      <span class="muted">not set</span>
+                    }
+                  </span>
+                  @if (y.status !== 'future') {
+                    <span><span class="muted">Actual</span> <strong>{{ value(r.def.kind, r.actual) }}</strong></span>
+                  }
+                </div>
+                @if (r.percent !== null) {
+                  <app-progress-bar size="xs" [value]="r.percent" [label]="r.def.label + ' progress'" />
+                }
+              </li>
+            }
+          </ul>
+        </section>
+      }
+    </div>
+    @if (y.notes) {
+      <p class="notes">{{ y.notes }}</p>
+    }
+    @if (results(); as res) {
+      <p class="muted small">
+        {{ res.newPaying }} became paying, {{ res.churned }} left · {{ res.steps.done }} of {{ res.steps.total }} roadmap steps done
+      </p>
+    }
   </app-panel>
-</div>
+
+  <div class="bar page-section">
+    <h2 class="section-title">Year {{ y.year }} roadmap</h2>
+    <button appButton [variant]="editing() ? 'primary' : 'ghost'" size="sm" type="button" (click)="editing.set(!editing())">
+      {{ editing() ? 'Done editing' : 'Edit roadmap' }}
+    </button>
+  </div>
+
+  <div class="phases">
+    @for (view of phases(); track view.phase.id) {
+      <app-phase-card [phase]="view.phase" [done]="view.done" [total]="view.total" unit="steps" [current]="view.current">
+        @if (editing()) {
+          <div class="phase-actions">
+            <button appButton variant="ghost" size="sm" type="button" (click)="form.set({ kind: 'phase', year: y, phase: view.source })">Edit phase</button>
+            <button appButton variant="ghost" size="sm" type="button" (click)="confirm.set({ kind: 'phase', phase: view.source })">Remove</button>
+          </div>
+          <form class="add-step" (submit)="addStep(view.phase.id, $event)">
+            <input
+              class="input"
+              type="text"
+              maxlength="300"
+              placeholder="New step…"
+              [attr.aria-label]="'New step in ' + view.phase.name"
+              [value]="draft(view.phase.id)"
+              (input)="setDraft(view.phase.id, $any($event.target).value)"
+            />
+            <button appButton size="sm" type="submit" [disabled]="!draft(view.phase.id).trim()">Add</button>
+          </form>
+        }
+        <ul class="steps">
+          @for (step of view.steps; track step.id) {
+            <li [class.editable]="editing()">
+              <app-checkbox variant="row" strike [checked]="step.done" (checkedChange)="store.setStep(step.id, $event)">
+                {{ step.text }}
+              </app-checkbox>
+              @if (editing()) {
+                <span class="step-actions">
+                  <button type="button" class="icon-btn" [attr.aria-label]="'Edit: ' + step.text" (click)="form.set({ kind: 'step', step })">✎</button>
+                  <button type="button" class="icon-btn" [attr.aria-label]="'Remove: ' + step.text" (click)="confirm.set({ kind: 'step', step })">×</button>
+                </span>
+              }
+            </li>
+          } @empty {
+            <li class="muted small">{{ editing() ? 'No steps yet: add the first one above.' : 'No steps yet. Use Edit roadmap to add some.' }}</li>
+          }
+        </ul>
+        @if (view.milestone) {
+          <p class="milestone"><span>Done when</span> {{ view.milestone }}</p>
+        }
+      </app-phase-card>
+    } @empty {
+      <p class="muted">No phases yet. Use Edit roadmap, then Add phase.</p>
+    }
+  </div>
+
+  @if (editing()) {
+    <div class="edit-bar">
+      <button appButton type="button" (click)="form.set({ kind: 'phase', year: y, phase: null })"><app-icon name="plus" [size]="16" /> Add phase</button>
+      @if (isLast() && y.status === 'future') {
+        <button appButton variant="ghost" type="button" (click)="confirm.set({ kind: 'year', year: y })">Remove Year {{ y.year }}</button>
+      }
+    </div>
+  }
+
+  @if (y.status === 'current') {
+    <app-salon-counter class="page-section" [count]="billing.paying()" [mrr]="billing.mrr()" [live]="true" />
+
+    <div class="extras page-section">
+      <app-weekly-rhythm />
+      <app-panel [heading]="planB.title">
+        <p>{{ planB.text }}</p>
+        <p class="muted small">{{ planB.note }}</p>
+      </app-panel>
+    </div>
+  }
+} @else if (!store.loaded()) {
+  <p class="muted">Loading…</p>
+}
+
+@if (form(); as f) {
+  <app-form-dialog
+    [heading]="formHeading(f)"
+    [subheading]="formSub(f)"
+    [fields]="formFields(f)"
+    [initial]="formValues(f)"
+    [size]="f.kind === 'goals' ? 'lg' : 'md'"
+    saveLabel="Save"
+    (saved)="saveForm($event)"
+    (closed)="form.set(null)"
+  />
+}
+
+@if (confirm(); as c) {
+  <app-confirm-dialog
+    [heading]="confirmText(c).heading"
+    [message]="confirmText(c).message"
+    confirmLabel="Remove"
+    (confirmed)="confirmed(c)"
+    (closed)="confirm.set(null)"
+  />
+}

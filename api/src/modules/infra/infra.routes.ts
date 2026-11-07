@@ -7,7 +7,7 @@ import { parseBody, parseParams, parseQuery } from '../../http/validate.js';
 import { logActivity } from '../../lib/activity.js';
 import { addDays, monthOf, today } from '../../lib/dates.js';
 import { currency, id as textId, longText, monthKey, optionalDate, text, timestamp, uuid, uuidParams } from '../../lib/schemas.js';
-import { TARGETS } from '../../lib/targets.js';
+import { targetsFor } from '../../lib/targets.js';
 import { addGenerator } from '../deadlines/deadlines.service.js';
 
 type Db = Knex | Knex.Transaction;
@@ -103,16 +103,17 @@ async function health(k: Db): Promise<Row> {
     .map((s) => ({ id: s.id, name: s.name, renewsOn: s.renewsOn }));
   const [size] = (await k.raw('SELECT pg_database_size(current_database())::bigint as db_bytes, (SELECT coalesce(sum(size_bytes), 0)::bigint FROM files) as file_bytes')).rows;
   const premiumSalons = Number(premium.n);
+  const goals = await targetsFor(k, month);
   return {
     month,
-    costs: { monthlyRonBani, planBani: TARGETS.operationalCostsBani, services: services.length },
+    costs: { monthlyRonBani, planBani: goals.operationalCostsBani, services: services.length },
     sms: {
       sent: sms.sent,
       costBani: sms.costBani,
-      budget: TARGETS.smsMonthlyBudget,
-      pct: Math.round((sms.sent / TARGETS.smsMonthlyBudget) * 100),
+      budget: goals.smsMonthlyBudget,
+      pct: goals.smsMonthlyBudget ? Math.round((sms.sent / goals.smsMonthlyBudget) * 100) : 0,
       premiumSalons,
-      perSalonBudget: premiumSalons ? Math.floor(TARGETS.smsMonthlyBudget / premiumSalons) : null,
+      perSalonBudget: premiumSalons ? Math.floor(goals.smsMonthlyBudget / premiumSalons) : null,
     },
     backups: {
       lastBackupAt: lastBackup?.checkedAt ?? null,
@@ -185,7 +186,7 @@ export function infraRouter(): Router {
     const { month } = parseQuery(z.object({ month: monthKey.optional() }), req);
     const m = month ?? monthOf(today());
     const items = await db('smsUsage as u').leftJoin('salons as s', 's.id', 'u.salonId').where('u.month', m).orderBy('s.name').select('u.*', 's.name as salonName');
-    res.json({ month: m, items, budget: TARGETS.smsMonthlyBudget });
+    res.json({ month: m, items, budget: (await targetsFor(db, m)).smsMonthlyBudget });
   });
 
   /** One number per month and salon (or for the whole account): saving again replaces it. */

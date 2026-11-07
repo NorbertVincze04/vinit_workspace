@@ -13,7 +13,7 @@
 
 <app-card class="band">
   <div class="stats">
-    <app-stat label="MRR" [value]="format(store.mrr())" [hint]="'goal ' + format(goal)" />
+    <app-stat label="MRR" [value]="format(store.mrr())" [hint]="'goal ' + format(goal())" />
     <app-stat label="Paying salons" [value]="'' + store.paying()" />
     <app-stat label="On trial" [value]="'' + store.trialing()" />
     <app-stat
@@ -29,9 +29,9 @@
   <div class="be">
     <div class="be-top">
       <span class="eyebrow">MRR vs. monthly costs</span>
-      <span>{{ store.mrr() | ron }} of {{ costs | ron }}</span>
+      <span>{{ store.mrr() | ron }} of {{ costs() | ron }}</span>
     </div>
-    <app-meter [value]="costsPercent()" [label]="'MRR ' + format(store.mrr()) + ' of ' + format(costs) + ' monthly costs'" />
+    <app-meter [value]="costsPercent()" [label]="'MRR ' + format(store.mrr()) + ' of ' + format(costs()) + ' monthly costs'" />
   </div>
 </app-card>
 

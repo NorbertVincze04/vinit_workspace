@@ -21,6 +21,7 @@ import { activityRouter } from './modules/activity/activity.routes.js';
 import { notificationsRouter } from './modules/notifications/notifications.routes.js';
 import { searchRouter } from './modules/search/search.routes.js';
 import { integrationsRouter } from './integrations/integrations.routes.js';
+import { planRouter } from './modules/plan/plan.routes.js';
 import { featuresRouter } from './modules/features/features.routes.js';
 import { kpisRouter } from './modules/kpis/kpis.routes.js';
 import { leadsRouter } from './modules/leads/leads.routes.js';
@@ -86,6 +87,7 @@ export function createApp(): express.Express {
   secured.use('/notifications', notificationsRouter());
   secured.use('/search', searchRouter());
   secured.use('/integrations', integrationsRouter());
+  secured.use('/plan', planRouter());
   api.use(secured);
 
   app.use('/api/v1', api);

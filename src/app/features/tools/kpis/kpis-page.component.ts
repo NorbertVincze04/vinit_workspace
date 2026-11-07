@@ -74,18 +74,18 @@ export class KpisPageComponent {
     return [
       {
         label: 'Paying salons',
-        value: `${k.paying} / ${t.year1Salons}`,
+        value: `${k.paying} / ${t.payingSalons}`,
         hint: k.paying < t.breakEvenSalons ? `${t.breakEvenSalons - k.paying} more to break-even (${t.breakEvenSalons})` : 'Break-even reached',
         tone: 'default',
-        percent: percent(k.paying, t.year1Salons),
+        percent: percent(k.paying, t.payingSalons),
         route: '/tools/subscriptions',
       },
       {
         label: 'MRR',
         value: this.ron(mrr),
-        hint: `goal ${this.ron(t.year1MrrBani)} · costs ${this.ron(t.monthlyCostsBani)}`,
+        hint: `goal ${this.ron(t.mrrBani)} · costs ${this.ron(t.monthlyCostsBani)}`,
         tone: mrr >= t.monthlyCostsBani ? 'positive' : 'default',
-        percent: percent(mrr, t.year1MrrBani),
+        percent: percent(mrr, t.mrrBani),
         route: '/tools/subscriptions',
       },
       {

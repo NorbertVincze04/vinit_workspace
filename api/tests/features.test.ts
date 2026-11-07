@@ -12,7 +12,7 @@ describe('feature requests', () => {
     const { agent } = await signedIn();
     const steps: AnyRow[] = (await agent.get('/api/v1/roadmap-steps')).body.items;
     expect(steps).toHaveLength(22);
-    expect(steps[0]).toMatchObject({ id: 'b1', phase: 'build' });
+    expect(steps[0]).toMatchObject({ id: 'b1', year: 1, phase: 'Build' });
     expect(steps.find((s) => s.id === 'p2')?.text).toContain('SMS reminders');
   });
 

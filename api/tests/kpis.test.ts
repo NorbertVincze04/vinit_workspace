@@ -61,7 +61,7 @@ describe('KPIs', () => {
     expect(april).toMatchObject({ paying: 2, mrrBani: 30000, newPaying: 1, retentionPct: 100, trialsEnded: 1, trialsConverted: 1, trialToPaidPct: 100 });
 
     const res = await agent.get('/api/v1/kpis?month=2026-04');
-    expect(res.body.targets).toMatchObject({ breakEvenSalons: 43, year1Salons: 50, retentionPct: 70, onboardingHours: 48 });
+    expect(res.body.targets).toMatchObject({ year: 1, breakEvenSalons: 43, payingSalons: 50, retentionPct: 70, onboardingHours: 48 });
   });
 
   it('freezes finished months, so later edits do not rewrite them', async () => {

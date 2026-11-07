@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { FINANCE, YEAR1_MRR } from '../../../core/data/finance.data';
 import { ToastService } from '../../../core/services/toast.service';
 import { monthName, shiftMonth, todayISO } from '../../../core/utils/date';
 import { formatRon, percent, plural } from '../../../core/utils/format';
@@ -22,6 +21,7 @@ import {
   TabsComponent,
 } from '../../../shared/ui';
 import { PlansStore } from '../salons/plans.store';
+import { RoadmapStore } from '../roadmap/roadmap.store';
 import { BillingDialogsComponent, BillingRequest } from './components/billing-dialogs/billing-dialogs.component';
 import { BillingWarningsComponent } from './components/billing-warnings/billing-warnings.component';
 import { PaymentAction, PaymentRowComponent } from './components/payment-row/payment-row.component';
@@ -68,9 +68,11 @@ export class SubscriptionsPageComponent {
   protected readonly payFilter = signal('open');
   protected readonly request = signal<BillingRequest | null>(null);
 
-  protected readonly costs = FINANCE.monthlyCosts;
-  protected readonly goal = YEAR1_MRR;
-  protected readonly costsPercent = computed(() => percent(this.store.mrr(), FINANCE.monthlyCosts));
+  private readonly plan = inject(RoadmapStore);
+  /** This year's goals (Roadmap), in RON. */
+  protected readonly costs = computed(() => Math.round((this.plan.goals().monthlyCostsBani ?? 0) / 100));
+  protected readonly goal = computed(() => Math.round((this.plan.goals().mrrBani ?? 0) / 100));
+  protected readonly costsPercent = computed(() => percent(this.store.mrr(), this.costs()));
   protected readonly format = formatRon;
 
   protected readonly thisMonth = todayISO().slice(0, 7);

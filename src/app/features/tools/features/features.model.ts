@@ -21,6 +21,7 @@ export interface FeatureRequest {
   roadmapStepId: string | null;
   roadmapStepText: string | null;
   roadmapPhase: string | null;
+  roadmapYear: number | null;
   shippedOn: string | null;
   createdAt: string;
   votes: number;
@@ -46,6 +47,8 @@ export interface Vote {
 
 export interface RoadmapStepRow {
   id: string;
+  year: number;
+  /** Phase name. */
   phase: string;
   text: string;
   position: number;

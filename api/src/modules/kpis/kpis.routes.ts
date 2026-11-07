@@ -6,7 +6,7 @@ import { parseParams, parseQuery } from '../../http/validate.js';
 import { logActivity } from '../../lib/activity.js';
 import { addMonths, monthOf, today } from '../../lib/dates.js';
 import { monthKey } from '../../lib/schemas.js';
-import { TARGETS } from '../../lib/targets.js';
+import { targetsFor } from '../../lib/targets.js';
 import { kpiHistory, monthKpis, rebuildSnapshot } from './kpis.service.js';
 
 /** /kpis — the business at a glance, against the plan's targets. */
@@ -15,7 +15,8 @@ export function kpisRouter(): Router {
 
   router.get('/', async (req, res) => {
     const { month } = parseQuery(z.object({ month: monthKey.optional() }), req);
-    res.json({ kpis: await monthKpis(db, month ?? monthOf(today())), targets: TARGETS });
+    const m = month ?? monthOf(today());
+    res.json({ kpis: await monthKpis(db, m), targets: await targetsFor(db, m) });
   });
 
   router.get('/history', async (req, res) => {
@@ -23,7 +24,7 @@ export function kpisRouter(): Router {
     const to = q.to ?? monthOf(today());
     const from = q.from ?? monthOf(addMonths(`${to}-01`, -11));
     if (from > to) throw new HttpError(400, 'validation', '"from" must be before "to".', { from: 'After "to".' });
-    res.json({ items: await kpiHistory(db, from, to), targets: TARGETS });
+    res.json({ items: await kpiHistory(db, from, to), targets: await targetsFor(db) });
   });
 
   /** Recompute a finished month's frozen figures. */

@@ -1,6 +1,6 @@
 import type { Knex } from 'knex';
 import { addDays, monthEnd, monthOf, monthRange, monthStart, today } from '../../lib/dates.js';
-import { TARGETS } from '../../lib/targets.js';
+import { targetsLookup } from '../../lib/targets.js';
 import { BillingCycle, LIVE_STATUSES, PAYING_STATUSES } from '../billing/billing.schemas.js';
 import { monthlyBani } from '../billing/billing.service.js';
 
@@ -62,7 +62,8 @@ function group<T extends Row>(rows: T[], key: string): Map<string, T[]> {
 
 /** Everything the computations need, read once (a few hundred rows at most). */
 async function loadHistory(k: Db) {
-  const [changes, statusHistory, subs, onboardings, leads, lostChanges] = await Promise.all([
+  const [targets, changes, statusHistory, subs, onboardings, leads, lostChanges] = await Promise.all([
+    targetsLookup(k),
     k('subscriptionChanges')
       .orderBy([{ column: 'changedOn' }, { column: 'createdAt' }])
       .select('subscriptionId', 'changedOn', 'kind', 'fromStatus', 'toStatus', 'toPriceBani', 'billingCycle'),
@@ -85,6 +86,7 @@ async function loadHistory(k: Db) {
       .select(k.raw(`to_char(occurred_at AT TIME ZONE 'Europe/Bucharest', 'YYYY-MM') as month`)),
   ]);
   return {
+    targets,
     changes: changes as Row[],
     bySub: group(changes as Row[], 'subscriptionId'),
     bySalon: group(statusHistory as Row[], 'salonId'),
@@ -132,7 +134,7 @@ function compute(h: History, month: string): MonthKpis {
   const trialsConverted = trials.filter((s) => converted.has(s.id)).length;
 
   const live = h.onboardings.filter((o) => o.month === month);
-  const within = live.filter((o) => Number(o.hours) <= TARGETS.onboardingHours).length;
+  const within = live.filter((o) => Number(o.hours) <= h.targets(month).onboardingHours).length;
   const avg = live.length ? Math.round((live.reduce((sum, o) => sum + Number(o.hours), 0) / live.length) * 10) / 10 : null;
 
   const pipeline: Record<string, number> = {};
@@ -206,4 +208,42 @@ export async function rebuildSnapshot(k: Db, month: string): Promise<MonthKpis> 
   const data = compute(await loadHistory(k), month);
   await k('kpiSnapshots').insert({ month, data: JSON.stringify(data) }).onConflict('month').merge();
   return { ...data, snapshot: true };
+}
+
+export interface PeriodSummary {
+  /** Paying salons and MRR at the end of the period (or now, when it hasn't ended). */
+  payingEnd: number;
+  mrrEndBani: number;
+  /** Paying at the start of the period that are still live at its end. */
+  payingAtStart: number;
+  retentionPct: number | null;
+  newPaying: number;
+  churned: number;
+  onboardingsLive: number;
+  avgOnboardingHours: number | null;
+}
+
+/** One figure per KPI for a range of months (a plan year): end-of-period state and period totals. */
+export async function periodSummary(k: Db, from: string, to: string): Promise<PeriodSummary> {
+  const h = await loadHistory(k);
+  const last = to < monthOf(today()) ? to : monthOf(today());
+  const end = monthEnd(last);
+  const subsAtEnd = stateAt(h.bySub, end, 'changedOn');
+  const subsAtStart = stateAt(h.bySub, addDays(monthStart(from), -1), 'changedOn');
+  const payingIds = (m: Map<string, Row>) => new Set([...m].filter(([, s]) => PAYING.includes(s.toStatus)).map(([id]) => id));
+  const payingStart = payingIds(subsAtStart);
+  const months = monthRange(from, last);
+  const perMonth = months.map((m) => compute(h, m));
+  const live = h.onboardings.filter((o) => o.month >= from && o.month <= last);
+  const end_ = perMonth.at(-1);
+  return {
+    payingEnd: end_?.paying ?? 0,
+    mrrEndBani: end_?.mrrBani ?? 0,
+    payingAtStart: payingStart.size,
+    retentionPct: pct([...payingStart].filter((id) => LIVE.includes(subsAtEnd.get(id)?.toStatus)).length, payingStart.size),
+    newPaying: perMonth.reduce((s, m) => s + m.newPaying, 0),
+    churned: perMonth.reduce((s, m) => s + m.churned, 0),
+    onboardingsLive: live.length,
+    avgOnboardingHours: live.length ? Math.round((live.reduce((s, o) => s + Number(o.hours), 0) / live.length) * 10) / 10 : null,
+  };
 }

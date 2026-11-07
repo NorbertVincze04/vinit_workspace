@@ -22,11 +22,14 @@ export interface MonthKpis {
   snapshot?: boolean;
 }
 
+/** The current plan year's goals (set on the Roadmap). */
 export interface Targets {
+  year: number;
   breakEvenSalons: number;
   monthlyCostsBani: number;
-  year1Salons: number;
-  year1MrrBani: number;
+  payingSalons: number;
+  mrrBani: number;
+  incomeBani: number | null;
   retentionPct: number;
   onboardingHours: number;
   earlyBirdLimit: number;

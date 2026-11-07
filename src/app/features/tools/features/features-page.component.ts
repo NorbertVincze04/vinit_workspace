@@ -66,7 +66,7 @@ import { FeaturesStore } from './features.store';
           <app-ledger-row clickable (activate)="openId.set(r.id)">
             <div>
               <span class="cell-title">{{ r.title }}</span>
-              <span class="cell-sub">{{ r.roadmapStepId ? 'Roadmap ' + r.roadmapStepId + ' · ' + r.roadmapStepText : 'Not on the roadmap' }}</span>
+              <span class="cell-sub">{{ r.roadmapStepId ? 'Roadmap · Year ' + r.roadmapYear + ' · ' + r.roadmapPhase + ' · ' + r.roadmapStepText : 'Not on the roadmap' }}</span>
             </div>
             <span class="cell-num">{{ r.votes }}</span>
             <span class="cell-num">{{ money(r.mrrBani) }}</span>
@@ -123,7 +123,7 @@ export class FeaturesPageComponent {
         label: 'Roadmap step',
         type: 'select',
         span: 'full',
-        options: [{ value: '', label: 'None' }, ...this.store.steps().map((s) => ({ value: s.id, label: `${s.id} · ${s.text}` }))],
+        options: [{ value: '', label: 'None' }, ...this.store.steps().map((s) => ({ value: s.id, label: `Year ${s.year} · ${s.phase} · ${s.text}` }))],
       },
     ];
   }
