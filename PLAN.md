@@ -1,6 +1,6 @@
 # VINIT Workspace: Salon Platform Plan (Phase 0)
 
-> Status: **Phases 1–4 done (2026-11-08). All planned phases are built; waiting for your OK / next priorities.** Decisions are in §0; questions settled with the defaults are marked in §9.
+> Status: **Phases 1–4 done (2026-11-08), plus a round of changes the same day: popups close on outside click, one Salons tool (billing details on the salon), Overview tools last, Add task on top, phone-calendar-style deadlines (time, reminders 5 min–1 week, tap a day), yearly goals and a roadmap per year (migrations 015–016). Waiting for your OK.** Decisions are in §0; questions settled with the defaults are marked in §9.
 
 ## 0. Decisions (2026-11-07)
 
