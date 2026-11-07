@@ -6,6 +6,7 @@ import { PageHeaderComponent } from '../../shared/ui';
 import { DuePaymentsComponent } from './components/due-payments/due-payments.component';
 import { LocalDataBannerComponent } from './components/local-data-banner/local-data-banner.component';
 import { SalonAlertsComponent } from './components/salon-alerts/salon-alerts.component';
+import { RecentActivityComponent } from './components/recent-activity/recent-activity.component';
 import { LegacyClientsBannerComponent } from '../tools/salons/components/legacy-clients-banner/legacy-clients-banner.component';
 import { DueTasksComponent } from './components/due-tasks/due-tasks.component';
 import { StatusGridComponent } from './components/status-grid/status-grid.component';
@@ -20,6 +21,7 @@ import { ToolTileComponent } from './components/tool-tile/tool-tile.component';
     LocalDataBannerComponent,
     LegacyClientsBannerComponent,
     SalonAlertsComponent,
+    RecentActivityComponent,
     ToolTileComponent,
     StatusGridComponent,
     DueTasksComponent,

@@ -24,6 +24,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
       },
       {
+        path: 'activity',
+        title: 'Activity · VINIT Workspace',
+        loadComponent: () => import('./features/activity/activity-page.component').then((m) => m.ActivityPageComponent),
+      },
+      {
         path: 'tools/kpis',
         title: 'KPIs · VINIT Workspace',
         loadComponent: () => import('./features/tools/kpis/kpis-page.component').then((m) => m.KpisPageComponent),

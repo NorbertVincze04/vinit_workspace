@@ -34,7 +34,7 @@ describe('AppComponent', () => {
     fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
     const labels = Array.from(el.querySelectorAll('app-sidebar a.link')).map((a) => a.textContent?.trim());
-    expect(labels).toEqual(['Overview', ...TOOLS.map((t) => t.title)]);
+    expect(labels).toEqual(['Overview', 'Activity', ...TOOLS.map((t) => t.title)]);
     expect(el.querySelector('app-sidebar')?.textContent).toContain('Sign out');
   });
 

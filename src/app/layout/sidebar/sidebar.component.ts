@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, output } from '@angular/core';
 import { ApiService } from '../../core/api/api.service';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { OVERVIEW_LINK, TOOL_GROUPS, toNavLink } from '../../core/data/tools.data';
+import { ACTIVITY_LINK, OVERVIEW_LINK, TOOL_GROUPS, toNavLink } from '../../core/data/tools.data';
 import { AuthService } from '../../core/auth/auth.service';
 import { StorageService } from '../../core/services/storage.service';
 import { ThemeService } from '../../core/services/theme.service';
@@ -34,6 +34,7 @@ export class SidebarComponent {
     return { text: 'All changes saved', failed: false, detail: '' };
   });
   protected readonly overview = OVERVIEW_LINK;
+  protected readonly activity = ACTIVITY_LINK;
   protected readonly groups = TOOL_GROUPS.map((g) => ({ id: g.id, title: g.title, links: g.tools.map(toNavLink) }));
 
   readonly navigate = output<void>();

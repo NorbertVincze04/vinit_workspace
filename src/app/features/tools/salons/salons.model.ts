@@ -229,29 +229,5 @@ export const clientFromOverview = (r: Record<string, unknown>): Partial<Client> 
   notes: String(r['notes'] ?? ''),
 });
 
-const ENTITY_LABELS: Record<string, string> = {
-  salons: 'Salon',
-  clients: 'Client',
-  domains: 'Domain',
-  leads: 'Lead',
-  subscriptions: 'Subscription',
-  payments: 'Payment',
-  onboardings: 'Onboarding',
-  'onboarding-steps': 'Onboarding step',
-  tickets: 'Ticket',
-  'time-entries': 'Time',
-};
-
-const ACTION_LABELS: Record<string, string> = {
-  created: 'added',
-  updated: 'edited',
-  deleted: 'removed',
-  status_changed: 'status changed',
-};
-
-/** "salons" + "status_changed" → "Salon · status changed". */
-export function activityLabel(entry: Pick<TimelineEntry, 'entityType' | 'action'>): string {
-  const what = ENTITY_LABELS[entry.entityType] ?? entry.entityType;
-  const did = ACTION_LABELS[entry.action] ?? entry.action.replace(/_/g, ' ');
-  return `${what} · ${did}`;
-}
+/** Labels of activity entries (shared with the activity feed). */
+export { activityLabel } from '../../../core/data/activity.data';

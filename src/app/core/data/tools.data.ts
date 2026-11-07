@@ -168,6 +168,8 @@ export const TOOL_GROUPS: readonly ToolGroup[] = [
 export const TOOLS: readonly ToolDefinition[] = TOOL_GROUPS.flatMap((g) => g.tools);
 
 export const OVERVIEW_LINK: NavLink = { label: 'Overview', route: '/', icon: 'home', exact: true };
+/** Everything that changed, by whom (shown under Overview, outside the groups). */
+export const ACTIVITY_LINK: NavLink = { label: 'Activity', route: '/activity', icon: 'clock', exact: false };
 
 export const toNavLink = (t: ToolDefinition): NavLink => ({ label: t.title, route: t.route, icon: t.icon, exact: false });
 

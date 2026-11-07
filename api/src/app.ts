@@ -17,6 +17,7 @@ import { contractsRouter } from './modules/contracts/contracts.routes.js';
 import { deadlinesRouter } from './modules/deadlines/deadlines.routes.js';
 import { wikiRouter } from './modules/wiki/wiki.routes.js';
 import { infraRouter } from './modules/infra/infra.routes.js';
+import { activityRouter } from './modules/activity/activity.routes.js';
 import { featuresRouter } from './modules/features/features.routes.js';
 import { kpisRouter } from './modules/kpis/kpis.routes.js';
 import { leadsRouter } from './modules/leads/leads.routes.js';
@@ -78,6 +79,7 @@ export function createApp(): express.Express {
   secured.use('/deadlines', deadlinesRouter());
   secured.use('/wiki', wikiRouter());
   secured.use('/infra', infraRouter());
+  secured.use('/activity', activityRouter());
   api.use(secured);
 
   app.use('/api/v1', api);

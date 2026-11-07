@@ -15,6 +15,10 @@
     <app-icon [name]="overview.icon" [size]="18" />
     {{ overview.label }}
   </a>
+  <a class="link" [routerLink]="activity.route" routerLinkActive="is-active" ariaCurrentWhenActive="page" (click)="navigate.emit()">
+    <app-icon [name]="activity.icon" [size]="18" />
+    {{ activity.label }}
+  </a>
 
   @for (group of groups; track group.id) {
     <p class="group" [id]="'nav-' + group.id">{{ group.title }}</p>
