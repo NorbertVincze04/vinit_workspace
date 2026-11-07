@@ -1,6 +1,6 @@
 # VINIT Workspace: Salon Platform Plan (Phase 0)
 
-> Status: **Phases 1–3 done (2026-11-07), waiting for your OK before Phase 4.** Decisions are in §0; questions settled with the defaults are marked in §9.
+> Status: **Phases 1–4 done (2026-11-08). All planned phases are built; waiting for your OK / next priorities.** Decisions are in §0; questions settled with the defaults are marked in §9.
 
 ## 0. Decisions (2026-11-07)
 
@@ -290,6 +290,12 @@ backup_checks    (service, checked_at, checked_by FK, restore_tested bool, notes
 - Extensions: `pgcrypto`, `citext`, `pg_trgm`, `unaccent`. Trigram GIN indexes on the name and title columns marked above, for global search.
 - `activity_log` is written by the service layer **in the same transaction** as every create, update, status change and conversion. A salon's "full story" is its activity timeline plus key dates.
 - Integration columns already exist in Phase 2 (`payments.invoice_*`, `salons.uptime_monitor_id`, `config_*`, `deploy_status`). Phase 4 only adds the provider interfaces.
+
+**Built in Phase 4 (2026-11-08):** tools grouped by role in the sidebar and on the Overview (Sales & marketing, Salons &
+support, Money, Planning, Operations); `GET /activity` + Activity page + Recent activity on the Overview; `notifications`
+(migration 014) generated hourly per person, with a bell; `GET /search` + Ctrl+K search box; `api/src/integrations` with
+the built-in uptime checker and stubs for SmartBill/Oblio, UptimeRobot and the booking platform (credentials only in `.env`).
+Not done: invoices are not sent automatically (stub answers 501), uptime is checked on demand only (no schedule).
 
 ---
 
