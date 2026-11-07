@@ -55,6 +55,13 @@ export const TOOLS: readonly ToolDefinition[] = [
     route: '/tools/support',
   },
   {
+    id: 'features',
+    title: 'Feature requests',
+    description: 'What salons ask for, weighed by the revenue behind it.',
+    icon: 'bulb',
+    route: '/tools/features',
+  },
+  {
     id: 'clients',
     title: 'Clients',
     description: 'The people and companies that pay, one salon each.',

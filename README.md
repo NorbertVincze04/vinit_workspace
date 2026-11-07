@@ -80,6 +80,7 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 | Support | `GET/POST /tickets`, `GET/PATCH/DELETE /tickets/:id`, `GET/POST /time-entries`, `PATCH/DELETE /time-entries/:id`, `GET /salons/:id/sessions`, `POST /salons/:id/bill-extra-work` |
 | Team | `GET /users` (names for pickers) |
 | KPIs | `GET /kpis?month=` (+ targets), `GET /kpis/history?from=&to=`, `PUT /kpis/snapshots/:month` (recompute a closed month) |
+| Feature requests | `GET/POST /feature-requests?status=`, `GET/PATCH/DELETE /feature-requests/:id`, `POST /feature-requests/:id/votes` {salonId | leadId}, `DELETE /feature-votes/:id`, `POST /tickets/:id/to-feature-request`, `GET /roadmap-steps` |
 | Import | `POST /import/legacy-clients` {records} (old browser Clients list → leads / salons; skips records moved before) |
 | Plans, promotions | `GET /plans`, `PATCH /plans/:id`, `GET/POST /promotions`, `PATCH /promotions/:id` (seeded by the migrations) |
 
@@ -95,6 +96,7 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 | Onboarding | `/tools/onboarding` | Salons being set up: checklist from a template, the 48h clock from when the client's materials arrive, blocked reasons, go-live; average time to live |
 | Subscriptions | `/tools/subscriptions` | MRR (now and month by month), who pays what, Early Bird places, payments to collect (create the month's in one click, mark paid → Finances income), warnings: trials ending, overdue, past due, salons without a subscription |
 | Support | `/tools/support` | Tickets (T-0001…) by priority and status, time logged on them; the salon page shows included sessions left (counted per meeting), unbilled extra work (100 RON/h, exact minutes) and a "Bill extra work" button |
+| Feature requests | `/tools/features` | What salons and leads ask for, ranked by the MRR of the paying salons that asked, then votes; linked to a roadmap step; shipping it notes it in each salon's story; change-request tickets become requests in one click |
 | Clients | `/tools/clients` | The people and companies that pay (one salon each), with business address |
 | Finances | `/tools/finances` | Transactions, recurring payments, investments, accounts, budgets, cash-flow chart, CSV export |
 | Marketing | `/tools/marketing` | 12-month content calendar, communication mix vs. target, copy & hashtags |

@@ -79,6 +79,8 @@ export interface Ticket {
   resolvedAt: string | null;
   closedAt: string | null;
   minutesLogged: number;
+  featureRequestId: string | null;
+  featureRequestTitle: string | null;
 }
 
 /** API row of GET /time-entries (money in bani). */

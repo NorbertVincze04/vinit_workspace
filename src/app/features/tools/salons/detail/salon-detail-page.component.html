@@ -92,6 +92,20 @@
             </app-panel>
           }
 
+          @if (features().length) {
+            <app-panel heading="Asked for" [meta]="features().length + ''">
+              <a panelAction routerLink="/tools/features">Feature requests</a>
+              <ul class="asked">
+                @for (f of features(); track f.id) {
+                  <li>
+                    <span>{{ f.title }}</span>
+                    <app-status-pill [tone]="requestStatus(f.status).tone">{{ requestStatus(f.status).label }}</app-status-pill>
+                  </li>
+                }
+              </ul>
+            </app-panel>
+          }
+
           <app-panel heading="Status history">
             <ol class="history">
               @for (h of data()?.history ?? []; track h.id) {

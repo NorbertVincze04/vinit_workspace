@@ -28,6 +28,7 @@ const ticketFields = z.object({
   priority: z.enum(PRIORITIES),
   reportedVia: z.enum(CHANNELS),
   assigneeId: uuidRef,
+  featureRequestId: uuidRef,
 });
 const ticketCreate = ticketFields.partial().required({ title: true }).extend({ salonId: uuid, id: uuid.optional() }).strict();
 const ticketPatch = ticketFields.partial().strict();
@@ -62,6 +63,7 @@ function ticketRows(k: Db): Knex.QueryBuilder {
       't.*',
       's.name as salonName',
       'u.fullName as assigneeName',
+      k.raw('(SELECT fr.title FROM feature_requests fr WHERE fr.id = t.feature_request_id) as feature_request_title'),
       k.raw('(SELECT coalesce(sum(e.minutes), 0)::int FROM time_entries e WHERE e.ticket_id = t.id) as minutes_logged'),
     );
 }

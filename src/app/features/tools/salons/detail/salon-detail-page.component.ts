@@ -58,6 +58,7 @@ import { BillingDialogsComponent, BillingRequest } from '../../subscriptions/com
 import { SalonBillingComponent } from './salon-billing.component';
 import { SalonSupportComponent } from './salon-support.component';
 import { SalonSupport } from '../../support/support.model';
+import { FeatureRequest, requestStatus } from '../../features/features.model';
 import { OnboardingChecklistComponent } from '../../onboarding/components/onboarding-checklist/onboarding-checklist.component';
 import { Onboarding } from '../../onboarding/onboarding.model';
 import { OnboardingStore } from '../../onboarding/onboarding.store';
@@ -131,6 +132,8 @@ export class SalonDetailPageComponent {
   protected readonly billingRequest = signal<BillingRequest | null>(null);
   protected readonly onboarding = computed(() => (this.data()?.['onboarding'] as Onboarding | null | undefined) ?? null);
   protected readonly support = computed(() => (this.data()?.['support'] as SalonSupport | undefined) ?? null);
+  protected readonly features = computed(() => (this.data()?.['features'] as FeatureRequest[] | undefined) ?? []);
+  protected readonly requestStatus = requestStatus;
   protected readonly billing = computed(() => (this.data()?.['billing'] as SalonBilling | undefined) ?? null);
   protected readonly deleting = signal<'salon' | SalonDomain | null>(null);
 

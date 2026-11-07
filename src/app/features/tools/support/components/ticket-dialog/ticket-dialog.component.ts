@@ -15,6 +15,7 @@ import {
 import { timeBody, timeFields } from '../../support.fields';
 import { TICKET_STATUSES, Ticket, TimeEntry, duration, priorityInfo, ticketNo, ticketStatus, typeLabel } from '../../support.model';
 import { SupportStore } from '../../support.store';
+import { FeaturesStore } from '../../../features/features.store';
 import { TimeListComponent } from '../time-list/time-list.component';
 
 /** A ticket opened: details, quick status change, time logged on it and "log time". */
@@ -39,6 +40,14 @@ import { TimeListComponent } from '../time-list/time-list.component';
         <app-facts [items]="facts()" />
         @if (t.description) {
           <p class="desc">{{ t.description }}</p>
+        }
+        @if (t.featureRequestId) {
+          <p class="fr">Feature request: <a routerLink="/tools/features" (click)="dialog.close()">{{ t.featureRequestTitle }}</a></p>
+        } @else if (t.type === 'change_request') {
+          <p class="fr">
+            Other salons may want this too.
+            <button appButton size="sm" variant="ghost" type="button" (click)="toFeature()">Make it a feature request</button>
+          </p>
         }
         <div class="time-head">
           <h3>Time · {{ total() }}</h3>
@@ -72,6 +81,8 @@ import { TimeListComponent } from '../time-list/time-list.component';
     .status .input { width: auto; }
     .salon { font-weight: 600; color: var(--main); text-decoration: none; }
     .desc { white-space: pre-line; font-size: 14px; margin-top: 14px; }
+    .fr { font-size: 13.5px; color: var(--muted); margin-top: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+    .fr a { color: var(--main); font-weight: 600; text-decoration: none; }
     .time-head { display: flex; align-items: center; justify-content: space-between; margin: 18px 0 8px; }
     h3 { font-size: 14px; font-weight: 600; }
     .footer { display: flex; flex-wrap: wrap; gap: 8px; width: 100%; }
@@ -87,6 +98,7 @@ export class TicketDialogComponent {
 
   private readonly store = inject(SupportStore);
   private readonly toast = inject(ToastService);
+  private readonly features = inject(FeaturesStore);
 
   protected readonly ticket = signal<Ticket | null>(null);
   protected readonly entries = signal<TimeEntry[] | null>(null);
@@ -147,6 +159,18 @@ export class TicketDialogComponent {
     try {
       this.ticket.set(await this.store.updateTicket(t, { status }));
       this.toast.show(`${ticketNo(t.number)}: ${ticketStatus(status).label.toLowerCase()}`);
+    } catch {
+      /* toast shown */
+    }
+  }
+
+  protected async toFeature(): Promise<void> {
+    const t = this.ticket();
+    if (!t) return;
+    try {
+      await this.features.fromTicket(t.id);
+      this.toast.show('Feature request created, with this salon as the first vote');
+      await this.load(t.id);
     } catch {
       /* toast shown */
     }
