@@ -13,6 +13,7 @@ import { filesRouter } from './modules/files/files.routes.js';
 import { metricsRouter, paymentsRouter, salonSubscriptionsRouter, subscriptionsRouter } from './modules/billing/billing.routes.js';
 import { onboardingRouter, salonOnboardingRouter } from './modules/onboarding/onboarding.routes.js';
 import { supportRouter } from './modules/support/support.routes.js';
+import { contractsRouter } from './modules/contracts/contracts.routes.js';
 import { featuresRouter } from './modules/features/features.routes.js';
 import { kpisRouter } from './modules/kpis/kpis.routes.js';
 import { leadsRouter } from './modules/leads/leads.routes.js';
@@ -70,6 +71,7 @@ export function createApp(): express.Express {
   secured.use('/import', legacyImportRouter());
   secured.use('/kpis', kpisRouter());
   secured.use(featuresRouter());
+  secured.use('/contracts', contractsRouter());
   api.use(secured);
 
   app.use('/api/v1', api);

@@ -83,7 +83,12 @@ export class FilesStore {
    * Uploads one file. `keep` preserves the id and date of a file moved from this browser's
    * old storage (see LocalDataService).
    */
-  async send(file: Blob, keep?: { id: string; name: string; createdAt: string }): Promise<StoredFile> {
+  /** Uploads a file; `attach` links it to a salon and/or one of its contracts. */
+  async send(
+    file: Blob,
+    keep?: { id: string; name: string; createdAt: string },
+    attach?: { salonId?: string; contractId?: string },
+  ): Promise<StoredFile> {
     const form = new FormData();
     const name = keep?.name ?? (file as File).name ?? 'file';
     form.append('name', name);
@@ -91,6 +96,8 @@ export class FilesStore {
       form.append('id', keep.id);
       if (keep.createdAt) form.append('createdAt', keep.createdAt);
     }
+    if (attach?.salonId) form.append('salonId', attach.salonId);
+    if (attach?.contractId) form.append('contractId', attach.contractId);
     form.append('file', file, name);
     const res = await this.api.write<{ item: Record<string, unknown> }>('POST', '/files', form);
     const item = fromApi<StoredFile>(FILE_FIELDS, res.item);
@@ -99,7 +106,7 @@ export class FilesStore {
   }
 
   /** The file's bytes, or null when they cannot be downloaded. */
-  async blob(item: StoredFile): Promise<Blob | null> {
+  async blob(item: Pick<StoredFile, 'id'>): Promise<Blob | null> {
     try {
       return await this.api.getBlob(`/files/${encodeURIComponent(item.id)}/download`);
     } catch (error) {
@@ -110,5 +117,11 @@ export class FilesStore {
 
   async remove(item: StoredFile): Promise<void> {
     this.collection.remove(item.id);
+  }
+
+  /** Deletes on the server and waits for it (attachments refresh their list right after). */
+  async delete(id: string): Promise<void> {
+    await this.api.write('DELETE', `/files/${encodeURIComponent(id)}`);
+    this.collection.setLocal((items) => items.filter((x) => x.id !== id));
   }
 }

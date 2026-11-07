@@ -62,6 +62,13 @@ export const TOOLS: readonly ToolDefinition[] = [
     route: '/tools/features',
   },
   {
+    id: 'contracts',
+    title: 'Contracts',
+    description: 'Signed contracts, DPAs (GDPR), renewals and missing paperwork.',
+    icon: 'file',
+    route: '/tools/contracts',
+  },
+  {
     id: 'clients',
     title: 'Clients',
     description: 'The people and companies that pay, one salon each.',

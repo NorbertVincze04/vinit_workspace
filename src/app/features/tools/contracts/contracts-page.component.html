@@ -1,0 +1,78 @@
+<app-page-header title="Contracts" description="Subscription contracts, DPAs (GDPR), custom projects and addenda, with their files and renewals.">
+  <div pageActions>
+    <button appButton variant="primary" type="button" (click)="openForm(null)"><app-icon name="plus" [size]="16" /> New contract</button>
+  </div>
+</app-page-header>
+
+@if (gaps().length) {
+  <app-panel class="block" heading="Missing paperwork" [meta]="gaps().length + ' salons'">
+    <ul class="gaps">
+      @for (g of gaps(); track g.salonId) {
+        <li>
+          <a [routerLink]="['/tools/salons', g.salonId]" [queryParams]="{ tab: 'contracts' }">{{ g.salonName }}</a>
+          @for (p of g.problems; track p) {
+            <app-status-pill [tone]="p.startsWith('Renewal') ? 'warn' : 'bad'">{{ p }}</app-status-pill>
+          }
+          <button appButton variant="ghost" size="sm" type="button" (click)="openForm(null, g.salonId)">Add contract</button>
+        </li>
+      }
+    </ul>
+  </app-panel>
+}
+
+@if (store.items().length) {
+  <div class="toolbar">
+    <app-chip-group label="Filter contracts" [options]="chips()" [(value)]="filter" />
+  </div>
+}
+
+@if (!store.loaded()) {
+  <app-empty-state heading="Loading…" text="Reading contracts from the VINIT server." />
+} @else if (!store.items().length) {
+  <app-empty-state
+    heading="No contracts yet"
+    text="Record each salon's subscription contract and DPA. Signing the subscription contract starts the salon's onboarding."
+  >
+    <button appButton variant="primary" type="button" (click)="openForm(null)">New contract</button>
+  </app-empty-state>
+} @else if (!visible().length) {
+  <app-empty-state heading="Nothing here" text="No contract matches this filter." />
+} @else {
+  <app-ledger [headers]="['Contract', 'Salon', 'Signed', 'Renewal', 'Status']" columns="minmax(0, 1.6fr) minmax(0, 1.4fr) 110px 110px 110px">
+    @for (c of visible(); track c.id) {
+      <app-ledger-row clickable (activate)="openId.set(c.id)">
+        <div>
+          <span class="cell-title">{{ kindLabel(c.kind) }}</span>
+          <span class="cell-sub">{{ c.number }}{{ c.files ? ' · ' + c.files + (c.files === 1 ? ' file' : ' files') : '' }}</span>
+        </div>
+        <span>{{ c.salonName }}</span>
+        <span>{{ date(c.signedOn) || '—' }}</span>
+        <span>{{ date(c.renewalOn) || '—' }}</span>
+        <div><app-status-pill [tone]="status(c.status).tone">{{ status(c.status).label }}</app-status-pill></div>
+      </app-ledger-row>
+    }
+  </app-ledger>
+}
+
+@if (openId(); as id) {
+  <app-contract-dialog [contractId]="id" (edit)="openForm($event)" (remove)="deleting.set($event)" (closed)="openId.set(null)" />
+}
+@if (form(); as f) {
+  <app-form-dialog
+    [heading]="f.item ? 'Edit contract' : 'New contract'"
+    [fields]="f.fields"
+    [initial]="f.values"
+    saveLabel="Save contract"
+    (saved)="save($event)"
+    (closed)="form.set(null)"
+  />
+}
+@if (deleting(); as c) {
+  <app-confirm-dialog
+    heading="Delete contract?"
+    [message]="kindLabel(c.kind) + ' ' + c.number + ' will be removed. Its files stay in Files.'"
+    cancelLabel="Keep it"
+    (confirmed)="confirmDelete(c)"
+    (closed)="deleting.set(null)"
+  />
+}

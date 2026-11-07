@@ -149,6 +149,9 @@
       @case ('support') {
         <app-salon-support [support]="support()" [salonId]="s.id" (changed)="load()" />
       }
+      @case ('contracts') {
+        <app-salon-contracts [data]="contracts()" [salonId]="s.id" (changed)="load()" />
+      }
       @case ('timeline') {
         @if (timeline(); as items) {
           @if (items.length) {

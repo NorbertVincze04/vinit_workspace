@@ -6,7 +6,7 @@ import { db } from '../../db/knex.js';
 import { HttpError, notFound } from '../../http/errors.js';
 import { parseParams } from '../../http/validate.js';
 import { logActivity } from '../../lib/activity.js';
-import { id, timestamp } from '../../lib/schemas.js';
+import { id, timestamp, uuid } from '../../lib/schemas.js';
 import { kindOf } from './file-kinds.js';
 
 const upload = multer({
@@ -20,9 +20,14 @@ const uploadFields = z.object({
   createdAt: timestamp.optional(),
   /** Sent separately because multipart file names are not reliably UTF-8 ("Fișă onboarding.pdf"). */
   name: z.string().trim().min(1).max(255).optional(),
+  /** Attach to a salon and/or one of its contracts. */
+  salonId: uuid.optional(),
+  contractId: uuid.optional(),
 });
 
-const META = ['id', 'name', 'mime', 'sizeBytes', 'kind', 'uploadedBy', 'createdAt', 'updatedAt'] as const;
+const listQuery = z.object({ salonId: uuid.optional(), contractId: uuid.optional() });
+
+const META = ['id', 'name', 'mime', 'sizeBytes', 'kind', 'uploadedBy', 'salonId', 'contractId', 'createdAt', 'updatedAt'] as const;
 
 /** RFC 6266 header that keeps non-ASCII names intact. */
 function contentDisposition(name: string): string {
@@ -40,8 +45,12 @@ function contentDisposition(name: string): string {
 export function filesRouter(): Router {
   const router = Router();
 
-  router.get('/', async (_req, res) => {
-    res.json({ items: await db('files').select(META).orderBy('createdAt', 'desc') });
+  router.get('/', async (req, res) => {
+    const { salonId, contractId } = listQuery.parse(req.query ?? {});
+    const q = db('files').select(META).orderBy('createdAt', 'desc');
+    if (salonId) q.where({ salonId });
+    if (contractId) q.where({ contractId });
+    res.json({ items: await q });
   });
 
   router.post('/', upload.single('file'), async (req, res) => {
@@ -52,6 +61,14 @@ export function filesRouter(): Router {
     const name = fields.name ?? Buffer.from(file.originalname, 'latin1').toString('utf8');
 
     const item = await db.transaction(async (trx) => {
+      // A contract's file belongs to the contract's salon.
+      let salonId = fields.salonId ?? null;
+      if (fields.contractId) {
+        const contract = await trx('contracts').where({ id: fields.contractId }).first('salonId');
+        if (!contract) throw new HttpError(400, 'validation', 'This contract does not exist.', { contractId: 'Unknown contract' });
+        if (salonId && salonId !== contract.salonId) throw new HttpError(400, 'validation', 'The contract belongs to another salon.', { contractId: 'Other salon' });
+        salonId = contract.salonId;
+      }
       const [row] = await trx('files')
         .insert({
           ...(fields.id ? { id: fields.id } : {}),
@@ -61,10 +78,12 @@ export function filesRouter(): Router {
           sizeBytes: file.size,
           kind: kindOf(name, file.mimetype),
           uploadedBy: req.user?.id ?? null,
+          salonId,
+          contractId: fields.contractId ?? null,
         })
         .returning(META);
       await trx('file_blobs').insert({ fileId: row.id, bytes: file.buffer });
-      await logActivity(trx, { userId: req.user?.id, entityType: 'files', entityId: row.id, action: 'uploaded', summary: name });
+      await logActivity(trx, { userId: req.user?.id, entityType: 'files', entityId: row.id, salonId, action: 'uploaded', summary: name });
       return row;
     });
     res.status(201).json({ item });
