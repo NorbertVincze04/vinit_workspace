@@ -1,0 +1,64 @@
+<app-page-header title="Onboarding" description="Every salon being set up. The 48h promise counts from when the client's materials arrive.">
+  <div pageActions>
+    <app-menu ariaLabel="More onboarding actions">
+      <button appMenuItem type="button" (click)="editingTemplate.set(true)">Edit the checklist template…</button>
+    </app-menu>
+    <button appButton variant="primary" type="button" (click)="openStart()">
+      <app-icon name="plus" [size]="16" /> Start onboarding
+    </button>
+  </div>
+</app-page-header>
+
+@if (store.items().length) {
+  <div class="toolbar">
+    <app-chip-group label="Filter onboardings" [options]="chips()" [(value)]="filter" />
+  </div>
+  <app-inline-stats class="summary" [items]="summary()" />
+}
+
+@if (!store.loaded()) {
+  <app-empty-state heading="Loading…" text="Reading onboardings from the VINIT server." />
+} @else if (!store.items().length) {
+  <app-empty-state
+    heading="No onboardings yet"
+    text="Start one when a salon signs: it gets the checklist (materials, kickoff, setup, approval, launch) and the 48h clock."
+  >
+    <button appButton variant="primary" type="button" (click)="openStart()">Start onboarding</button>
+  </app-empty-state>
+} @else if (!visible().length) {
+  <app-empty-state heading="Nothing here" text="No onboarding matches this filter." />
+} @else {
+  <app-ledger [headers]="['Salon', '48h clock', 'Checklist', 'Status']" columns="minmax(0, 1.6fr) minmax(0, 1.3fr) minmax(0, 1fr) 110px">
+    @for (o of visible(); track o.id) {
+      <app-ledger-row>
+        <div>
+          <a class="cell-title link" [routerLink]="['/tools/salons', o.salonId]" [queryParams]="{ tab: 'onboarding' }">{{ o.salonName }}</a>
+          @if (o.status === 'blocked') {
+            <span class="cell-sub">Blocked: {{ o.blockedReason }}</span>
+          }
+        </div>
+        <div><app-status-pill [tone]="clockOf(o).tone">{{ clockOf(o).text }}</app-status-pill></div>
+        <div class="progress">
+          <span>{{ o.stepsDone }} of {{ o.stepsTotal }} steps</span>
+          <app-progress-bar size="sm" [value]="percent(o)" [label]="o.stepsDone + ' of ' + o.stepsTotal + ' steps done'" />
+        </div>
+        <div><app-status-pill [tone]="statusOf(o).tone">{{ statusOf(o).label }}</app-status-pill></div>
+      </app-ledger-row>
+    }
+  </app-ledger>
+}
+
+@if (startForm(); as fields) {
+  <app-form-dialog
+    heading="Start onboarding"
+    subheading="The salon gets the checklist from the template."
+    [fields]="fields"
+    saveLabel="Start"
+    (saved)="start($event)"
+    (closed)="startForm.set(null)"
+  />
+}
+
+@if (editingTemplate()) {
+  <app-template-editor (closed)="editingTemplate.set(false)" />
+}

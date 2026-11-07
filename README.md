@@ -74,6 +74,7 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 | Leads | `GET /leads?stage=&q=&due=`, `POST /leads`, `GET/PATCH/DELETE /leads/:id`, `POST /leads/:id/move` {stage, position, lostReason}, `POST /leads/:id/activities`, `POST /leads/:id/convert` → {lead, salon}, `POST /leads/import` {rows} |
 | Subscriptions | `POST /salons/:id/subscriptions`, `GET /subscriptions?status=`, `GET/PATCH /subscriptions/:id`, `POST /subscriptions/:id/change` {kind: upgrade, downgrade, price_change, pause, resume, cancel, trial_converted, past_due, end}, `GET /subscriptions/warnings`, `GET /metrics/mrr?from=&to=` |
 | Payments | `GET /payments?status=&salonId=`, `POST /payments`, `PATCH/DELETE /payments/:id`, `POST /payments/:id/mark-paid` (adds the income to Finances), `POST /payments/:id/reopen`, `POST /payments/generate` {month} |
+| Onboarding | `POST /salons/:id/onboarding`, `GET /onboardings?open=`, `GET/PATCH/DELETE /onboardings/:id`, `POST /onboardings/:id/steps`, `POST /onboardings/:id/go-live`, `PATCH/DELETE /onboarding-steps/:id`, `GET/PUT /onboarding-template` |
 | Plans, promotions | `GET /plans`, `PATCH /plans/:id`, `GET/POST /promotions`, `PATCH /promotions/:id` (seeded by the migrations) |
 
 ## Tools
@@ -84,6 +85,7 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 | Tasks | `/tools/tasks` | Year 1 goals split into tasks, owners, due months, goals editor |
 | Leads | `/tools/leads` | Sales pipeline: board (drag cards between stages) or list, contact log with follow-ups, CSV import (e.g. the prospect list saved as CSV), convert into client + salon |
 | Salons | `/tools/salons` | Every salon (tenant) with client, plan, status and domains; `/tools/salons/:id` is its whole story (overview, status history, timeline) |
+| Onboarding | `/tools/onboarding` | Salons being set up: checklist from a template, the 48h clock from when the client's materials arrive, blocked reasons, go-live; average time to live |
 | Subscriptions | `/tools/subscriptions` | MRR (now and month by month), who pays what, Early Bird places, payments to collect (create the month's in one click, mark paid → Finances income), warnings: trials ending, overdue, past due, salons without a subscription |
 | Clients | `/tools/clients` | The people and companies that pay (one salon each), with business address |
 | Finances | `/tools/finances` | Transactions, recurring payments, investments, accounts, budgets, cash-flow chart, CSV export |

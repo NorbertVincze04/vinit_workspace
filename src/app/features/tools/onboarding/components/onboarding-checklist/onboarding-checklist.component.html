@@ -1,0 +1,86 @@
+<div class="grid">
+  <app-panel heading="Onboarding" [meta]="status().label">
+    <span panelAction class="actions">
+      @if (onboarding().status !== 'done') {
+        @if (!onboarding().materialsReceivedAt) {
+          <button appButton size="sm" variant="primary" type="button" (click)="open('materials')">Materials received</button>
+        } @else {
+          <button appButton size="sm" variant="primary" type="button" (click)="open('live')">Go live</button>
+        }
+      }
+      <app-menu ariaLabel="More onboarding actions">
+        @if (onboarding().materialsReceivedAt) {
+          <button appMenuItem type="button" (click)="open('materials')">Change when the materials arrived…</button>
+          @if (onboarding().status !== 'done') {
+            <button appMenuItem type="button" (click)="clearMaterials()">Materials not received yet</button>
+          }
+        }
+        <button appMenuItem type="button" (click)="open('signed')">Change the signing time…</button>
+        @if (onboarding().status === 'blocked' || onboarding().status === 'done') {
+          <button appMenuItem type="button" (click)="unblock()">{{ onboarding().status === 'done' ? 'Reopen (not live yet)' : 'Unblock' }}</button>
+        } @else {
+          <button appMenuItem type="button" (click)="open('block')">Mark blocked…</button>
+        }
+      </app-menu>
+    </span>
+
+    <div class="clock">
+      <app-status-pill [tone]="clock().tone">{{ clock().text }}</app-status-pill>
+      @if (onboarding().materialsReceivedAt) {
+        <app-meter
+          [value]="clock().percent"
+          [over]="onboarding().late"
+          [label]="'Used ' + clock().percent + '% of the ' + hours + ' hours'"
+        />
+      }
+    </div>
+    @if (onboarding().status === 'blocked') {
+      <p class="blocked">Blocked: {{ onboarding().blockedReason }}</p>
+    }
+    <app-facts [items]="facts()" />
+  </app-panel>
+
+  <app-panel heading="Checklist" [meta]="onboarding().stepsDone + ' / ' + onboarding().stepsTotal">
+    @for (g of groups(); track g.value) {
+      <section class="group">
+        <h3>{{ g.label }}</h3>
+        <ul>
+          @for (step of g.steps; track step.id) {
+            <li>
+              <app-checkbox [checked]="!!step.doneAt" [disabled]="busy()" (checkedChange)="toggle(step, $event)" strike>
+                {{ step.title }}
+              </app-checkbox>
+              @if (step.doneAt) {
+                <span class="done">{{ step.doneByName || '' }}</span>
+              } @else if (step.description) {
+                <span class="desc">{{ step.description }}</span>
+              }
+              <button class="remove" type="button" [attr.aria-label]="'Remove ' + step.title" (click)="removeStep(step)">×</button>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+    <form class="add" (submit)="$event.preventDefault(); addStep()">
+      <input class="input" maxlength="300" placeholder="Add a step" aria-label="New step" [value]="newStep()" (input)="onInput($event)" />
+      <select class="input" aria-label="Category of the new step" (change)="onCategory($event)">
+        @for (c of categories; track c.value) {
+          <option [value]="c.value" [selected]="c.value === newCategory()">{{ c.label }}</option>
+        }
+      </select>
+      <button appButton size="sm" type="submit" [disabled]="!newStep().trim() || busy()">Add</button>
+    </form>
+  </app-panel>
+</div>
+
+@if (dialog(); as d) {
+  <app-form-dialog
+    size="sm"
+    [heading]="titles[d.kind]"
+    [fields]="d.fields"
+    [initial]="d.values"
+    saveLabel="Save"
+    (saved)="saved($event)"
+    (closed)="dialog.set(null)"
+  />
+}

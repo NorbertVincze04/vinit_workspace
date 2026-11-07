@@ -117,6 +117,18 @@
           </app-panel>
         </div>
       }
+      @case ('onboarding') {
+        @if (onboarding(); as o) {
+          <app-onboarding-checklist [onboarding]="o" (changed)="load()" />
+        } @else {
+          <app-empty-state
+            heading="No onboarding yet"
+            text="Start it when the salon signs: it gets the checklist and the 48h clock, which starts when the client's materials arrive."
+          >
+            <button appButton variant="primary" type="button" (click)="startOnboarding()">Start onboarding</button>
+          </app-empty-state>
+        }
+      }
       @case ('billing') {
         <app-salon-billing [billing]="billing()" [salonId]="s.id" [salonPlanId]="s.planId" (request)="billingRequest.set($event)" />
       }

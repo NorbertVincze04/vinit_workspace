@@ -27,6 +27,13 @@ export const TOOLS: readonly ToolDefinition[] = [
     route: '/tools/salons',
   },
   {
+    id: 'onboarding',
+    title: 'Onboarding',
+    description: 'New salons live within 48h of their materials: checklist and clock.',
+    icon: 'rocket',
+    route: '/tools/onboarding',
+  },
+  {
     id: 'subscriptions',
     title: 'Subscriptions',
     description: 'MRR, plans, Early Bird trials and payments to collect.',

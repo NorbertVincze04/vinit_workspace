@@ -56,6 +56,9 @@ import { kindLabel, sourceLabel, stageInfo } from '../../leads/leads.model';
 import { SalonBilling } from '../../subscriptions/billing.model';
 import { BillingDialogsComponent, BillingRequest } from '../../subscriptions/components/billing-dialogs/billing-dialogs.component';
 import { SalonBillingComponent } from './salon-billing.component';
+import { OnboardingChecklistComponent } from '../../onboarding/components/onboarding-checklist/onboarding-checklist.component';
+import { Onboarding } from '../../onboarding/onboarding.model';
+import { OnboardingStore } from '../../onboarding/onboarding.store';
 
 interface SalonLead {
   id: string;
@@ -98,6 +101,7 @@ type Dialog =
     ConfirmDialogComponent,
     SalonBillingComponent,
     BillingDialogsComponent,
+    OnboardingChecklistComponent,
   ],
   templateUrl: './salon-detail-page.component.html',
   styleUrl: './salon-detail-page.component.css',
@@ -106,10 +110,13 @@ type Dialog =
 export class SalonDetailPageComponent {
   /** Route parameter. */
   readonly id = input.required<string>();
+  /** Optional ?tab= query parameter (e.g. links from the Onboarding page). */
+  readonly tabParam = input<string | undefined>(undefined, { alias: 'tab' });
 
   private readonly store = inject(SalonsStore);
   private readonly clients = inject(ClientsStore);
   private readonly plans = inject(PlansStore);
+  private readonly onboardings = inject(OnboardingStore);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
 
@@ -119,6 +126,7 @@ export class SalonDetailPageComponent {
   protected readonly tab = signal('overview');
   protected readonly dialog = signal<Dialog | null>(null);
   protected readonly billingRequest = signal<BillingRequest | null>(null);
+  protected readonly onboarding = computed(() => (this.data()?.['onboarding'] as Onboarding | null | undefined) ?? null);
   protected readonly billing = computed(() => (this.data()?.['billing'] as SalonBilling | undefined) ?? null);
   protected readonly deleting = signal<'salon' | SalonDomain | null>(null);
 
@@ -140,6 +148,7 @@ export class SalonDetailPageComponent {
 
   protected readonly tabs = computed<ChipOption[]>(() => [
     { value: 'overview', label: 'Overview' },
+    { value: 'onboarding', label: this.onboarding()?.status === 'done' ? 'Onboarding ✓' : 'Onboarding' },
     { value: 'billing', label: 'Subscription & payments', count: this.billing()?.payments.filter((p) => p['status'] === 'due').length || undefined },
     { value: 'timeline', label: 'Timeline' },
   ]);
@@ -194,6 +203,13 @@ export class SalonDetailPageComponent {
       () => {
         const id = this.id();
         untracked(() => void this.load(id));
+      },
+      { allowSignalWrites: true },
+    );
+    effect(
+      () => {
+        const t = this.tabParam();
+        if (t) untracked(() => this.tab.set(t));
       },
       { allowSignalWrites: true },
     );
@@ -296,6 +312,18 @@ export class SalonDetailPageComponent {
       /* the store showed the server's message */
     }
     await this.load();
+  }
+
+  protected async startOnboarding(): Promise<void> {
+    const s = this.salon();
+    if (!s) return;
+    try {
+      await this.onboardings.start(s.id, {});
+      this.toast.show('Onboarding started');
+      await this.load();
+    } catch {
+      /* toast shown */
+    }
   }
 
   protected async confirmDelete(): Promise<void> {
