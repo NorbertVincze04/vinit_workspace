@@ -2,7 +2,8 @@ import { Injectable, computed, signal } from '@angular/core';
 import { Entity } from '../../../core/models';
 import { addPeriod, daysUntil, formatDate, monthName, shiftMonth, todayISO } from '../../../core/utils/date';
 import { formatMoney, formatRon } from '../../../core/utils/format';
-import { PersistedCollection, persistedCollection } from '../../../core/utils/persisted-collection';
+import { ApiCollection, apiCollection } from '../../../core/api/api-collection';
+import { remoteSetting } from '../../../core/api/remote-setting';
 import { persistedSignal } from '../../../core/utils/persisted-signal';
 import { matchesSearch } from '../../../core/utils/text';
 import { ChartGroup } from '../../../shared/components';
@@ -20,6 +21,7 @@ import {
   TxType,
   labelOf,
 } from './finances.data';
+import { ACCOUNT_FIELDS, BUDGET_FIELDS, HOLDING_FIELDS, RECURRING_FIELDS, TRANSACTION_FIELDS } from './finances.api';
 import {
   Account,
   AccountRow,
@@ -49,16 +51,16 @@ const TYPE_SIGN: Record<TxType, string> = { income: '+', expense: '−', invest:
 
 /**
  * Finances tool state: five saved collections, exchange rates and every derived figure.
- * Saved in localStorage under "vinit.finances.*".
+ * Saved on the server (/api/v1/finances/*); the open tab is remembered per device.
  */
 @Injectable({ providedIn: 'root' })
 export class FinancesStore {
-  readonly transactions = persistedCollection<Transaction>('finances.transactions.v1', 'tx');
-  readonly recurring = persistedCollection<Recurring>('finances.recurring.v1', 'rc');
-  readonly holdings = persistedCollection<Holding>('finances.holdings.v1', 'hd');
-  readonly accounts = persistedCollection<Account>('finances.accounts.v1', 'ac');
-  readonly budgets = persistedCollection<Budget>('finances.budgets.v1', 'bd');
-  readonly rates = persistedSignal<Rates>('finances.rates.v1', () => ({ ...DEFAULT_RATES }), { validate: isRates });
+  readonly transactions = apiCollection<Transaction>('/finances/transactions', TRANSACTION_FIELDS, 'tx');
+  readonly recurring = apiCollection<Recurring>('/finances/recurring', RECURRING_FIELDS, 'rc');
+  readonly holdings = apiCollection<Holding>('/finances/holdings', HOLDING_FIELDS, 'hd');
+  readonly accounts = apiCollection<Account>('/finances/accounts', ACCOUNT_FIELDS, 'ac');
+  readonly budgets = apiCollection<Budget>('/finances/budgets', BUDGET_FIELDS, 'bd');
+  readonly rates = remoteSetting<Rates>('finances.rates', () => ({ ...DEFAULT_RATES }), isRates);
 
   /** Selected month "YYYY-MM". */
   readonly month = signal(todayISO().slice(0, 7));
@@ -347,8 +349,8 @@ export class FinancesStore {
 
   // ---------------------------------------------------------------- actions
 
-  collection(name: FinanceCollection): PersistedCollection<Entity> {
-    return this[name] as unknown as PersistedCollection<Entity>;
+  collection(name: FinanceCollection): ApiCollection<Entity> {
+    return this[name] as unknown as ApiCollection<Entity>;
   }
 
   /** Adds (id = null) or updates a record from validated form values. */
@@ -431,9 +433,11 @@ export class FinancesStore {
 
   importState(data: unknown): boolean {
     const d = data as Partial<FinanceBackup> | null;
-    const names: FinanceCollection[] = ['transactions', 'recurring', 'holdings', 'accounts', 'budgets'];
+    // Records others link to go first, so transactions keep their account / holding / recurring links.
+    // (Writes reach the server in this order.)
+    const names: FinanceCollection[] = ['accounts', 'holdings', 'recurring', 'transactions', 'budgets'];
     if (!d || !names.every((n) => Array.isArray(d[n]))) return false;
-    for (const n of names) this.collection(n).replaceAll(d[n] as Entity[]);
+    for (const n of names) void this.collection(n).replaceAll(d[n] as Entity[]).catch(() => undefined);
     if (isRates(d.rates)) this.rates.set(d.rates);
     return true;
   }

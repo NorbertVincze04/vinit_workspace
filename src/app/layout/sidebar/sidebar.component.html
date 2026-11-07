@@ -36,9 +36,9 @@
 </nav>
 
 <div class="foot">
-  <p class="save" [class.failed]="storage.writeFailed()" role="status">
+  <p class="save" [class.failed]="save().failed" [title]="save().detail" role="status">
     <span class="dot" aria-hidden="true"></span>
-    {{ storage.writeFailed() ? 'Not saved — export a backup' : 'Saved in this browser' }}
+    {{ save().text }}
   </p>
   <button
     type="button"

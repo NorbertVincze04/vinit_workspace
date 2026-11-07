@@ -1,6 +1,8 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { FileStorageService } from '../../../core/services/file-storage.service';
-import { persistedCollection } from '../../../core/utils/persisted-collection';
+import { apiCollection } from '../../../core/api/api-collection';
+import { FieldMap, field, fromApi } from '../../../core/api/api-fields';
+import { ApiService, apiError } from '../../../core/api/api.service';
 import { matchesSearch } from '../../../core/utils/text';
 import { ChipOption } from '../../../shared/ui';
 import { FILE_KINDS, FileFilters, MAX_FILE_BYTES, StoredFile, formatBytes, kindInfo, kindOf } from './files.model';
@@ -11,14 +13,18 @@ export interface UploadResult {
   failed: string[];
 }
 
-/**
- * Files tool state. The file list is saved in localStorage under "vinit.appendices.v1"
- * (the tool's original name — kept so existing uploads stay visible), the bytes in IndexedDB.
- */
+const FILE_FIELDS: FieldMap<StoredFile> = {
+  name: field.text(),
+  type: field.text('mime'),
+  size: field.int('sizeBytes'),
+  kind: field.text(),
+};
+
+/** Files tool state. Files are stored on the server (in Postgres), so every device sees them. */
 @Injectable({ providedIn: 'root' })
 export class FilesStore {
-  private readonly collection = persistedCollection<StoredFile>('appendices.v1', 'a');
-  private readonly blobs = inject(FileStorageService);
+  private readonly collection = apiCollection<StoredFile>('/files', FILE_FIELDS, 'a');
+  private readonly api = inject(ApiService);
 
   readonly items = this.collection.items;
   readonly filters = signal<FileFilters>({ q: '', kind: 'all' });
@@ -44,10 +50,6 @@ export class FilesStore {
       .sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
   });
 
-  constructor() {
-    void this.removeOrphans();
-  }
-
   setFilters(patch: Partial<FileFilters>): void {
     this.filters.update((f) => ({ ...f, ...patch }));
   }
@@ -66,10 +68,10 @@ export class FilesStore {
         } else if (file.size > MAX_FILE_BYTES) {
           result.failed.push(`${file.name}: larger than ${formatBytes(MAX_FILE_BYTES)}`);
         } else {
-          result.added.push(await this.save(file));
+          result.added.push(await this.send(file));
         }
-      } catch {
-        result.failed.push(`${file.name}: the browser's storage is full or blocked`);
+      } catch (error) {
+        result.failed.push(`${file.name}: ${apiError(error).message}`);
       } finally {
         this.uploading.update((n) => n - 1);
       }
@@ -77,40 +79,36 @@ export class FilesStore {
     return result;
   }
 
-  /** The stored bytes, or null when they are missing from this browser. */
+  /**
+   * Uploads one file. `keep` preserves the id and date of a file moved from this browser's
+   * old storage (see LocalDataService).
+   */
+  async send(file: Blob, keep?: { id: string; name: string; createdAt: string }): Promise<StoredFile> {
+    const form = new FormData();
+    const name = keep?.name ?? (file as File).name ?? 'file';
+    form.append('name', name);
+    if (keep) {
+      form.append('id', keep.id);
+      if (keep.createdAt) form.append('createdAt', keep.createdAt);
+    }
+    form.append('file', file, name);
+    const res = await this.api.write<{ item: Record<string, unknown> }>('POST', '/files', form);
+    const item = fromApi<StoredFile>(FILE_FIELDS, res.item);
+    this.collection.setLocal((items) => [...items.filter((x) => x.id !== item.id), item]);
+    return item;
+  }
+
+  /** The file's bytes, or null when they cannot be downloaded. */
   async blob(item: StoredFile): Promise<Blob | null> {
     try {
-      return await this.blobs.get(item.id);
-    } catch {
+      return await this.api.getBlob(`/files/${encodeURIComponent(item.id)}/download`);
+    } catch (error) {
+      if (error instanceof HttpErrorResponse && error.status === 404) void this.collection.reload();
       return null;
     }
   }
 
   async remove(item: StoredFile): Promise<void> {
     this.collection.remove(item.id);
-    await this.blobs.delete(item.id).catch(() => undefined);
-  }
-
-  private async save(file: File): Promise<StoredFile> {
-    // If the bytes can't be stored, the record is removed again so the list never shows a broken file.
-    const item = this.collection.add({ name: file.name, type: file.type, size: file.size, kind: kindOf(file.name, file.type) });
-    try {
-      await this.blobs.put(item.id, file);
-      return item;
-    } catch (error) {
-      this.collection.remove(item.id);
-      throw error;
-    }
-  }
-
-  /** Drops stored bytes whose record was deleted (e.g. site data partly cleared). */
-  private async removeOrphans(): Promise<void> {
-    try {
-      const stored = await this.blobs.keys();
-      const known = new Set(this.items().map((f) => f.id));
-      await Promise.all(stored.filter((id) => !known.has(id)).map((id) => this.blobs.delete(id)));
-    } catch {
-      /* storage unavailable: nothing to clean */
-    }
   }
 }

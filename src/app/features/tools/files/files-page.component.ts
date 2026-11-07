@@ -72,7 +72,7 @@ export class FilesPageComponent {
     if (blob) {
       downloadBlob(blob, item.name);
     } else {
-      this.toast.show(`${item.name} is no longer stored in this browser. Delete it and upload it again.`, 6000);
+      this.toast.show(`${item.name} could not be downloaded. Check that the server is running, or upload it again.`, 6000);
     }
   }
 

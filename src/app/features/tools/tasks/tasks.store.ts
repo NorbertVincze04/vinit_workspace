@@ -1,4 +1,4 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
 import { PHASES } from '../../../core/data/phases.data';
 import { PhaseId, PhaseProgress } from '../../../core/models';
 import { PlanCalendarService } from '../../../core/services/plan-calendar.service';
@@ -6,9 +6,11 @@ import { isMonthKey } from '../../../core/utils/date';
 import { percent } from '../../../core/utils/format';
 import { matchesSearch } from '../../../core/utils/text';
 import { uid } from '../../../core/utils/id';
-import { persistedSignal } from '../../../core/utils/persisted-signal';
+import { apiCollection } from '../../../core/api/api-collection';
+import { FieldMap, field } from '../../../core/api/api-fields';
 import { SelectOption } from '../../../shared/ui';
 import {
+  Goal,
   GoalStat,
   NO_GOAL,
   Task,
@@ -23,19 +25,49 @@ import { TASKS_SEED } from './tasks.seed';
 
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
 
+const GOAL_FIELDS: FieldMap<Goal> = { name: field.text(), target: field.text() };
+
+/** Task model ⇄ API: `due` is the plan month (dueMonth), `goal` the goal id ('' = none). */
+const TASK_FIELDS: FieldMap<Task> = {
+  text: field.text(),
+  goal: field.ref('goalId'),
+  owner: field.text(),
+  prio: field.text(),
+  due: field.int('dueMonth'),
+  phase: field.text(),
+  done: field.bool(),
+  notes: field.text(),
+};
+
 /**
  * State + derived views for the Tasks tool.
- * Saved in localStorage under "vinit.tasks.v1"; filters are session-only.
+ * Goals and tasks are saved on the server (/api/v1/goals, /api/v1/tasks); filters are session-only.
+ * An empty workspace starts with the Year-1 worksheet (TASKS_SEED), like the first visit did before.
  * The plan start month lives in the shared PlanCalendarService.
  */
 @Injectable({ providedIn: 'root' })
 export class TasksStore {
   private readonly plan = inject(PlanCalendarService);
-  private readonly state = persistedSignal<TasksState>('tasks.v1', () => clone(TASKS_SEED), {
-    validate: isTasksState,
-  });
+  private readonly goalList = apiCollection<Goal>('/goals', GOAL_FIELDS, 'g');
+  private readonly taskList = apiCollection<Task>('/tasks', TASK_FIELDS, 't');
+  private readonly state = computed<TasksState>(() => ({ goals: [...this.goalList.items()], tasks: [...this.taskList.items()] }));
+  /** True once goals and tasks have been loaded from the server. */
+  readonly loaded = computed(() => this.goalList.loaded() && this.taskList.loaded());
 
   readonly filters = signal<TaskFilters>({ q: '', goal: '', owner: '', hideDone: false });
+
+  constructor() {
+    // A brand-new workspace (successfully loaded, no goals and no tasks) gets the Year-1 worksheet.
+    let seeded = false;
+    effect(
+      () => {
+        if (seeded || !this.loaded()) return;
+        seeded = true;
+        if (!this.goalList.items().length && !this.taskList.items().length) untracked(() => this.reset());
+      },
+      { allowSignalWrites: true },
+    );
+  }
 
   readonly goals = computed(() => this.state().goals);
   readonly start = this.plan.start.asReadonly();
@@ -125,7 +157,7 @@ export class TasksStore {
   addTask(phaseId: PhaseId): string {
     const phase = PHASES.find((p) => p.id === phaseId) ?? PHASES[0];
     const f = this.filters();
-    const task: Task = {
+    const task = this.taskList.add({
       id: uid('t'),
       text: '',
       goal: f.goal && f.goal !== NO_GOAL ? f.goal : '',
@@ -135,42 +167,32 @@ export class TasksStore {
       phase: phase.id,
       done: false,
       notes: '',
-    };
-    this.state.update((s) => ({ ...s, tasks: [...s.tasks, task] }));
+    });
     return task.id;
   }
 
   updateTask(id: string, patch: TaskPatch): void {
-    this.state.update((s) => ({
-      ...s,
-      tasks: s.tasks.map((t) => (t.id === id ? { ...t, ...patch } : t)),
-    }));
+    this.taskList.update(id, patch);
   }
 
   deleteTask(id: string): void {
-    this.state.update((s) => ({ ...s, tasks: s.tasks.filter((t) => t.id !== id) }));
+    this.taskList.remove(id);
   }
 
   // ---- Goals ----
 
   addGoal(): void {
-    this.state.update((s) => ({ ...s, goals: [...s.goals, { id: uid('g'), name: 'New goal', target: '' }] }));
+    this.goalList.add({ id: uid('g'), name: 'New goal', target: '' });
   }
 
   updateGoal(id: string, patch: Partial<{ name: string; target: string }>): void {
-    this.state.update((s) => ({
-      ...s,
-      goals: s.goals.map((g) => (g.id === id ? { ...g, ...patch } : g)),
-    }));
+    this.goalList.update(id, patch);
   }
 
-  /** Removes a goal; its tasks become "No goal". */
+  /** Removes a goal; its tasks become "No goal" (the server unlinks them too). */
   deleteGoal(id: string): void {
-    this.state.update((s) => ({
-      ...s,
-      goals: s.goals.filter((g) => g.id !== id),
-      tasks: s.tasks.map((t) => (t.goal === id ? { ...t, goal: '' } : t)),
-    }));
+    this.goalList.remove(id);
+    this.taskList.setLocal((tasks) => tasks.map((t) => (t.goal === id ? { ...t, goal: '' } : t)));
     if (this.filters().goal === id) this.setFilters({ goal: '' });
   }
 
@@ -193,15 +215,21 @@ export class TasksStore {
   /** Replaces everything with a backup. Returns false if the data is not a valid backup. */
   importState(data: unknown): boolean {
     if (!isTasksState(data)) return false;
-    const { start, ...rest } = clone(data);
-    this.state.set(rest);
+    const { start, goals, tasks } = clone(data);
+    this.replace(goals, tasks);
     if (isMonthKey(start)) this.plan.setStart(start);
     return true;
   }
 
   reset(): void {
-    const { start: _start, ...seed } = clone(TASKS_SEED);
-    this.state.set(seed);
+    const { goals, tasks } = clone(TASKS_SEED);
+    this.replace(goals, tasks);
+  }
+
+  /** Goals first, so the tasks' goal links exist when the tasks arrive (writes stay in order). */
+  private replace(goals: Goal[], tasks: Task[]): void {
+    void this.goalList.replaceAll(goals).catch(() => undefined);
+    void this.taskList.replaceAll(tasks).catch(() => undefined);
   }
 
   // ---- helpers ----

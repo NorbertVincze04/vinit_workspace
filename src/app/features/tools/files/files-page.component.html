@@ -1,4 +1,4 @@
-<app-page-header title="Files" description="Shared documents for the team. Files stay in this browser.">
+<app-page-header title="Files" description="Shared documents for the team, stored on the VINIT server.">
   <div pageActions>
     <button appButton variant="primary" type="button" [disabled]="store.uploading() > 0" (click)="zone.open()">
       Upload files
@@ -59,7 +59,7 @@
 @if (deleting(); as item) {
   <app-confirm-dialog
     heading="Delete file?"
-    [message]="'“' + item.name + '” will be removed for everyone using this browser. This can’t be undone.'"
+    [message]="'“' + item.name + '” will be removed for the whole team. This can’t be undone.'"
     cancelLabel="Keep file"
     (confirmed)="confirmDelete(item)"
     (closed)="deleting.set(null)"

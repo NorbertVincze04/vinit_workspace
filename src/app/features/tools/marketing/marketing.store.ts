@@ -1,7 +1,8 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { EntityData } from '../../../core/models';
 import { percent } from '../../../core/utils/format';
-import { persistedCollection } from '../../../core/utils/persisted-collection';
+import { apiCollection } from '../../../core/api/api-collection';
+import { FieldMap, field } from '../../../core/api/api-fields';
 import { matchesSearch } from '../../../core/utils/text';
 import { ChipOption } from '../../../shared/ui';
 import { MIX, MONTH_PLAN, PLANNED_APPEARANCES, POST_STATUSES } from './marketing.data';
@@ -9,10 +10,30 @@ import { MixShare, MonthStats, Post, PostFilters, PostGroup, PostStatus } from '
 
 const appearances = (p: Post): number => (Number(p.count) > 0 ? Number(p.count) : 1);
 
-/** Marketing plan state. Saved in localStorage under "vinit.marketing.v1". */
+/** How a post maps to the API (money in bani, empty date = null). */
+const POST_FIELDS: FieldMap<Post> = {
+  title: field.text(),
+  month: field.int(),
+  week: field.int(),
+  date: field.date(),
+  format: field.text(),
+  mix: field.text(),
+  platforms: field.list(),
+  count: field.int(),
+  budget: field.money('budgetBani'),
+  status: field.text(),
+  caption: field.text(),
+  visual: field.text(),
+  cta: field.text(),
+  keywords: field.text(),
+  hashtags: field.text(),
+  notes: field.text(),
+};
+
+/** Marketing plan state, saved on the server (/api/v1/marketing/posts). */
 @Injectable({ providedIn: 'root' })
 export class MarketingStore {
-  private readonly collection = persistedCollection<Post>('marketing.v1', 'p');
+  private readonly collection = apiCollection<Post>('/marketing/posts', POST_FIELDS, 'p');
 
   readonly posts = this.collection.items;
   readonly filters = signal<PostFilters>({ q: '', status: 'all', format: 'all', month: 0 });
@@ -108,7 +129,7 @@ export class MarketingStore {
   importState(data: unknown): boolean {
     const list = (data as { posts?: unknown } | null)?.posts;
     if (!Array.isArray(list)) return false;
-    this.collection.replaceAll(list as Post[]);
+    void this.collection.replaceAll(list as Post[]).catch(() => undefined);
     return true;
   }
 
