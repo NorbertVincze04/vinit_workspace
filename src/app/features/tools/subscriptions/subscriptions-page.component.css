@@ -1,0 +1,38 @@
+:host {
+  display: block;
+}
+
+.band {
+  display: block;
+  margin-bottom: 16px;
+}
+.band ::ng-deep .card,
+.band {
+  min-width: 0;
+}
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 36px;
+  margin-bottom: 16px;
+}
+.be {
+  display: grid;
+  gap: 9px;
+}
+.be-top {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 13.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.warnings {
+  margin-bottom: 16px;
+}
+
+.tab-body {
+  margin-top: 16px;
+}

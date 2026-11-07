@@ -53,6 +53,9 @@ import {
 } from '../salons.model';
 import { SalonsStore } from '../salons.store';
 import { kindLabel, sourceLabel, stageInfo } from '../../leads/leads.model';
+import { SalonBilling } from '../../subscriptions/billing.model';
+import { BillingDialogsComponent, BillingRequest } from '../../subscriptions/components/billing-dialogs/billing-dialogs.component';
+import { SalonBillingComponent } from './salon-billing.component';
 
 interface SalonLead {
   id: string;
@@ -93,6 +96,8 @@ type Dialog =
     EmptyStateComponent,
     FormDialogComponent,
     ConfirmDialogComponent,
+    SalonBillingComponent,
+    BillingDialogsComponent,
   ],
   templateUrl: './salon-detail-page.component.html',
   styleUrl: './salon-detail-page.component.css',
@@ -113,6 +118,8 @@ export class SalonDetailPageComponent {
   protected readonly timeline = signal<TimelineEntry[] | null>(null);
   protected readonly tab = signal('overview');
   protected readonly dialog = signal<Dialog | null>(null);
+  protected readonly billingRequest = signal<BillingRequest | null>(null);
+  protected readonly billing = computed(() => (this.data()?.['billing'] as SalonBilling | undefined) ?? null);
   protected readonly deleting = signal<'salon' | SalonDomain | null>(null);
 
   protected readonly salon = computed<Salon | null>(() => {
@@ -133,6 +140,7 @@ export class SalonDetailPageComponent {
 
   protected readonly tabs = computed<ChipOption[]>(() => [
     { value: 'overview', label: 'Overview' },
+    { value: 'billing', label: 'Subscription & payments', count: this.billing()?.payments.filter((p) => p['status'] === 'due').length || undefined },
     { value: 'timeline', label: 'Timeline' },
   ]);
 

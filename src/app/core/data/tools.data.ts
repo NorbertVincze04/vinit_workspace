@@ -27,6 +27,13 @@ export const TOOLS: readonly ToolDefinition[] = [
     route: '/tools/salons',
   },
   {
+    id: 'subscriptions',
+    title: 'Subscriptions',
+    description: 'MRR, plans, Early Bird trials and payments to collect.',
+    icon: 'repeat',
+    route: '/tools/subscriptions',
+  },
+  {
     id: 'clients',
     title: 'Clients',
     description: 'The people and companies that pay, one salon each.',

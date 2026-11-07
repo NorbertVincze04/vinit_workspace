@@ -49,7 +49,7 @@ export function promotionsRouter(): Router {
   const router = Router();
 
   router.get('/', async (_req, res) => {
-    res.json({ items: await promotionRows(db).orderBy('pr.createdAt').orderBy('pr.code') });
+    res.json({ items: await promotionRows(db).orderByRaw("coalesce(array_position(array['early_bird','beta','referral','discount_50'], pr.code), 99)").orderBy('pr.createdAt') });
   });
 
   router.post('/', async (req, res) => {

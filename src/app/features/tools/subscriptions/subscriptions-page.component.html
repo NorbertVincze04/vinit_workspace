@@ -1,0 +1,106 @@
+<app-page-header title="Subscriptions" description="Who pays what, MRR, payments to collect and what needs attention.">
+  <div pageActions>
+    <app-menu ariaLabel="More billing actions">
+      <button appMenuItem type="button" (click)="generate(thisMonth)">Create payments for {{ monthName(thisMonth) }}</button>
+      <button appMenuItem type="button" (click)="generate(nextMonth)">Create payments for {{ monthName(nextMonth) }}</button>
+      <button appMenuItem type="button" (click)="request.set({ kind: 'payment' })">Add a payment…</button>
+    </app-menu>
+    <button appButton variant="primary" type="button" (click)="request.set({ kind: 'start' })">
+      <app-icon name="plus" [size]="16" /> New subscription
+    </button>
+  </div>
+</app-page-header>
+
+<app-card class="band">
+  <div class="stats">
+    <app-stat label="MRR" [value]="format(store.mrr())" [hint]="'goal ' + format(goal)" />
+    <app-stat label="Paying salons" [value]="'' + store.paying()" />
+    <app-stat label="On trial" [value]="'' + store.trialing()" />
+    <app-stat
+      label="Overdue"
+      [value]="format(store.overdueTotal())"
+      [tone]="store.overdueTotal() ? 'negative' : 'default'"
+      [hint]="store.overdue().length + ' payments'"
+    />
+    @if (plans.earlyBirdLeft() !== null) {
+      <app-stat label="Early Bird places left" [value]="'' + plans.earlyBirdLeft()" [hint]="'of ' + (plans.earlyBird()?.maxSalons ?? 50)" />
+    }
+  </div>
+  <div class="be">
+    <div class="be-top">
+      <span class="eyebrow">MRR vs. monthly costs</span>
+      <span>{{ store.mrr() | ron }} of {{ costs | ron }}</span>
+    </div>
+    <app-meter [value]="costsPercent()" [label]="'MRR ' + format(store.mrr()) + ' of ' + format(costs) + ' monthly costs'" />
+  </div>
+</app-card>
+
+@if (store.warnings().length) {
+  <app-panel class="warnings" heading="Needs attention" [meta]="store.warnings().length + ''">
+    <app-billing-warnings [warnings]="store.warnings()" />
+  </app-panel>
+}
+
+<app-tabs label="Billing sections" [options]="tabs()" [(value)]="tab" />
+
+<div class="tab-body">
+  @switch (tab()) {
+    @case ('subscriptions') {
+      <div class="toolbar">
+        <app-chip-group label="Filter subscriptions" [options]="subChips()" [(value)]="subFilter" />
+      </div>
+      @if (!store.loaded()) {
+        <app-empty-state heading="Loading…" text="Reading subscriptions from the VINIT server." />
+      } @else if (!visibleSubs().length) {
+        <app-empty-state
+          heading="No subscriptions here"
+          text="Start one for a salon: pick the plan and the promotion (Early Bird gives 3 free months)."
+        >
+          <button appButton variant="primary" type="button" (click)="request.set({ kind: 'start' })">New subscription</button>
+        </app-empty-state>
+      } @else {
+        <app-ledger
+          [headers]="['Salon', 'Price', 'Status', 'Dates', '']"
+          [numeric]="[1]"
+          columns="minmax(0, 1.8fr) 110px 110px minmax(0, 1.2fr) auto"
+        >
+          @for (s of visibleSubs(); track s.id) {
+            <app-subscription-row [sub]="s" (change)="onChange(s, $event)" />
+          }
+        </app-ledger>
+      }
+    }
+    @case ('payments') {
+      <div class="toolbar">
+        <app-chip-group label="Filter payments" [options]="payChips()" [(value)]="payFilter" />
+      </div>
+      @if (!visiblePayments().length) {
+        <app-empty-state
+          heading="No payments here"
+          [text]="'Use ⋯ › Create payments for ' + monthName(thisMonth) + ' to add the month’s subscription payments.'"
+        >
+          <button appButton type="button" (click)="generate(thisMonth)">Create payments for {{ monthName(thisMonth) }}</button>
+        </app-empty-state>
+      } @else {
+        <app-ledger
+          [headers]="['Salon', 'Amount', 'Due', 'Status', '']"
+          [numeric]="[1]"
+          columns="minmax(0, 1.8fr) 110px 130px 100px auto"
+        >
+          @for (p of visiblePayments(); track p.id) {
+            <app-payment-row [payment]="p" (act)="onPayment(p, $event)" />
+          }
+        </app-ledger>
+      }
+    }
+    @case ('mrr') {
+      <app-panel heading="MRR at the end of each month" meta="last 12 months, rebuilt from every subscription change">
+        @if (mrrGroups().length) {
+          <app-bar-chart [series]="series" [groups]="mrrGroups()" ariaLabel="MRR by month" />
+        }
+      </app-panel>
+    }
+  }
+</div>
+
+<app-billing-dialogs [request]="request()" (done)="request.set(null)" />

@@ -6,8 +6,8 @@ import { StatTone } from '../../../../shared/ui';
 import { FinancesStore } from '../../../tools/finances/finances.store';
 import { MarketingStore } from '../../../tools/marketing/marketing.store';
 import { RoadmapStore } from '../../../tools/roadmap/roadmap.store';
-import { PlansStore } from '../../../tools/salons/plans.store';
 import { SalonsStore } from '../../../tools/salons/salons.store';
+import { BillingStore } from '../../../tools/subscriptions/billing.store';
 import { TasksStore } from '../../../tools/tasks/tasks.store';
 
 interface Kpi {
@@ -52,18 +52,13 @@ export class StatusGridComponent {
   private readonly roadmap = inject(RoadmapStore);
   private readonly tasks = inject(TasksStore);
   private readonly salons = inject(SalonsStore);
-  private readonly plans = inject(PlansStore);
-
-  /** Until subscriptions exist: the plan price of each active salon. */
-  private readonly mrr = computed(() =>
-    this.salons.active().reduce((sum, s) => sum + (this.plans.plan(s.planId)?.monthlyPrice ?? 0), 0),
-  );
+  private readonly billing = inject(BillingStore);
   private readonly finances = inject(FinancesStore);
   private readonly marketing = inject(MarketingStore);
 
   protected readonly kpis = computed<Kpi[]>(() => {
     const active = this.salons.active().length;
-    const mrr = this.mrr();
+    const mrr = this.billing.mrr();
     const costsPercent = percent(mrr, FINANCE.monthlyCosts);
     const goal = FINANCE.year1Salons;
     const business = this.finances.businessThisMonth();
@@ -91,7 +86,7 @@ export class StatusGridComponent {
         value: formatRon(mrr),
         hint: `${costsPercent}% of ${formatRon(FINANCE.monthlyCosts)} costs`,
         percent: costsPercent,
-        route: '/tools/salons',
+        route: '/tools/subscriptions',
       }),
       kpi({
         label: 'Business result this month',
