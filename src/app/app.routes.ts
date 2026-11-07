@@ -82,6 +82,16 @@ export const routes: Routes = [
         loadComponent: () => import('./features/tools/calendar/calendar-page.component').then((m) => m.CalendarPageComponent),
       },
       {
+        path: 'tools/wiki',
+        title: 'Wiki · VINIT Workspace',
+        loadComponent: () => import('./features/tools/wiki/wiki-page.component').then((m) => m.WikiPageComponent),
+      },
+      {
+        path: 'tools/wiki/:slug',
+        title: 'Wiki · VINIT Workspace',
+        loadComponent: () => import('./features/tools/wiki/wiki-article.component').then((m) => m.WikiArticleComponent),
+      },
+      {
         path: 'tools/clients',
         title: 'Clients · VINIT Workspace',
         loadComponent: () =>

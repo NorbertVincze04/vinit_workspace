@@ -15,6 +15,7 @@ import { onboardingRouter, salonOnboardingRouter } from './modules/onboarding/on
 import { supportRouter } from './modules/support/support.routes.js';
 import { contractsRouter } from './modules/contracts/contracts.routes.js';
 import { deadlinesRouter } from './modules/deadlines/deadlines.routes.js';
+import { wikiRouter } from './modules/wiki/wiki.routes.js';
 import { featuresRouter } from './modules/features/features.routes.js';
 import { kpisRouter } from './modules/kpis/kpis.routes.js';
 import { leadsRouter } from './modules/leads/leads.routes.js';
@@ -74,6 +75,7 @@ export function createApp(): express.Express {
   secured.use(featuresRouter());
   secured.use('/contracts', contractsRouter());
   secured.use('/deadlines', deadlinesRouter());
+  secured.use('/wiki', wikiRouter());
   api.use(secured);
 
   app.use('/api/v1', api);

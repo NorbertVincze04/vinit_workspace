@@ -76,6 +76,13 @@ export const TOOLS: readonly ToolDefinition[] = [
     route: '/tools/calendar',
   },
   {
+    id: 'wiki',
+    title: 'Wiki',
+    description: 'How-tos and SOPs: onboarding, deploys, JSON config, backups, sales.',
+    icon: 'book',
+    route: '/tools/wiki',
+  },
+  {
     id: 'clients',
     title: 'Clients',
     description: 'The people and companies that pay, one salon each.',
