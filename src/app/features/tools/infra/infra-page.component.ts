@@ -26,6 +26,7 @@ import { SalonsStore } from '../salons/salons.store';
 import { ToastService } from '../../../core/services/toast.service';
 import { BackupCheck, InfraService, SmsUsage, backupTone, optionalAmount, parseOptionalAmount, serviceBody, serviceCategory, serviceFields } from './infra.model';
 import { InfraStore } from './infra.store';
+import { IntegrationsPanelComponent } from './integrations-panel.component';
 
 type Dialog =
   | { kind: 'service'; item: InfraService | null; fields: FieldDef[]; values: FormValues }
@@ -49,6 +50,7 @@ type Dialog =
     EmptyStateComponent,
     FormDialogComponent,
     ConfirmDialogComponent,
+    IntegrationsPanelComponent,
   ],
   templateUrl: './infra-page.component.html',
   styles: `

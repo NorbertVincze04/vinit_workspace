@@ -41,6 +41,11 @@ months, deadlines generated from the data, and notifications (late payments, tri
 follow-ups, urgent tickets, deadline reminders, SMS budget, backups). Each person sees theirs under the bell (lead
 follow-ups and assigned tickets only go to their owner). Nothing is missed when the PC was off: it catches up on start.
 
+**Integrations** (Infra page → Integrations): credentials go only in `.env` (`api/.env` for `npm run dev`, the repo-root
+`.env` for Docker), never in the database, and the app never shows their values. The uptime checker is built in.
+SmartBill / Oblio invoices, UptimeRobot and the booking-platform link are stubs behind interfaces in
+`api/src/integrations/integrations.ts`: the panel shows what each one needs. See `.env.example` for the variable names.
+
 Security notes: the app is served over plain http on your home network, so only use it on networks you trust. The
 database port is only reachable from the PC itself. Passwords are bcrypt-hashed; sessions are httpOnly cookies.
 
@@ -93,6 +98,7 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 | Activity | `GET /activity?area=&userId=&salonId=&before=&limit=` → {items, next} (newest first; `next` is the cursor for older entries) |
 | Notifications | `GET /notifications` (own; brings them up to date first), `GET /notifications/count`, `POST /notifications/:id/read`, `POST /notifications/:id/dismiss`, `POST /notifications/read-all`, `POST /notifications/refresh` |
 | Search | `GET /search?q=` → salons, clients, leads, tickets (`T-12`), contracts, feature requests, wiki pages (every word must match; accents ignored) |
+| Integrations | `GET /integrations/status` (variable names only, never values), `POST /integrations/uptime/check`, `POST /integrations/invoices` {paymentId} (409 when no provider, 501 while the provider is a stub) |
 | Import | `POST /import/legacy-clients` {records} (old browser Clients list → leads / salons; skips records moved before) |
 | Plans, promotions | `GET /plans`, `PATCH /plans/:id`, `GET/POST /promotions`, `PATCH /promotions/:id` (seeded by the migrations) |
 

@@ -39,6 +39,19 @@ services:
       COOKIE_SECURE: "false"
       # nginx (the web service) is the one proxy in front of the API.
       TRUST_PROXY: "1"
+      # Integrations (optional, from .env; empty = not configured).
+      INVOICE_PROVIDER: ${INVOICE_PROVIDER:-}
+      SMARTBILL_EMAIL: ${SMARTBILL_EMAIL:-}
+      SMARTBILL_TOKEN: ${SMARTBILL_TOKEN:-}
+      SMARTBILL_CIF: ${SMARTBILL_CIF:-}
+      SMARTBILL_SERIES: ${SMARTBILL_SERIES:-}
+      OBLIO_EMAIL: ${OBLIO_EMAIL:-}
+      OBLIO_SECRET: ${OBLIO_SECRET:-}
+      OBLIO_CIF: ${OBLIO_CIF:-}
+      OBLIO_SERIES: ${OBLIO_SERIES:-}
+      UPTIMEROBOT_API_KEY: ${UPTIMEROBOT_API_KEY:-}
+      TENANT_PLATFORM_URL: ${TENANT_PLATFORM_URL:-}
+      TENANT_PLATFORM_TOKEN: ${TENANT_PLATFORM_TOKEN:-}
     depends_on:
       db:
         condition: service_healthy
