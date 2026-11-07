@@ -2,15 +2,73 @@
 
 Internal workspace for **VINIT SaaS Solutions SRL** (not for public use): one place where the team opens the tools
 they work with — tasks, clients, finances, marketing calendar, roadmap and shared files — plus an overview of what
-needs attention. Angular 18 (standalone components, signals). Runs locally; all data is saved in the browser
-(`localStorage` keys prefixed `vinit.`, files in IndexedDB). Each tool's **⋯** menu has **Export backup / Import backup**
-to keep a copy or move data to another device.
+needs attention. Angular 18 (standalone components, signals) + an Express/PostgreSQL API (`api/`), all running on
+your own PC with Docker. Sign-in is required (max 3 team accounts). See [PLAN.md](PLAN.md) for the salon-platform roadmap.
+
+## Run it (Docker, on your PC)
+
+First time:
 
 ```bash
-npm start        # dev server on http://localhost:4200
-npm run build    # production build in dist/
-npm test         # unit tests (Karma)
+cp .env.example .env            # then fill DB_PASSWORD and JWT_SECRET (random, see the file)
+docker compose up -d --build    # database + API + web app
+docker compose exec api node --import tsx src/scripts/create-user.ts --email you@vinit.ro --name "Your Name"
 ```
+
+Open **http://localhost:8080** and sign in. From a phone on the same Wi-Fi, open **http://&lt;your-PC-IP&gt;:8080**
+(find the IP with `ipconfig`; allow port 8080 if Windows Firewall asks).
+
+Every day: `docker compose up -d` to start, `docker compose stop` to stop. Data lives in the Docker volume `vinit_pgdata`
+and survives restarts and rebuilds. After pulling code changes: `docker compose up -d --build` (migrations run on start).
+
+| Task | Command |
+|---|---|
+| Add a team member (max 3) | `docker compose exec api node --import tsx src/scripts/create-user.ts --email … --name "…"` |
+| Reset a password | `docker compose exec api node --import tsx src/scripts/set-password.ts --email …` |
+| Back up the database | `npm run db:backup` → `backups/vinit-<date>.dump` (includes uploaded files; copy it somewhere safe) |
+| Restore a backup | `npm run db:restore -- backups/<file>.dump --yes` (replaces everything), then `docker compose restart api` |
+| Try with demo data | `npm --prefix api run db:seed:demo` → database `vinit_demo` (never the real `vinit` database) |
+
+**Moving your old browser data:** before the server existed, everything was saved in the browser. Open the Overview in
+the browser that has your latest data and click **Move to the server** (one time). Tasks, Finances, Marketing,
+Roadmap, settings and files are copied; nothing in the browser is deleted. **Clients** still saves in the browser until
+Phase 2 reshapes it into clients + salons.
+
+Security notes: the app is served over plain http on your home network, so only use it on networks you trust. The
+database port is only reachable from the PC itself. Passwords are bcrypt-hashed; sessions are httpOnly cookies.
+
+## Develop
+
+```bash
+docker compose up -d db          # only the database (127.0.0.1:5433)
+cp api/.env.example api/.env     # once: same DB_PASSWORD as .env, any JWT_SECRET ≥ 32 chars
+npm --prefix api install         # once
+npm run api                      # API on http://localhost:3000 (reloads on change)
+npm start                        # app on http://localhost:4200, /api is proxied to the API
+```
+
+Create a user for development with `npm --prefix api run user:create -- --email … --name "…"`.
+
+| Command | What it does |
+|---|---|
+| `npm test` | Angular unit tests (Karma) |
+| `npm run api:test` | API tests (Vitest + supertest) against the separate `vinit_test` database — the db container must run |
+| `npm --prefix api run typecheck` | Type-check the API |
+| `npm --prefix api run db:migrate` / `db:rollback` | Apply / undo migrations (`api/src/db/migrations`, listed in `index.ts`) |
+
+### API
+
+`/api/v1`, JSON, cookie session; every write needs the `X-Requested-With` header (the app adds it).
+Errors: `{ "error": { "code", "message", "fields"? } }`. Money is **integer bani** (`amountBani: 4999` = 49,99 RON);
+the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the app's models keep RON.
+
+| Area | Endpoints |
+|---|---|
+| Auth | `POST /auth/login`, `POST /auth/logout`, `GET /auth/me`, `POST /auth/password` |
+| Tools | `GET/POST /goals`, `/tasks`, `/finances/{accounts,holdings,recurring,transactions,budgets}`, `/marketing/posts`; `PATCH/DELETE …/:id`; `PUT …` replaces all (backup import) |
+| Roadmap | `GET /roadmap`, `PUT /roadmap/steps/:stepId`, `PUT /roadmap` |
+| Settings | `GET /settings`, `PUT /settings/:key` (`plan.start`, `finances.rates`, `roadmap.salons`) |
+| Files | `GET /files`, `POST /files` (multipart, ≤ 50 MB), `GET /files/:id/download`, `DELETE /files/:id` |
 
 ## Tools
 
@@ -24,9 +82,7 @@ npm test         # unit tests (Karma)
 | Roadmap | `/tools/roadmap` | Four phase checklists, paying-salon counter vs. break-even |
 | Files | `/tools/files` | Upload shared documents (PDF, PowerPoint, Excel, Word, images…), filter, download, delete |
 
-Files keeps the file list in `localStorage` (`vinit.appendices.v1` — the tool's former name, kept so existing uploads
-stay visible) and the bytes in IndexedDB (`FileStorageService`, database `vinit-files`), up to 50 MB per file.
-Replace `FileStorageService` with an API (e.g. object storage) to share files between people.
+Files are stored in PostgreSQL (metadata in `files`, bytes in `file_blobs`), up to 50 MB per file.
 `/tools/appendices` redirects to `/tools/files`.
 
 "Month 1" of the plan is shared by all tools (`PlanCalendarService`) and can be changed from Tasks or Marketing.
@@ -41,11 +97,14 @@ src/
     app.component         shell: sidebar (drawer on small screens), routed page, toasts
     layout/sidebar/       navigation built from the tools registry, theme switch, save status
     core/                 no UI — data, models, services, helpers
+      api/                ApiService (ordered write queue, save status), apiCollection(), remoteSetting(),
+                          field maps (api-fields.ts), interceptor (app header, expired session)
+      auth/               AuthService (signed-in user), authGuard / guestGuard
       data/               tools.data.ts (tool registry → sidebar + overview), finance.data.ts (plan numbers),
                           phases.data.ts (Build/Prove/Sell/Scale)
       models/             TypeScript interfaces (Entity = id/createdAt/updatedAt base)
-      services/           StorageService, FileStorageService (IndexedDB), ThemeService,
-                          PlanCalendarService (shared Month 1), ToastService
+      services/           StorageService (per-device prefs + Clients), ThemeService, ToastService,
+                          PlanCalendarService (shared Month 1), LocalDataService (one-time move of old browser data)
       utils/              persistedSignal(), persistedCollection(), date/format/text helpers, file (JSON/CSV)
     shared/
       ui/                 primitives: button, card, panel, badge, icon, checkbox, fields, grid, page-header,
@@ -56,10 +115,19 @@ src/
                           progress-summary
       pipes/ directives/  `ron` pipe, `appAutosize` textarea directive
     features/
-      dashboard/          overview page + components/ (status-grid, tool-tile, due-tasks, due-payments)
+      login/              sign-in page
+      dashboard/          overview page + components/ (status-grid, tool-tile, due-tasks, due-payments, local-data-banner)
       tools/<tool>/       <tool>-page.component, <tool>.store.ts, <tool>.model.ts, <tool>.data.ts,
                           <tool>.fields.ts (form definitions) and components/ used only by that tool
       not-found/
+api/                      Express 5 + Knex + PostgreSQL (see "Develop" above)
+  src/config.ts           env settings          src/app.ts        routes (public: health, auth; the rest needs a session)
+  src/db/                 knex (camelCase ⇄ snake_case), migrations/ (raw SQL, listed in index.ts)
+  src/lib/                resource.ts (generic CRUD + bulk replace + activity log), schemas.ts (zod field types)
+  src/modules/            auth, tools (table definitions), settings, roadmap, files
+  src/scripts/            migrate, create-user, set-password, seed-demo, backup/restore
+  tests/                  Vitest + supertest
+docker-compose.yml        db (Postgres 16) + api + web (nginx serving the build, proxying /api)
 ```
 
 ## Conventions
@@ -93,15 +161,20 @@ src/
 - Buttons are an attribute on native elements (`<button appButton>`, `<a appButton routerLink="…">`) so they keep
   their semantics.
 - Presentational components take `input()` and emit `output()`; pages (and Finances' tab panels) read the store.
-- Each tool keeps its state in a root `*Store` built on `persistedCollection()` / `persistedSignal()` — replace
-  `StorageService` with an API later without touching the components.
+- Each tool keeps its state in a root `*Store` built on `apiCollection()` / `remoteSetting()` (server) — same shape as
+  the older `persistedCollection()` / `persistedSignal()` (browser), so components never know where data lives.
+  Changes show instantly and are written in order; a failed write shows a toast and reloads from the server.
+- **Validate on both sides:** `FieldDef` rules in the form, zod schemas in the API (`api/src/lib/schemas.ts`), and
+  CHECK constraints in the database.
 - Colours, type and spacing come only from CSS variables in `styles/tokens.css` (accent `--main`, logo teal `#0E9899`,
   secondary `#35398C`), with dark mode. Chart colours (`--chart-1..3`) are validated for colour-blind separation.
 
 ## Adding a tool
 
-1. Create `features/tools/<name>/` with a page component and, if it saves data, a store using `persistedCollection()`
+1. API: add a migration (`api/src/db/migrations`, then list it in `index.ts`), a `ResourceDef` (fields as zod schemas)
+   mounted in `app.ts`, and tests in `api/tests`.
+2. Create `features/tools/<name>/` with a page component and a store using `apiCollection(path, FIELD_MAP)`
    (add `snapshot()` / `importState()` to get the backup menu for free).
-2. Add a lazy route in `app.routes.ts`.
-3. Add its entry in `core/data/tools.data.ts` — the sidebar and the overview launcher update automatically.
-4. Optional: add a figure for it in `features/dashboard/components/status-grid/status-grid.component.ts`.
+3. Add a lazy route inside the signed-in group in `app.routes.ts`.
+4. Add its entry in `core/data/tools.data.ts` — the sidebar and the overview launcher update automatically.
+5. Optional: add a figure for it in `features/dashboard/components/status-grid/status-grid.component.ts`.

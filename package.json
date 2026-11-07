@@ -6,7 +6,11 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "api": "npm --prefix api run dev",
+    "api:test": "npm --prefix api test",
+    "db:backup": "npm --prefix api run db:backup",
+    "db:restore": "npm --prefix api run db:restore --"
   },
   "private": true,
   "dependencies": {

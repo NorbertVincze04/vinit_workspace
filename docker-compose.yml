@@ -24,5 +24,32 @@ services:
       timeout: 3s
       retries: 20
 
+  api:
+    build: ./api
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: vinit
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: vinit
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      # Plain http on the home network; set to "true" only behind HTTPS.
+      COOKIE_SECURE: "false"
+      # nginx (the web service) is the one proxy in front of the API.
+      TRUST_PROXY: "1"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build: .
+    # Reachable from this PC (http://localhost:8080) and from phones on the same Wi-Fi (http://<pc-ip>:8080).
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
 volumes:
   pgdata:

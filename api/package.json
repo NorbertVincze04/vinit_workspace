@@ -11,11 +11,11 @@
     "test": "vitest run",
     "db:migrate": "tsx src/scripts/migrate.ts latest",
     "db:rollback": "tsx src/scripts/migrate.ts rollback",
-    "db:seed": "tsx src/scripts/seed.ts",
     "db:seed:demo": "tsx src/scripts/seed-demo.ts",
-    "db:backup": "tsx src/scripts/backup.ts",
+    "db:backup": "tsx src/scripts/backup.ts backup",
     "user:create": "tsx src/scripts/create-user.ts",
-    "user:password": "tsx src/scripts/set-password.ts"
+    "user:password": "tsx src/scripts/set-password.ts",
+    "db:restore": "tsx src/scripts/backup.ts restore"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

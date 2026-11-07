@@ -1,0 +1,11 @@
+.git
+.angular
+.vscode
+node_modules
+dist
+api
+backups
+docker/db-init
+.env
+*.docx
+*.md
