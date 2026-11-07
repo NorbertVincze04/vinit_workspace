@@ -44,7 +44,8 @@ const list = (v: unknown): unknown[] => (Array.isArray(v) ? v : []);
 /**
  * One-time move of the data saved in this browser (localStorage + IndexedDB files) to the server.
  * Uses each store's normal import, so the data goes through the same validation as a backup.
- * The browser copy is left in place (nothing is deleted), and Clients stays local until Phase 2.
+ * The browser copy is left in place (nothing is deleted). The old Clients list has its own move
+ * (LegacyClientsService), because its records become leads, salons and subscriptions.
  */
 @Injectable({ providedIn: 'root' })
 export class LocalDataService {

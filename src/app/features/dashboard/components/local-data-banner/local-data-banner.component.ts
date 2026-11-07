@@ -19,7 +19,7 @@ const count = (n: number, one: string, many = one + 's'): string => (n ? `${n} $
       <app-panel heading="Data saved in this browser" [meta]="parts()">
         <p>
           Before the server existed, this browser kept your workspace data. Move it to the server once, so it is
-          available on every device. Clients stay in this browser until the new Salons module.
+          available on every device. The old Clients list is moved separately (below).
         </p>
         <div class="actions">
           <button appButton variant="primary" type="button" [disabled]="busy()" (click)="confirming.set(true)">

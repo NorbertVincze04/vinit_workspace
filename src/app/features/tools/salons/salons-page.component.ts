@@ -16,6 +16,7 @@ import {
   TextFieldComponent,
 } from '../../../shared/ui';
 import { ClientsStore } from '../clients/clients.store';
+import { LegacyClientsBannerComponent } from './components/legacy-clients-banner/legacy-clients-banner.component';
 import { SalonRowComponent } from './components/salon-row/salon-row.component';
 import { PlansStore } from './plans.store';
 import { newSalonBody, newSalonFields } from './salons.fields';
@@ -37,6 +38,7 @@ import { SalonsStore } from './salons.store';
     EmptyStateComponent,
     FormDialogComponent,
     SalonRowComponent,
+    LegacyClientsBannerComponent,
   ],
   templateUrl: './salons-page.component.html',
   styles: '.summary { display: flex; margin-bottom: 12px; }',

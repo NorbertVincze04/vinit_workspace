@@ -32,7 +32,9 @@ and survives restarts and rebuilds. After pulling code changes: `docker compose 
 **Moving your old browser data:** before the server existed, everything was saved in the browser. Open the Overview in
 the browser that has your latest data and click **Move to the server** (one time). Tasks, Finances, Marketing,
 Roadmap, settings and files are copied; nothing in the browser is deleted. Records from the old browser **Clients** tool
-are moved separately (see the Salons page) because they become clients, salons, leads and subscriptions.
+have their own **Move clients to the server** button (Overview and Salons): leads and demos become Leads; beta, active
+and paused become a salon with its client and subscription. Then add each client's business address (Clients › Address
+missing), since the old list had none.
 
 Security notes: the app is served over plain http on your home network, so only use it on networks you trust. The
 database port is only reachable from the PC itself. Passwords are bcrypt-hashed; sessions are httpOnly cookies.
@@ -77,6 +79,7 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 | Onboarding | `POST /salons/:id/onboarding`, `GET /onboardings?open=`, `GET/PATCH/DELETE /onboardings/:id`, `POST /onboardings/:id/steps`, `POST /onboardings/:id/go-live`, `PATCH/DELETE /onboarding-steps/:id`, `GET/PUT /onboarding-template` |
 | Support | `GET/POST /tickets`, `GET/PATCH/DELETE /tickets/:id`, `GET/POST /time-entries`, `PATCH/DELETE /time-entries/:id`, `GET /salons/:id/sessions`, `POST /salons/:id/bill-extra-work` |
 | Team | `GET /users` (names for pickers) |
+| Import | `POST /import/legacy-clients` {records} (old browser Clients list → leads / salons; skips records moved before) |
 | Plans, promotions | `GET /plans`, `PATCH /plans/:id`, `GET/POST /promotions`, `PATCH /promotions/:id` (seeded by the migrations) |
 
 ## Tools

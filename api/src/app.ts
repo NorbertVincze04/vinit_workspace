@@ -14,6 +14,7 @@ import { metricsRouter, paymentsRouter, salonSubscriptionsRouter, subscriptionsR
 import { onboardingRouter, salonOnboardingRouter } from './modules/onboarding/onboarding.routes.js';
 import { supportRouter } from './modules/support/support.routes.js';
 import { leadsRouter } from './modules/leads/leads.routes.js';
+import { legacyImportRouter } from './modules/salons/legacy-import.routes.js';
 import { clientsRouter } from './modules/salons/clients.routes.js';
 import { plansRouter, promotionsRouter } from './modules/salons/plans.routes.js';
 import { domainsRouter, salonsRouter } from './modules/salons/salons.routes.js';
@@ -64,6 +65,7 @@ export function createApp(): express.Express {
   secured.use('/salons/:id/onboarding', salonOnboardingRouter());
   secured.use(onboardingRouter());
   secured.use(supportRouter());
+  secured.use('/import', legacyImportRouter());
   api.use(secured);
 
   app.use('/api/v1', api);
