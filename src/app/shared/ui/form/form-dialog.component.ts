@@ -52,6 +52,8 @@ export class FormDialogComponent implements OnInit {
   protected readonly formId = uid('form-');
   protected readonly values = signal<FormValues>({});
   protected readonly error = signal('');
+  /** Something was typed or picked since the form opened. */
+  protected readonly dirty = signal(false);
   protected readonly visibleFields = computed(() =>
     this.fields().filter((f) => !f.show || f.show(this.values())),
   );
@@ -116,6 +118,7 @@ export class FormDialogComponent implements OnInit {
     let next: FormValues = { ...this.values(), [f.key]: value };
     if (f.onChange) next = { ...next, ...(f.onChange(next) as FormValues) };
     this.values.set(next);
+    this.dirty.set(true);
   }
 
   // ---- submit ----

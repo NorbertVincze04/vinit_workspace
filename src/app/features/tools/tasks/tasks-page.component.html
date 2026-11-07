@@ -22,6 +22,9 @@
 <div class="phases">
   @for (column of store.columns(); track column.phase.id) {
     <app-phase-card [phase]="column.phase" [done]="column.done" [total]="column.total" unit="tasks" [current]="column.current">
+      <button appButton variant="ghost" size="sm" class="add" type="button" (click)="addTask(column.phase.id)">
+        <app-icon name="plus" [size]="16" /> Add task
+      </button>
       @if (column.visible.length) {
         <ul class="tasks">
           @for (view of column.visible; track view.task.id) {
@@ -42,9 +45,6 @@
       } @else {
         <p class="none">{{ column.total ? 'No tasks match the filters.' : 'No tasks yet.' }}</p>
       }
-      <button appButton variant="ghost" size="sm" class="add" type="button" (click)="addTask(column.phase.id)">
-        <app-icon name="plus" [size]="16" /> Add task
-      </button>
     </app-phase-card>
   }
 </div>

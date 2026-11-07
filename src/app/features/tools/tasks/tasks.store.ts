@@ -102,7 +102,8 @@ export class TasksStore {
 
       const visible = all
         .filter((t) => this.matches(t))
-        .sort((a, b) => a.due - b.due)
+        // A just-added (still empty) task first, right under the Add button; then by due month.
+        .sort((a, b) => Number(!!a.text.trim()) - Number(!!b.text.trim()) || a.due - b.due)
         .map((t) => this.toView(t));
 
       return { phase, total: all.length, done, percent: percent(done, all.length), current, visible };

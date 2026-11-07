@@ -1,4 +1,8 @@
-<dialog #dialog [attr.aria-labelledby]="titleId" [attr.data-size]="size()" (close)="closed.emit()">
+<dialog #dialog [attr.aria-labelledby]="titleId" [attr.data-size]="size()" (close)="closed.emit()"
+  (cancel)="onCancel($event)"
+  (pointerdown)="pressedOutside = isBackdrop($event)"
+  (click)="onClick($event)"
+>
   <div class="head">
     <h2 [id]="titleId">{{ heading() }}</h2>
     @if (subheading()) {

@@ -3,20 +3,6 @@
 <app-local-data-banner />
 <app-legacy-clients-banner />
 
-<section aria-labelledby="tools-heading">
-  <h2 id="tools-heading" class="section-title">Tools</h2>
-  @for (group of groups; track group.id) {
-    <div class="tool-group">
-      <h3 class="group-title">{{ group.title }} <span class="group-who">{{ group.who }}</span></h3>
-      <div class="tools">
-        @for (tool of group.tools; track tool.id) {
-          <app-tool-tile [tool]="tool" />
-        }
-      </div>
-    </div>
-  }
-</section>
-
 <section class="page-section" aria-labelledby="status-heading">
   <h2 id="status-heading" class="section-title">Status</h2>
   <app-status-grid />
@@ -30,4 +16,18 @@
 <section class="page-section attention" aria-label="Needs attention">
   <app-due-tasks />
   <app-due-payments />
+</section>
+
+<section class="page-section" aria-labelledby="tools-heading">
+  <h2 id="tools-heading" class="section-title">Tools</h2>
+  @for (group of groups; track group.id) {
+    <div class="tool-group">
+      <h3 class="group-title">{{ group.title }} <span class="group-who">{{ group.who }}</span></h3>
+      <div class="tools">
+        @for (tool of group.tools; track tool.id) {
+          <app-tool-tile [tool]="tool" />
+        }
+      </div>
+    </div>
+  }
 </section>
