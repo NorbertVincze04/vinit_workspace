@@ -27,7 +27,7 @@ and survives restarts and rebuilds. After pulling code changes: `docker compose 
 | Reset a password | `docker compose exec api node --import tsx src/scripts/set-password.ts --email …` |
 | Back up the database | `npm run db:backup` → `backups/vinit-<date>.dump` (includes uploaded files; copy it somewhere safe) |
 | Restore a backup | `npm run db:restore -- backups/<file>.dump --yes` (replaces everything), then `docker compose restart api` |
-| Try with demo data | `npm --prefix api run db:seed:demo` → database `vinit_demo` (never the real `vinit` database) |
+| Try with demo data | `npm --prefix api run db:seed:demo` → database `vinit_demo` (never the real `vinit` database): finances, marketing, and fake salons, leads, subscriptions, an onboarding and tickets. Run the API with `DB_NAME=vinit_demo` and add a login there with `user:create` |
 
 **Moving your old browser data:** before the server existed, everything was saved in the browser. Open the Overview in
 the browser that has your latest data and click **Move to the server** (one time). Tasks, Finances, Marketing,

@@ -13,11 +13,19 @@ import { parseArgs } from 'node:util';
 import { config } from '../config.js';
 import { createKnex } from '../db/knex.js';
 import { migrationConfig } from '../db/migrations/index.js';
+import { addDays, today } from '../lib/dates.js';
+import { changeSubscription, createSubscription, generatePayments, markPaid } from '../modules/billing/billing.service.js';
+import { convertLead, moveLead, nextPosition } from '../modules/leads/leads.service.js';
+import { createSalon } from '../modules/salons/salons.service.js';
 
 const { values } = parseArgs({ options: { db: { type: 'string', default: 'vinit_demo' }, force: { type: 'boolean', default: false } } });
 const target = values.db!;
 
-const DEMO_TABLES = ['fin_transactions', 'fin_recurring', 'fin_budgets', 'fin_holdings', 'fin_accounts', 'mkt_posts', 'roadmap_progress'];
+const DEMO_TABLES = [
+  'fin_transactions', 'fin_recurring', 'fin_budgets', 'fin_holdings', 'fin_accounts', 'mkt_posts', 'roadmap_progress',
+  'time_entries', 'tickets', 'onboarding_steps', 'onboardings', 'payments', 'subscription_changes', 'subscriptions',
+  'lead_activities', 'leads', 'salon_domains', 'salon_status_history', 'salons', 'clients', 'activity_log',
+];
 
 /** "YYYY-MM-DD" for the given day of the month `offset` months from now. */
 function day(offset: number, dayOfMonth: number): string {
@@ -73,6 +81,98 @@ async function ensureDatabase(): Promise<void> {
   } finally {
     await admin.destroy();
   }
+}
+
+/**
+ * Salon platform demo (fake names and addresses): salons in every state, leads in every stage,
+ * Early Bird and beta subscriptions, payments, an onboarding on the 48h clock and tickets.
+ * Built with the same service functions the API uses, so every rule applies.
+ */
+async function seedSalons(db: ReturnType<typeof createKnex>): Promise<void> {
+  const now = today();
+  const hoursAgo = (h: number): string => new Date(Date.now() - h * 3_600_000).toISOString();
+  const client = (name: string, city: string) => ({ name: `${name} SRL`, kind: 'company' as const, city, businessAddress: `Str. Exemplu 1, ${city}` });
+
+  await db.transaction(async (trx) => {
+    const id = async (table: string, code: string): Promise<string> => (await trx(table).where({ code }).first('id')).id;
+    const [standard, premium, custom] = [await id('plans', 'standard'), await id('plans', 'premium'), await id('plans', 'custom')];
+    const [earlyBird, beta] = [await id('promotions', 'early_bird'), await id('promotions', 'beta')];
+
+    // 1. Early Bird salon that became paying: trial over, last month paid, this month due.
+    const lab = await createSalon(trx, {
+      name: 'Barber Lab (demo)',
+      city: 'Cluj-Napoca',
+      planId: premium,
+      status: 'trial',
+      domain: 'barberlab-demo.ro',
+      tenantSlug: 'barber-lab-demo',
+      client: client('Barber Lab', 'Cluj-Napoca'),
+    });
+    const labSub = await createSubscription(trx, lab, { planId: premium, promotionId: earlyBird, startedOn: addDays(now, -130) });
+    await changeSubscription(trx, labSub, { kind: 'trial_converted', on: addDays(now, -38) });
+    await generatePayments(trx, addDays(now, -31).slice(0, 7));
+    await generatePayments(trx, now.slice(0, 7));
+    const first = await trx('payments').where({ salonId: lab }).orderBy('dueOn').first('id');
+    if (first) await markPaid(trx, first.id, { paidOn: addDays(now, -25), invoiceNumber: 'DEMO-001' });
+    await trx('salons').where({ id: lab }).update({ deployStatus: 'live', goLiveOn: addDays(now, -125), configVersion: 'v4' });
+
+    // 2. New Early Bird salon in onboarding: materials arrived 20h ago, 7 steps done.
+    const central = await createSalon(trx, { name: 'Frizeria Centrală (demo)', city: 'Satu Mare', planId: standard, status: 'trial', client: client('Frizeria Centrala', 'Satu Mare') });
+    await createSubscription(trx, central, { planId: standard, promotionId: earlyBird, startedOn: addDays(now, -2) });
+    const [ob] = await trx('onboardings').insert({ salonId: central, signedAt: hoursAgo(50), materialsReceivedAt: hoursAgo(20) }).returning('id');
+    const template = await trx('onboardingTemplateItems').orderBy('position');
+    await trx('onboardingSteps').insert(
+      template.map((t: Record<string, unknown>, i: number) => ({
+        onboardingId: ob.id,
+        position: i,
+        title: t['title'],
+        description: t['description'],
+        category: t['category'],
+        doneAt: i < 7 ? hoursAgo(18 - i) : null,
+      })),
+    );
+    await trx('timeEntries').insert({ salonId: central, onboardingId: ob.id, kind: 'included_session', minutes: 30, workedOn: now, description: 'Kickoff session' });
+
+    // 3. Beta salon (free, doesn't use Early Bird places).
+    const aurora = await createSalon(trx, { name: 'Salon Aurora (demo)', city: 'Pitești', planId: standard, status: 'trial', client: client('Aurora Beauty', 'Pitești') });
+    await createSubscription(trx, aurora, { planId: standard, promotionId: beta, startedOn: addDays(now, -60) });
+
+    // 4. Custom subscription with an urgent ticket and unbilled extra work.
+    const noir = await createSalon(trx, { name: 'Studio Noir (demo)', city: 'Iași', planId: custom, status: 'active', domain: 'studionoir-demo.ro', client: client('Studio Noir', 'Iași') });
+    await createSubscription(trx, noir, { planId: custom, priceBani: RON(1200), startedOn: addDays(now, -70) });
+    const [ticket] = await trx('tickets').insert({ salonId: noir, title: 'SMS reminders arrive one hour late', type: 'bug', priority: 'urgent', status: 'in_progress' }).returning('id');
+    await trx('timeEntries').insert([
+      { salonId: noir, ticketId: ticket.id, kind: 'internal', minutes: 40, workedOn: now, description: 'Looked at the Twilio logs' },
+      { salonId: noir, kind: 'billable', rateBani: 10000, minutes: 75, workedOn: addDays(now, -3), description: 'New gallery page' },
+      { salonId: noir, kind: 'included_session', minutes: 30, workedOn: addDays(now, -65), description: 'Kickoff' },
+    ]);
+
+    // 5. A salon that left.
+    const old = await createSalon(trx, { name: 'Old School Barbers (demo)', city: 'Constanța', planId: standard, status: 'active', client: client('Old School', 'Constanta') });
+    const oldSub = await createSubscription(trx, old, { planId: standard, startedOn: addDays(now, -200) });
+    await changeSubscription(trx, oldSub, { kind: 'cancel', on: addDays(now, -30), note: 'Moved to a marketplace app' });
+
+    // Leads in every stage.
+    const leads: [string, string, string, Record<string, unknown>][] = [
+      ['Barber House (demo)', 'Buzău', 'contacted', { source: 'instagram_dm', nextFollowUpOn: now }],
+      ['Gentlemen Cuts (demo)', 'Timișoara', 'contacted', { source: 'visit', nextFollowUpOn: addDays(now, -2) }],
+      ['Fade Factory (demo)', 'Cluj-Napoca', 'replied', { source: 'instagram_dm', nextFollowUpOn: addDays(now, 3), employees: 4 }],
+      ['Classic Barber (demo)', 'Iași', 'demo_booked', { source: 'referral', referredBySalonId: lab, demoAt: new Date(Date.now() + 2 * 86_400_000).toISOString() }],
+      ['Beard & Co (demo)', 'Eforie Nord', 'contacted', { source: 'email' }],
+    ];
+    for (const [businessName, city, stage, extra] of leads) {
+      await trx('leads').insert({ businessName, city, stage, stagePosition: await nextPosition(trx, stage), ...extra });
+    }
+    const [lost] = await trx('leads').insert({ businessName: 'Salon Elegance (demo)', city: 'Constanța', stagePosition: await nextPosition(trx, 'contacted') }).returning('id');
+    await moveLead(trx, lost.id, { stage: 'lost', lostReason: 'price', lostNote: 'Pays 99 RON elsewhere' });
+
+    // A lead won and converted: the salon page shows where it came from.
+    const [won] = await trx('leads')
+      .insert({ businessName: 'Urban Barber (demo)', city: 'Cluj-Napoca', stage: 'demo_booked', source: 'instagram_dm', stagePosition: await nextPosition(trx, 'demo_booked') })
+      .returning('id');
+    await trx('leadActivities').insert({ leadId: won.id, kind: 'dm', body: 'Sent the demo link, they liked having their own brand', occurredAt: hoursAgo(24 * 6) });
+    await convertLead(trx, won.id, { client: client('Urban Barber', 'Cluj-Napoca'), salon: { status: 'trial', planId: standard } });
+  });
 }
 
 async function main(): Promise<void> {
@@ -144,6 +244,8 @@ async function main(): Promise<void> {
 
       await trx('roadmap_progress').insert(['b1', 'b2', 'b3', 'b4'].map((stepId) => ({ stepId })));
     });
+
+    await seedSalons(db);
 
     console.log(`Demo data is in "${target}". Start the API with DB_NAME=${target} to look at it.`);
   } finally {
