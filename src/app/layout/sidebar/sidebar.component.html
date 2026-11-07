@@ -49,4 +49,10 @@
     <app-icon [name]="theme.effective() === 'dark' ? 'sun' : 'moon'" [size]="18" />
     {{ theme.effective() === 'dark' ? 'Light mode' : 'Dark mode' }}
   </button>
+  @if (auth.user(); as user) {
+    <button type="button" class="link" [attr.aria-label]="'Sign out ' + user.fullName" (click)="auth.logout()">
+      <app-icon name="log-out" [size]="18" />
+      <span class="who">Sign out <span class="muted">· {{ user.fullName }}</span></span>
+    </button>
+  }
 </div>

@@ -115,3 +115,10 @@ ul {
     min-height: 44px;
   }
 }
+
+.who {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { OVERVIEW_LINK, TOOL_LINKS } from '../../core/data/tools.data';
+import { AuthService } from '../../core/auth/auth.service';
 import { StorageService } from '../../core/services/storage.service';
 import { ThemeService } from '../../core/services/theme.service';
 import { IconComponent, LogoComponent } from '../../shared/ui';
@@ -20,6 +21,7 @@ import { IconComponent, LogoComponent } from '../../shared/ui';
 export class SidebarComponent {
   protected readonly theme = inject(ThemeService);
   protected readonly storage = inject(StorageService);
+  protected readonly auth = inject(AuthService);
   protected readonly overview = OVERVIEW_LINK;
   protected readonly tools = TOOL_LINKS;
 

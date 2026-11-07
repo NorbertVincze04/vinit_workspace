@@ -1,0 +1,53 @@
+<main class="wrap">
+  <app-card padding="lg" class="box">
+    <div class="brand">
+      <app-logo [size]="32" />
+      <div>
+        <h1 class="title-md">VINIT Workspace</h1>
+        <p class="muted small">Sign in with your team account.</p>
+      </div>
+    </div>
+
+    @if (expired) {
+      <p class="note" role="status">Your session ended. Please sign in again.</p>
+    }
+
+    <form class="stack" novalidate (submit)="submit($event)">
+      <div>
+        <app-text-field
+          label="Email"
+          type="email"
+          name="email"
+          autocomplete="username"
+          [invalid]="!!errors().email"
+          [(value)]="email"
+        />
+        @if (errors().email; as message) {
+          <p class="error">{{ message }}</p>
+        }
+      </div>
+
+      <div>
+        <app-text-field
+          label="Password"
+          type="password"
+          name="password"
+          autocomplete="current-password"
+          [invalid]="!!errors().password"
+          [(value)]="password"
+        />
+        @if (errors().password; as message) {
+          <p class="error">{{ message }}</p>
+        }
+      </div>
+
+      @if (errors().form; as message) {
+        <p class="error" role="alert">{{ message }}</p>
+      }
+
+      <button appButton variant="primary" type="submit" block [disabled]="busy()">
+        {{ busy() ? 'Signing in…' : 'Sign in' }}
+      </button>
+    </form>
+  </app-card>
+</main>

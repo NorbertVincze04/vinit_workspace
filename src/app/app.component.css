@@ -7,6 +7,11 @@
   overflow-x: clip;
 }
 
+/* Sign-in page: no sidebar, the page fills the screen. */
+:host(.bare) {
+  display: block;
+}
+
 .sidebar {
   position: sticky;
   top: 0;

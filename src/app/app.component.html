@@ -1,33 +1,38 @@
-<a class="skip-link" href="#main" (click)="skipToContent($event, main)">Skip to content</a>
+@if (auth.user()) {
+  <a class="skip-link" href="#main" (click)="skipToContent($event, main)">Skip to content</a>
 
-<header class="topbar">
-  <button
-    appButton
-    variant="ghost"
-    iconOnly
-    type="button"
-    aria-controls="sidebar"
-    [attr.aria-expanded]="navOpen()"
-    [attr.aria-label]="navOpen() ? 'Close navigation' : 'Open navigation'"
-    (click)="toggleNav()"
-  >
-    <app-icon [name]="navOpen() ? 'close' : 'menu'" />
-  </button>
-  <a class="topbar-brand" routerLink="/" aria-label="VINIT Workspace, overview">
-    <app-logo [size]="22" />
-    <span>VINIT</span>
-  </a>
-</header>
+  <header class="topbar">
+    <button
+      appButton
+      variant="ghost"
+      iconOnly
+      type="button"
+      aria-controls="sidebar"
+      [attr.aria-expanded]="navOpen()"
+      [attr.aria-label]="navOpen() ? 'Close navigation' : 'Open navigation'"
+      (click)="toggleNav()"
+    >
+      <app-icon [name]="navOpen() ? 'close' : 'menu'" />
+    </button>
+    <a class="topbar-brand" routerLink="/" aria-label="VINIT Workspace, overview">
+      <app-logo [size]="22" />
+      <span>VINIT</span>
+    </a>
+  </header>
 
-<app-sidebar id="sidebar" class="sidebar" [class.is-open]="navOpen()" (navigate)="closeNav()" />
-@if (navOpen()) {
-  <div class="backdrop" aria-hidden="true" (click)="closeNav()"></div>
+  <app-sidebar id="sidebar" class="sidebar" [class.is-open]="navOpen()" (navigate)="closeNav()" />
+  @if (navOpen()) {
+    <div class="backdrop" aria-hidden="true" (click)="closeNav()"></div>
+  }
+
+  <main id="main" #main tabindex="-1">
+    <div class="content">
+      <router-outlet />
+    </div>
+  </main>
+} @else {
+  <!-- Sign-in page (or the moment before the session check finishes): no workspace chrome. -->
+  <router-outlet />
 }
-
-<main id="main" #main tabindex="-1">
-  <div class="content">
-    <router-outlet />
-  </div>
-</main>
 
 <app-toast />

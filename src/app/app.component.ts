@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AuthService } from './core/auth/auth.service';
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
 import { ButtonComponent, IconComponent, LogoComponent, ToastComponent } from './shared/ui';
 
@@ -14,10 +15,12 @@ import { ButtonComponent, IconComponent, LogoComponent, ToastComponent } from '.
   imports: [RouterOutlet, RouterLink, SidebarComponent, ButtonComponent, IconComponent, LogoComponent, ToastComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
-  host: { '(document:keydown.escape)': 'closeNav()' },
+  host: { '(document:keydown.escape)': 'closeNav()', '[class.bare]': '!auth.user()' },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
+  protected readonly auth = inject(AuthService);
+
   /** Mobile drawer state; ignored on wide screens where the sidebar is always shown. */
   protected readonly navOpen = signal(false);
 

@@ -5,6 +5,8 @@ import morgan from 'morgan';
 import { config } from './config.js';
 import { db } from './db/knex.js';
 import { errorHandler, notFoundHandler } from './http/errors.js';
+import { requireAppHeader, requireAuth } from './modules/auth/auth.middleware.js';
+import { authRouter } from './modules/auth/auth.routes.js';
 
 /** Builds the Express app (no listen), so tests can drive it with supertest. */
 export function createApp(): express.Express {
@@ -18,11 +20,19 @@ export function createApp(): express.Express {
   app.use(cookieParser());
 
   const api = Router();
+  api.use(requireAppHeader);
 
+  // Public: health check and sign-in.
   api.get('/health', async (_req, res) => {
     await db.raw('select 1');
     res.json({ ok: true, time: new Date().toISOString() });
   });
+  api.use('/auth', authRouter());
+
+  // Everything below needs a signed-in user.
+  const secured = Router();
+  secured.use(requireAuth);
+  api.use(secured);
 
   app.use('/api/v1', api);
   app.use(notFoundHandler);
