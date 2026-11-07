@@ -33,8 +33,8 @@ and survives restarts and rebuilds. After pulling code changes: `docker compose 
 the browser that has your latest data and click **Move to the server** (one time). Tasks, Finances, Marketing,
 Roadmap, settings and files are copied; nothing in the browser is deleted. Records from the old browser **Clients** tool
 have their own **Move clients to the server** button (Overview and Salons): leads and demos become Leads; beta, active
-and paused become a salon with its client and subscription. Then add each client's business address (Clients › Address
-missing), since the old list had none.
+and paused become a salon with its client and subscription. Then add each salon's business address (on the salon: Billing › Edit),
+since the old list had none.
 
 **Background job:** while the API runs it works through, at start-up and then every hour: KPI snapshots of finished
 months, deadlines generated from the data, and notifications (late payments, trials ending, onboardings over 48h,
@@ -97,7 +97,7 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 | Infra | `GET/POST /infra/services`, `PATCH/DELETE /infra/services/:id`, `GET/PUT /infra/sms-usage?month=`, `DELETE /infra/sms-usage/:id`, `GET/POST /infra/backup-checks`, `GET /infra/health` |
 | Activity | `GET /activity?area=&userId=&salonId=&before=&limit=` → {items, next} (newest first; `next` is the cursor for older entries) |
 | Notifications | `GET /notifications` (own; brings them up to date first), `GET /notifications/count`, `POST /notifications/:id/read`, `POST /notifications/:id/dismiss`, `POST /notifications/read-all`, `POST /notifications/refresh` |
-| Search | `GET /search?q=` → salons, clients, leads, tickets (`T-12`), contracts, feature requests, wiki pages (every word must match; accents ignored) |
+| Search | `GET /search?q=` → salons (also by owner name, email, phone), leads, tickets (`T-12`), contracts, feature requests, wiki pages (every word must match; accents ignored) |
 | Integrations | `GET /integrations/status` (variable names only, never values), `POST /integrations/uptime/check`, `POST /integrations/invoices` {paymentId} (409 when no provider, 501 while the provider is a stub) |
 | Import | `POST /import/legacy-clients` {records} (old browser Clients list → leads / salons; skips records moved before) |
 | Plans, promotions | `GET /plans`, `PATCH /plans/:id`, `GET/POST /promotions`, `PATCH /promotions/:id` (seeded by the migrations) |
@@ -105,7 +105,7 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 ## Tools
 
 The sidebar and the Overview group the tools by what they are for, so each role finds its tools together:
-**Sales & marketing** (Leads, Marketing, Clients) · **Salons & support** (Salons, Onboarding, Support, Feature requests,
+**Sales & marketing** (Leads, Marketing) · **Salons & support** (Salons, Onboarding, Support, Feature requests,
 Contracts) · **Money** (Subscriptions, Finances, KPIs) · **Planning** (Tasks, Roadmap, Calendar) · **Operations** (Infra,
 Wiki, Files).
 
@@ -126,7 +126,6 @@ Wiki, Files).
 | Calendar | `/tools/calendar` | Deadlines: month grid (agenda on phones) and upcoming list; manual ones repeat monthly/quarterly/yearly; domain, SSL, contract renewal, trial and minimum-term dates are generated from the salons |
 | Wiki | `/tools/wiki` | How-tos and SOPs in Markdown (live preview), search that ignores diacritics, every version kept and restorable, archive; starts with onboarding, plans & offers and backups pages |
 | Infra | `/tools/infra` | Services and their monthly cost (from the linked Finances payment, decision G, or an estimate), SMS against the 1.500 budget, backups and restore tests (`npm run db:backup` records itself), storage; renewals go to the Calendar |
-| Clients | `/tools/clients` | The people and companies that pay (one salon each), with business address |
 | Finances | `/tools/finances` | Transactions, recurring payments, investments, accounts, budgets, cash-flow chart, CSV export |
 | Marketing | `/tools/marketing` | 12-month content calendar, communication mix vs. target, copy & hashtags |
 | Roadmap | `/tools/roadmap` | Four phase checklists, live paying salons and MRR vs. break-even |

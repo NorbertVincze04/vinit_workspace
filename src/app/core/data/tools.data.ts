@@ -27,13 +27,6 @@ export const TOOL_GROUPS: readonly ToolGroup[] = [
         icon: 'megaphone',
         route: '/tools/marketing',
       },
-      {
-        id: 'clients',
-        title: 'Clients',
-        description: 'The people and companies that pay, one salon each.',
-        icon: 'users',
-        route: '/tools/clients',
-      },
     ],
   },
   {
@@ -44,7 +37,7 @@ export const TOOL_GROUPS: readonly ToolGroup[] = [
       {
         id: 'salons',
         title: 'Salons',
-        description: 'Every salon with its client, plan, domains and full story.',
+        description: 'Your clients: every salon with its billing details, plan, domains and full story.',
         icon: 'store',
         route: '/tools/salons',
       },

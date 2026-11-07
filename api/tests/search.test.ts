@@ -16,7 +16,7 @@ describe('global search', () => {
     expect(words('  Ștefan  cel%_mare ')).toEqual(['stefan', 'celmare']);
   });
 
-  it('finds salons, clients, leads, tickets, contracts, feature requests and wiki pages', async () => {
+  it('finds salons (also by who pays), leads, tickets, contracts, feature requests and wiki pages', async () => {
     const { agent } = await signedIn();
     const s = await createSalon(agent, { name: 'Frizeria Bărbaților', city: 'Timișoara', domain: 'barbati.ro' }, { name: 'Bărbați SRL', phone: '0744 123 456' });
     await agent.post('/api/v1/leads').set(APP_HEADER).send({ businessName: 'Barber Timisoara', city: 'Timișoara' });
@@ -25,14 +25,14 @@ describe('global search', () => {
     await agent.post('/api/v1/feature-requests').set(APP_HEADER).send({ title: 'Barbati loyalty card' });
 
     const hits = await search(agent, 'barbati');
-    expect(hits.map((h) => h.type)).toEqual(expect.arrayContaining(['salon', 'client', 'feature', 'contract']));
+    expect(hits.map((h) => h.type)).toEqual(expect.arrayContaining(['salon', 'feature', 'contract']));
     expect(hits.find((h) => h.type === 'salon')).toMatchObject({ title: 'Frizeria Bărbaților', link: `/tools/salons/${s.id}`, sub: expect.stringContaining('barbati.ro') });
 
     // Every word has to match: city + name.
     expect((await search(agent, 'timisoara barber')).map((h) => h.title)).toEqual(['Barber Timisoara']);
     expect((await search(agent, 'programari')).map((h) => h.type)).toEqual(['ticket']);
     expect((await search(agent, `T-${t.number}`))[0]).toMatchObject({ type: 'ticket', link: `/tools/salons/${s.id}?tab=support` });
-    expect((await search(agent, '0744'))[0]).toMatchObject({ type: 'client' });
+    expect((await search(agent, '0744'))[0]).toMatchObject({ type: 'salon', title: 'Frizeria Bărbaților', sub: expect.stringContaining('Bărbați SRL') });
     expect((await search(agent, 'backup'))[0]).toMatchObject({ type: 'wiki', link: '/tools/wiki/backups-and-restore' });
     expect(await search(agent, '  ')).toEqual([]);
     expect(await search(agent, '%')).toEqual([]);

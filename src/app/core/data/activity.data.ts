@@ -14,7 +14,7 @@ export interface ActivityEntry {
 
 const ENTITY: Record<string, { label: string; route: string; tab?: string }> = {
   salons: { label: 'Salon', route: '/tools/salons' },
-  clients: { label: 'Client', route: '/tools/clients' },
+  clients: { label: 'Billing details', route: '/tools/salons' },
   domains: { label: 'Domain', route: '/tools/salons' },
   leads: { label: 'Lead', route: '/tools/leads' },
   subscriptions: { label: 'Subscription', route: '/tools/subscriptions', tab: 'billing' },

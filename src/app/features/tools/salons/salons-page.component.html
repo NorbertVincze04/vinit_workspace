@@ -34,7 +34,7 @@
 } @else if (!store.salons().length) {
   <app-empty-state
     heading="No salons yet"
-    text="Add a salon with its client (who pays), plan and domain. Leads you win will also land here."
+    text="Add a salon with its billing details (who pays), plan and domain. Leads you win will also land here."
   >
     <button appButton variant="primary" type="button" (click)="openNew()">Add salon</button>
   </app-empty-state>
@@ -44,7 +44,7 @@
   </app-empty-state>
 } @else {
   <app-ledger
-    [headers]="['Salon', 'Client', 'Plan', 'Status']"
+    [headers]="['Salon', 'Billed to', 'Plan', 'Status']"
     columns="minmax(0, 1.8fr) minmax(0, 1.5fr) minmax(0, 1.2fr) 120px"
   >
     @for (salon of store.visible(); track salon.id) {

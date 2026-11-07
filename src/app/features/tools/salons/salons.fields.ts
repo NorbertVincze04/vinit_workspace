@@ -34,15 +34,15 @@ export function newSalonFields(freeClients: readonly Client[], plans: readonly P
     { key: 'domain', label: 'Domain', type: 'text', maxLength: 253, placeholder: 'barberhouse.ro', validate: checkDomain },
     {
       key: 'clientId',
-      label: 'Client (who pays)',
+      label: 'Billed to (who pays)',
       type: 'select',
       default: NEW_CLIENT,
       span: 'full',
       options: [
-        { value: NEW_CLIENT, label: 'New client…' },
+        { value: NEW_CLIENT, label: 'Enter billing details…' },
         ...freeClients.map((c) => ({ value: c.id, label: c.name })),
       ],
-      hint: 'One client has one salon. Only clients without a salon are listed.',
+      hint: 'Usually new details. Only payers without a salon are listed.',
     },
     ...clientFormFields('client.', isNewClient),
     { key: 'notes', label: 'Notes', type: 'textarea', span: 'full' },

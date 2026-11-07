@@ -101,12 +101,8 @@ export const routes: Routes = [
         title: 'Infra · VINIT Workspace',
         loadComponent: () => import('./features/tools/infra/infra-page.component').then((m) => m.InfraPageComponent),
       },
-      {
-        path: 'tools/clients',
-        title: 'Clients · VINIT Workspace',
-        loadComponent: () =>
-          import('./features/tools/clients/clients-page.component').then((m) => m.ClientsPageComponent),
-      },
+      // Clients are managed on each salon now (billing details); old links land on Salons.
+      { path: 'tools/clients', redirectTo: 'tools/salons' },
       {
         path: 'tools/finances',
         title: 'Finances · VINIT Workspace',

@@ -5,7 +5,7 @@ import { ACTIVITY_LINK, OVERVIEW_LINK, TOOLS } from '../../core/data/tools.data'
 import { DialogComponent, IconComponent } from '../../shared/ui';
 
 export interface SearchHit {
-  type: 'tool' | 'salon' | 'client' | 'lead' | 'ticket' | 'contract' | 'feature' | 'wiki';
+  type: 'tool' | 'salon' | 'lead' | 'ticket' | 'contract' | 'feature' | 'wiki';
   id: string;
   title: string;
   sub: string;
@@ -15,7 +15,6 @@ export interface SearchHit {
 const TYPE_LABELS: Record<SearchHit['type'], string> = {
   tool: 'Go to',
   salon: 'Salons',
-  client: 'Clients',
   lead: 'Leads',
   ticket: 'Tickets',
   contract: 'Contracts',
@@ -31,7 +30,7 @@ export class SearchService {
   readonly open = signal(false);
 }
 
-/** One box to find salons, clients, leads, tickets (T-12), contracts, feature requests, wiki pages and tools. */
+/** One box to find salons (also by who pays), leads, tickets (T-12), contracts, feature requests, wiki pages and tools. */
 @Component({
   selector: 'app-search-palette',
   standalone: true,
@@ -48,7 +47,7 @@ export class SearchService {
             type="search"
             autofocus
             autocomplete="off"
-            placeholder="Salon, client, lead, T-12, contract, wiki…"
+            placeholder="Salon, owner, lead, T-12, contract, wiki…"
             aria-label="Search the workspace"
             role="combobox"
             aria-controls="search-results"

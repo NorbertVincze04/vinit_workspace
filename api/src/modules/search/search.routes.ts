@@ -8,7 +8,7 @@ import { prefixQuery } from '../wiki/wiki.routes.js';
 type Row = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 export interface SearchHit {
-  type: 'salon' | 'client' | 'lead' | 'ticket' | 'contract' | 'feature' | 'wiki';
+  type: 'salon' | 'lead' | 'ticket' | 'contract' | 'feature' | 'wiki';
   id: string;
   title: string;
   sub: string;
@@ -35,7 +35,7 @@ function match(q: Knex.QueryBuilder, fields: string, title: string, ws: string[]
   return q.orderByRaw(`similarity(unaccent(lower(${title})), ?) DESC`, [phrase]).limit(PER_TYPE);
 }
 
-/** /search?q= — one box for salons, clients, leads, tickets, contracts, feature requests and wiki pages. */
+/** /search?q= — one box for salons (with who pays for them), leads, tickets, contracts, feature requests and wiki pages. */
 export function searchRouter(): Router {
   const router = Router();
 
@@ -51,17 +51,16 @@ export function searchRouter(): Router {
     const ticketNo = /^(?:t-?|#)?(\d{1,6})$/i.exec(q.trim())?.[1];
     const tsq = prefixQuery(q);
 
-    const [salons, clients, leads, tickets, contracts, features, wiki] = await Promise.all([
+    const [salons, leads, tickets, contracts, features, wiki] = await Promise.all([
       match(
         db('salons as s').join('clients as c', 'c.id', 's.clientId').leftJoin('salonDomains as d', function () {
           this.on('d.salonId', '=', 's.id').andOnVal('d.isPrimary', '=', true);
-        }).select('s.id', 's.name', 's.city', 's.status', 'd.domain'),
-        's.name, s.city, s.tenant_slug, d.domain, c.name',
+        }).select('s.id', 's.name', 's.city', 's.status', 'd.domain', 'c.name as clientName'),
+        's.name, s.city, s.tenant_slug, d.domain, c.name, c.contact_person, c.email, c.phone',
         's.name',
         ws,
         phrase,
       ),
-      match(db('clients as c').leftJoin('salons as s', 's.clientId', 'c.id').select('c.id', 'c.name', 'c.email', 'c.phone', 's.name as salonName'), 'c.name, c.contact_person, c.email, c.phone, c.city', 'c.name', ws, phrase),
       match(db('leads as l').select('l.id', 'l.businessName', 'l.city', 'l.stage', 'l.phone'), 'l.business_name, l.contact_name, l.city, l.phone, l.email, l.instagram', 'l.business_name', ws, phrase),
       ticketNo
         ? db('tickets as t').join('salons as s', 's.id', 't.salonId').where('t.number', Number(ticketNo)).select('t.id', 't.number', 't.title', 't.status', 't.salonId', 's.name as salonName').limit(1)
@@ -79,8 +78,7 @@ export function searchRouter(): Router {
     ]);
 
     const items: SearchHit[] = [
-      ...salons.map((s: Row) => ({ type: 'salon' as const, id: s.id, title: s.name, sub: [s.city, s.domain, s.status].filter(Boolean).join(' · '), link: `/tools/salons/${s.id}` })),
-      ...clients.map((c: Row) => ({ type: 'client' as const, id: c.id, title: c.name, sub: [c.salonName, c.phone, c.email].filter(Boolean).join(' · '), link: '/tools/clients' })),
+      ...salons.map((s: Row) => ({ type: 'salon' as const, id: s.id, title: s.name, sub: [s.city, s.domain, s.clientName !== s.name ? s.clientName : null, s.status].filter(Boolean).join(' · '), link: `/tools/salons/${s.id}` })),
       ...leads.map((l: Row) => ({ type: 'lead' as const, id: l.id, title: l.businessName, sub: [l.city, l.stage.replace('_', ' '), l.phone].filter(Boolean).join(' · '), link: '/tools/leads' })),
       ...tickets.map((t: Row) => ({
         type: 'ticket' as const,

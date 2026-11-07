@@ -7,7 +7,7 @@
       <button appButton variant="primary" type="button" (click)="changeStatus()">Change status</button>
       <app-menu ariaLabel="More salon actions">
         <button appMenuItem type="button" (click)="editSalon()">Edit salon</button>
-        <button appMenuItem type="button" (click)="editClient()">Edit client</button>
+        <button appMenuItem type="button" (click)="editClient()">Edit billing details</button>
         <button appMenuItem tone="danger" type="button" (click)="deleting.set('salon')">Delete salon…</button>
       </app-menu>
     </div>
@@ -27,7 +27,7 @@
             }
           </app-panel>
 
-          <app-panel heading="Client (who pays)">
+          <app-panel heading="Billing (who pays)">
             <button panelAction appButton variant="ghost" size="sm" type="button" (click)="editClient()">Edit</button>
             <app-facts [items]="clientFacts()" />
           </app-panel>
@@ -188,7 +188,7 @@
   @if (d.kind === 'salon') {
     <app-form-dialog heading="Edit salon" [fields]="d.fields" [initial]="d.values" saveLabel="Save salon" (saved)="saved($event)" (closed)="dialog.set(null)" />
   } @else if (d.kind === 'client') {
-    <app-form-dialog heading="Edit client" [fields]="clientFields" [initial]="d.values" saveLabel="Save client" (saved)="saved($event)" (closed)="dialog.set(null)" />
+    <app-form-dialog heading="Edit billing details" subheading="The person or company that pays for this salon" [fields]="clientFields" [initial]="d.values" saveLabel="Save" (saved)="saved($event)" (closed)="dialog.set(null)" />
   } @else if (d.kind === 'status') {
     <app-form-dialog
       heading="Change status"
