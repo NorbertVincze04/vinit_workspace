@@ -1,6 +1,7 @@
 import { db } from './db/knex.js';
 import { regenerateDeadlines } from './modules/deadlines/deadlines.service.js';
 import { ensureSnapshots } from './modules/kpis/kpis.service.js';
+import { generateNotifications } from './modules/notifications/notifications.service.js';
 
 type Job = { name: string; run: () => Promise<unknown> };
 
@@ -11,15 +12,19 @@ type Job = { name: string; run: () => Promise<unknown> };
 const JOBS: Job[] = [
   { name: 'KPI snapshots', run: () => ensureSnapshots(db) },
   { name: 'Deadlines', run: () => regenerateDeadlines(db) },
+  // After the deadlines, so today's reminders are there.
+  { name: 'Notifications', run: () => generateNotifications(db) },
 ];
 
-const EVERY_MS = 6 * 60 * 60 * 1000;
+/** Hourly: cheap (a few hundred rows), and notifications should not wait long. */
+const EVERY_MS = 60 * 60 * 1000;
 
 async function runAll(): Promise<void> {
   for (const job of JOBS) {
     try {
       const result = await job.run();
-      if (Array.isArray(result) && result.length) console.log(`${job.name}: ${result.length} done`);
+      const count = Array.isArray(result) ? result.length : typeof result === 'number' ? result : 0;
+      if (count) console.log(`${job.name}: ${count} done`);
     } catch (error) {
       console.error(`${job.name} failed:`, (error as Error).message);
     }

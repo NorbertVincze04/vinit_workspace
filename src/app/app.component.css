@@ -112,3 +112,7 @@ main {
 .skip-link:focus {
   transform: none;
 }
+
+.topbar-bell {
+  margin-left: auto;
+}

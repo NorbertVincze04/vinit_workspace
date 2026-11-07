@@ -6,6 +6,7 @@ import { AuthService } from '../../core/auth/auth.service';
 import { StorageService } from '../../core/services/storage.service';
 import { ThemeService } from '../../core/services/theme.service';
 import { IconComponent, LogoComponent } from '../../shared/ui';
+import { BellComponent } from '../bell/bell.component';
 
 /**
  * Workspace navigation: logo, overview, tools (from the registry), theme switch, save status and sign-out.
@@ -14,7 +15,7 @@ import { IconComponent, LogoComponent } from '../../shared/ui';
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, IconComponent, LogoComponent],
+  imports: [RouterLink, RouterLinkActive, IconComponent, LogoComponent, BellComponent],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

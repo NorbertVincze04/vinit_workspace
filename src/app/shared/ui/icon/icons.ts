@@ -36,6 +36,7 @@ export const ICONS = {
   bulb: 'M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z',
   book: 'M4 4a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2zM4 20a2 2 0 0 0 2 2h14v-4M8 6h8M8 10h6',
   server: 'M4 4h16v6H4zM4 14h16v6H4zM8 7h.01M8 17h.01',
+  bell: 'M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0',
   clock: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2',
 } as const;
 

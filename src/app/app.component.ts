@@ -4,6 +4,7 @@ import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from './core/auth/auth.service';
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
+import { BellComponent } from './layout/bell/bell.component';
 import { ButtonComponent, IconComponent, LogoComponent, ToastComponent } from './shared/ui';
 
 /**
@@ -12,7 +13,7 @@ import { ButtonComponent, IconComponent, LogoComponent, ToastComponent } from '.
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, SidebarComponent, ButtonComponent, IconComponent, LogoComponent, ToastComponent],
+  imports: [RouterOutlet, RouterLink, SidebarComponent, BellComponent, ButtonComponent, IconComponent, LogoComponent, ToastComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
   host: { '(document:keydown.escape)': 'closeNav()', '[class.bare]': '!auth.user()' },

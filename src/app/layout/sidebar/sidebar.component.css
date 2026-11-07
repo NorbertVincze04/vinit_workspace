@@ -10,6 +10,19 @@
   overscroll-behavior: contain;
 }
 
+.brand-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px;
+}
+/* Phones have the bell in the top bar. */
+@media (max-width: 960px) {
+  .desktop-bell {
+    display: none;
+  }
+}
+
 .brand {
   display: flex;
   align-items: center;

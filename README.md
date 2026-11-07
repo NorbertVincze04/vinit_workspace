@@ -36,6 +36,11 @@ have their own **Move clients to the server** button (Overview and Salons): lead
 and paused become a salon with its client and subscription. Then add each client's business address (Clients › Address
 missing), since the old list had none.
 
+**Background job:** while the API runs it works through, at start-up and then every hour: KPI snapshots of finished
+months, deadlines generated from the data, and notifications (late payments, trials ending, onboardings over 48h,
+follow-ups, urgent tickets, deadline reminders, SMS budget, backups). Each person sees theirs under the bell (lead
+follow-ups and assigned tickets only go to their owner). Nothing is missed when the PC was off: it catches up on start.
+
 Security notes: the app is served over plain http on your home network, so only use it on networks you trust. The
 database port is only reachable from the PC itself. Passwords are bcrypt-hashed; sessions are httpOnly cookies.
 
@@ -86,6 +91,7 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 | Wiki | `GET /wiki?q=&category=&archived=`, `POST /wiki`, `GET/PUT /wiki/:slug` (PUT with `baseRevision` refuses a stale save), `POST /wiki/:slug/archive`, `GET /wiki/:slug/revisions`, `POST /wiki/:slug/restore/:revision` |
 | Infra | `GET/POST /infra/services`, `PATCH/DELETE /infra/services/:id`, `GET/PUT /infra/sms-usage?month=`, `DELETE /infra/sms-usage/:id`, `GET/POST /infra/backup-checks`, `GET /infra/health` |
 | Activity | `GET /activity?area=&userId=&salonId=&before=&limit=` → {items, next} (newest first; `next` is the cursor for older entries) |
+| Notifications | `GET /notifications` (own; brings them up to date first), `GET /notifications/count`, `POST /notifications/:id/read`, `POST /notifications/:id/dismiss`, `POST /notifications/read-all`, `POST /notifications/refresh` |
 | Import | `POST /import/legacy-clients` {records} (old browser Clients list → leads / salons; skips records moved before) |
 | Plans, promotions | `GET /plans`, `PATCH /plans/:id`, `GET/POST /promotions`, `PATCH /promotions/:id` (seeded by the migrations) |
 
