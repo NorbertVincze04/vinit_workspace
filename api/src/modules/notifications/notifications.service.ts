@@ -1,5 +1,5 @@
 import type { Knex } from 'knex';
-import { addDays, monthOf, today } from '../../lib/dates.js';
+import { addDays, bucharestTime, monthOf, today } from '../../lib/dates.js';
 import { TARGETS } from '../../lib/targets.js';
 import { billingWarnings } from '../billing/billing.service.js';
 
@@ -28,6 +28,14 @@ const ISO_WEEK = (d: Date): string => {
   const week = Math.ceil(((t.getTime() - Date.UTC(year, 0, 1)) / 86_400_000 + 1) / 7);
   return `${year}-W${String(week).padStart(2, '0')}`;
 };
+
+/** "Due today at 14:30", "Due tomorrow", "Due in 3 days (2026-11-12)". */
+export function dueText(daysLeft: number, time: string | null, dueOn: string): string {
+  const at = time ? ` at ${time}` : '';
+  if (daysLeft === 0) return `Due today${at}`;
+  if (daysLeft === 1) return `Due tomorrow${at}`;
+  return `Due in ${daysLeft} days (${dueOn}${at})`;
+}
 
 /** Everything worth a notification right now. */
 export async function candidates(k: Db): Promise<Candidate[]> {
@@ -98,21 +106,32 @@ export async function candidates(k: Db): Promise<Candidate[]> {
     });
   }
 
-  // Deadlines: on each reminder day, and once when late. Trials are already covered above.
-  const deadlines = await k('deadlines as d').leftJoin('salons as s', 's.id', 'd.salonId').where('d.status', 'open').where('d.dueOn', '<=', addDays(now, 60)).whereRaw(`coalesce(d.source_type, '') <> 'trial'`).select('d.*', 's.name as salonName', k.raw('(d.due_on - ?::date) as days_left', [now]));
+  // Deadlines: the latest reminder that has passed (a new notification for each one), and once when
+  // late (the day after). All-day reminders go off at 09:00 Bucharest time. Trials are covered above.
+  const deadlines = await k('deadlines as d')
+    .where('d.status', 'open')
+    .where('d.dueOn', '<=', addDays(now, 366))
+    .whereRaw(`coalesce(d.source_type, '') <> 'trial'`)
+    .select('d.*', k.raw('(d.due_on - ?::date) as days_left', [now]));
+  const nowMs = Date.now();
   for (const d of deadlines as Row[]) {
     const left = Number(d.daysLeft);
-    const reminder = left < 0 ? 'late' : (d.remindDays as number[]).includes(left) ? String(left) : null;
-    if (!reminder) continue;
+    const at = d.allDay ? '' : ` ${d.dueTime}`;
+    const base = { kind: 'deadline', title: d.title, link: '/tools/calendar', salonId: d.salonId, dueOn: d.dueOn };
+    if (left < 0) {
+      out.push({ ...base, key: `deadline:${d.id}:late:${d.dueOn}${at}`, severity: 'bad', body: `Was due ${d.dueOn}${at}` });
+      continue;
+    }
+    const event = bucharestTime(d.dueOn, d.allDay ? '09:00' : d.dueTime).getTime();
+    const passed = (d.reminders as number[]).filter((m) => event - m * 60_000 <= nowMs);
+    if (!passed.length) continue;
+    // Several passed (e.g. the PC was off): only the latest one.
+    const minutes = Math.min(...passed);
     out.push({
-      key: `deadline:${d.id}:${reminder}`,
-      kind: 'deadline',
-      severity: left < 0 ? 'bad' : left <= 3 ? 'warn' : 'info',
-      title: d.title,
-      body: left < 0 ? `Was due ${d.dueOn}` : left === 0 ? 'Due today' : `Due in ${left} days (${d.dueOn})`,
-      link: '/tools/calendar',
-      salonId: d.salonId,
-      dueOn: d.dueOn,
+      ...base,
+      key: `deadline:${d.id}:${minutes}:${d.dueOn}${at}`,
+      severity: left === 0 ? 'warn' : 'info',
+      body: dueText(left, d.allDay ? null : d.dueTime, d.dueOn),
     });
   }
 

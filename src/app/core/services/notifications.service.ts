@@ -16,7 +16,8 @@ export interface AppNotification {
   createdAt: string;
 }
 
-const POLL_MS = 2 * 60 * 1000;
+/** Every minute: deadline reminders can be minutes before. */
+const POLL_MS = 60 * 1000;
 
 /** The signed-in person's notifications: unread count (polled), the list, read / dismiss. */
 @Injectable({ providedIn: 'root' })

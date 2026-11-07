@@ -46,16 +46,32 @@ describe('deadlines', () => {
     const { agent } = await signedIn();
     const bad = await agent.post('/api/v1/deadlines').set(APP_HEADER).send({ title: '', dueOn: '2026-02-30' });
     expect(bad.status).toBe(400);
-    const d = (await agent.post('/api/v1/deadlines').set(APP_HEADER).send({ title: 'Monthly VAT return', category: 'tax', dueOn: '2026-01-31', recurrence: 'monthly', remindDays: [7, 1] })).body.item;
-    expect(d).toMatchObject({ status: 'open', remindDays: [7, 1], sourceType: null });
+    const d = (await agent.post('/api/v1/deadlines').set(APP_HEADER).send({ title: 'Monthly VAT return', category: 'tax', dueOn: '2026-01-31', recurrence: 'monthly', dueTime: '10:00', reminders: [60, 1440, 60] })).body.item;
+    expect(d).toMatchObject({ status: 'open', allDay: false, dueTime: '10:00', reminders: [1440, 60], sourceType: null });
 
     const done = await agent.post(`/api/v1/deadlines/${d.id}/done`).set(APP_HEADER);
     expect(done.body.item.status).toBe('done');
-    expect(done.body.next).toMatchObject({ title: 'Monthly VAT return', dueOn: '2026-02-28', status: 'open', remindDays: [7, 1] });
+    expect(done.body.next).toMatchObject({ title: 'Monthly VAT return', dueOn: '2026-02-28', status: 'open', allDay: false, dueTime: '10:00', reminders: [1440, 60] });
     expect((await agent.post(`/api/v1/deadlines/${d.id}/done`).set(APP_HEADER)).status).toBe(409);
 
     const reopened = await agent.patch(`/api/v1/deadlines/${d.id}`).set(APP_HEADER).send({ status: 'open' });
     expect(reopened.body.item).toMatchObject({ status: 'open', doneAt: null });
     expect((await agent.delete(`/api/v1/deadlines/${d.id}`).set(APP_HEADER)).status).toBe(204);
+  });
+
+  it('is all day (the default) or at a time', async () => {
+    const { agent } = await signedIn();
+    const post = (body: object) => agent.post('/api/v1/deadlines').set(APP_HEADER).send({ title: 'Call the accountant', dueOn: '2026-12-10', ...body });
+    expect((await post({})).body.item).toMatchObject({ allDay: true, dueTime: null, reminders: [10080, 1440, 0] });
+    expect((await post({ allDay: false })).status).toBe(400);
+    expect((await post({ dueTime: '25:00' })).status).toBe(400);
+    expect((await post({ reminders: [-5] })).status).toBe(400);
+    const timed = (await post({ dueTime: '09:30', reminders: [15] })).body.item;
+    expect(timed).toMatchObject({ allDay: false, dueTime: '09:30', reminders: [15] });
+    const moved = await agent.patch(`/api/v1/deadlines/${timed.id}`).set(APP_HEADER).send({ dueTime: '16:45' });
+    expect(moved.body.item).toMatchObject({ allDay: false, dueTime: '16:45' });
+    const allDay = await agent.patch(`/api/v1/deadlines/${timed.id}`).set(APP_HEADER).send({ allDay: true });
+    expect(allDay.body.item).toMatchObject({ allDay: true, dueTime: null });
+    expect((await agent.patch(`/api/v1/deadlines/${timed.id}`).set(APP_HEADER).send({ allDay: false })).status).toBe(400);
   });
 });

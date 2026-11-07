@@ -21,8 +21,10 @@ describe('notifications', () => {
     await agent.post('/api/v1/payments').set(APP_HEADER).send({ salonId: s.id, amountBani: 15000, dueOn: addDays(today(), -3) });
     // Only the colleague: their lead's follow-up.
     await agent.post('/api/v1/leads').set(APP_HEADER).send({ businessName: 'Fade Factory', nextFollowUpOn: today(), ownerUserId: colleague.id });
-    // A deadline exactly 3 days away (a reminder day).
-    await agent.post('/api/v1/deadlines').set(APP_HEADER).send({ title: 'VAT return', dueOn: addDays(today(), 3), remindDays: [14, 3, 0] });
+    // Deadlines 3 days away: a 1-week reminder has passed, a 1-hour one hasn't.
+    await agent.post('/api/v1/deadlines').set(APP_HEADER).send({ title: 'VAT return', dueOn: addDays(today(), 3), reminders: [10080] });
+    await agent.post('/api/v1/deadlines').set(APP_HEADER).send({ title: 'Bank meeting', dueOn: addDays(today(), 3), dueTime: '10:00', reminders: [10080, 60] });
+    await agent.post('/api/v1/deadlines').set(APP_HEADER).send({ title: 'Not yet', dueOn: addDays(today(), 3), dueTime: '10:00', reminders: [60] });
 
     const created = await generateNotifications(db);
     expect(await generateNotifications(db)).toBe(0);
@@ -34,7 +36,9 @@ describe('notifications', () => {
     expect(kinds).not.toContain('lead_followup');
     const overdue = mine.find((n) => n.kind === 'payment_overdue')!;
     expect(overdue).toMatchObject({ severity: 'bad', link: `/tools/salons/${s.id}?tab=billing`, salonName: 'Barber House', readAt: null });
-    expect(mine.find((n) => n.kind === 'deadline')).toMatchObject({ title: 'VAT return', body: expect.stringContaining('in 3 days') });
+    expect(mine.find((n) => n.title === 'VAT return')).toMatchObject({ kind: 'deadline', body: `Due in 3 days (${addDays(today(), 3)})` });
+    expect(mine.find((n) => n.title === 'Bank meeting')!.body).toBe(`Due in 3 days (${addDays(today(), 3)} at 10:00)`);
+    expect(mine.map((n) => n.title)).not.toContain('Not yet');
 
     const other = request.agent(app);
     await other.post('/api/v1/auth/login').set(APP_HEADER).send({ email: 'sales@vinit.test', password: PASSWORD });

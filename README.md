@@ -36,8 +36,8 @@ have their own **Move clients to the server** button (Overview and Salons): lead
 and paused become a salon with its client and subscription. Then add each salon's business address (on the salon: Billing › Edit),
 since the old list had none.
 
-**Background job:** while the API runs it works through, at start-up and then every hour: KPI snapshots of finished
-months, deadlines generated from the data, and notifications (late payments, trials ending, onboardings over 48h,
+**Background job:** while the API runs it works through, at start-up and then every hour (notifications every minute,
+so "5 minutes before" reminders arrive on time): KPI snapshots of finished months, deadlines generated from the data, and notifications (late payments, trials ending, onboardings over 48h,
 follow-ups, urgent tickets, deadline reminders, SMS budget, backups). Each person sees theirs under the bell (lead
 follow-ups and assigned tickets only go to their owner). Nothing is missed when the PC was off: it catches up on start.
 
@@ -123,7 +123,7 @@ Wiki, Files).
 | Support | `/tools/support` | Tickets (T-0001…) by priority and status, time logged on them; the salon page shows included sessions left (counted per meeting), unbilled extra work (100 RON/h, exact minutes) and a "Bill extra work" button |
 | Feature requests | `/tools/features` | What salons and leads ask for, ranked by the MRR of the paying salons that asked, then votes; linked to a roadmap step; shipping it notes it in each salon's story; change-request tickets become requests in one click |
 | Contracts | `/tools/contracts` | Subscription contracts, DPAs (GDPR), custom projects, addenda (numbered VIN-2026-001…) with their files; missing paperwork per salon; signing the subscription contract starts the onboarding. The salon page has a Contracts & files tab |
-| Calendar | `/tools/calendar` | Deadlines: month grid (agenda on phones) and upcoming list; manual ones repeat monthly/quarterly/yearly; domain, SSL, contract renewal, trial and minimum-term dates are generated from the salons |
+| Calendar | `/tools/calendar` | Deadlines like a phone calendar: all day or at a time, reminders 5 min … 1 week before (all-day ones at 09:00). Tap a day to add one there (phones: tap a day to list it, then Add). Done = green, ticked; dismissed = faded, dashed. Upcoming list; manual ones repeat monthly/quarterly/yearly; domain, SSL, contract renewal, trial and minimum-term dates are generated from the salons |
 | Wiki | `/tools/wiki` | How-tos and SOPs in Markdown (live preview), search that ignores diacritics, every version kept and restorable, archive; starts with onboarding, plans & offers and backups pages |
 | Infra | `/tools/infra` | Services and their monthly cost (from the linked Finances payment, decision G, or an estimate), SMS against the 1.500 budget, backups and restore tests (`npm run db:backup` records itself), storage; renewals go to the Calendar |
 | Finances | `/tools/finances` | Transactions, recurring payments, investments, accounts, budgets, cash-flow chart, CSV export |

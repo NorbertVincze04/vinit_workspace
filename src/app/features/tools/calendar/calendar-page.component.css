@@ -44,10 +44,7 @@
   font-weight: 500;
   overflow-wrap: anywhere;
 }
-.title.closed {
-  color: var(--muted);
-  text-decoration: line-through;
-}
+
 .sub {
   font-size: 12.5px;
   color: var(--muted);
@@ -71,10 +68,24 @@
   flex: 1;
 }
 
-/* Phones: the month grid is too narrow, show the agenda instead. */
+.day-bar {
+  display: none;
+}
+
+/* Phones: a compact grid (dots) and, under it, the picked day or the month as a list. */
 @media (max-width: 720px) {
   .grid-view {
-    display: none;
+    margin-bottom: 12px;
+  }
+  .day-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .day-bar strong {
+    margin-right: auto;
   }
   .agenda {
     display: block;
@@ -86,4 +97,14 @@
     grid-column: 2;
     justify-self: start;
   }
+}
+
+/* Done: ticked off. Dismissed: faded and italic (no longer relevant). */
+.title[data-status="done"] {
+  color: var(--tone-ok-fg);
+  text-decoration: line-through;
+}
+.title[data-status="dismissed"] {
+  color: var(--muted);
+  font-style: italic;
 }

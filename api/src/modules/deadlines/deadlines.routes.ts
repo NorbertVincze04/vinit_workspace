@@ -21,7 +21,11 @@ const fields = z.object({
   dueOn: isoDate,
   salonId: uuidRef,
   recurrence: z.enum(['none', 'monthly', 'quarterly', 'yearly']),
-  remindDays: z.array(z.number().int().min(0).max(365)).max(10),
+  /** All day (reminders at 09:00) or at dueTime, Bucharest time. */
+  allDay: z.boolean(),
+  dueTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Use a time like 14:30.').nullable(),
+  /** Minutes before (0 = at the time / on the day at 09:00). */
+  reminders: z.array(z.number().int().min(0).max(525600)).max(10),
   url,
   notes: longText,
 });
@@ -46,7 +50,22 @@ async function getDeadline(k: Db, id: string): Promise<Row> {
 }
 
 /** Generated deadlines only change their status and notes; the date comes from the source. */
-const GENERATED_EDITABLE = new Set(['status', 'notes', 'remindDays']);
+const GENERATED_EDITABLE = new Set(['status', 'notes', 'reminders']);
+
+/** All day ⇔ no time; a timed deadline needs its time. Sorted, unique reminders. */
+function normalize(data: Row, current: Row | null = null): Row {
+  const out = { ...data };
+  if (out.dueTime && out.allDay === undefined) out.allDay = false;
+  const allDay = out.allDay ?? current?.allDay ?? true;
+  const time = out.dueTime !== undefined ? out.dueTime : (current?.dueTime ?? null);
+  if (allDay) {
+    if (out.allDay !== undefined || out.dueTime !== undefined) out.dueTime = null;
+  } else if (!time) {
+    throw new HttpError(400, 'validation', 'Pick a time, or make it an all-day deadline.', { dueTime: 'Pick a time.' });
+  }
+  if (out.reminders) out.reminders = [...new Set(out.reminders as number[])].sort((a, b) => b - a);
+  return out;
+}
 
 /** /deadlines — the calendar of everything that is due. */
 export function deadlinesRouter(): Router {
@@ -55,7 +74,7 @@ export function deadlinesRouter(): Router {
   router.get('/', async (req, res) => {
     const { from, to, status, salonId } = parseQuery(listQuery, req);
     await regenerateDeadlines(db);
-    const q = deadlineRows(db).orderBy([{ column: 'dl.dueOn' }, { column: 'dl.title' }]);
+    const q = deadlineRows(db).orderBy([{ column: 'dl.dueOn' }, { column: 'dl.allDay', order: 'desc' }, { column: 'dl.dueTime' }, { column: 'dl.title' }]);
     if (from) q.where('dl.dueOn', '>=', from);
     if (to) q.where('dl.dueOn', '<=', to);
     if (status) q.where('dl.status', status);
@@ -68,7 +87,7 @@ export function deadlinesRouter(): Router {
     const { days } = parseQuery(z.object({ days: z.coerce.number().int().min(0).max(365).default(30) }), req);
     await regenerateDeadlines(db);
     res.json({
-      items: await deadlineRows(db).where('dl.status', 'open').where('dl.dueOn', '<=', addDays(today(), days)).orderBy('dl.dueOn'),
+      items: await deadlineRows(db).where('dl.status', 'open').where('dl.dueOn', '<=', addDays(today(), days)).orderBy(['dl.dueOn', { column: 'dl.allDay', order: 'desc' }, 'dl.dueTime']),
     });
   });
 
@@ -79,10 +98,10 @@ export function deadlinesRouter(): Router {
   });
 
   router.post('/', async (req, res) => {
-    const data = parseBody(createSchema, req);
+    const data = normalize(parseBody(createSchema, req));
     const item = await db.transaction(async (trx) => {
       const [row] = await trx('deadlines').insert(data).returning('*');
-      await logActivity(trx, { userId: req.user?.id, entityType: 'deadlines', entityId: row.id, salonId: row.salonId, action: 'created', summary: `${row.title} (${row.dueOn})` });
+      await logActivity(trx, { userId: req.user?.id, entityType: 'deadlines', entityId: row.id, salonId: row.salonId, action: 'created', summary: `${row.title} (${row.dueOn}${row.dueTime ? ' ' + row.dueTime : ''})` });
       return getDeadline(trx, row.id);
     });
     res.status(201).json({ item });
@@ -97,7 +116,7 @@ export function deadlinesRouter(): Router {
       if (current.sourceType && Object.keys(patch).some((f) => !GENERATED_EDITABLE.has(f))) {
         throw new HttpError(409, 'generated', 'This deadline comes from the data (domain, contract, subscription): change it there.');
       }
-      const next: Row = { ...patch };
+      const next: Row = normalize(patch, current);
       if (patch.status === 'open') next.doneAt = null;
       if (Object.keys(next).length) await trx('deadlines').where({ id }).update(next);
       await logActivity(trx, { userId: req.user?.id, entityType: 'deadlines', entityId: id, salonId: current.salonId, action: patch.status === 'dismissed' ? 'dismissed' : 'updated', summary: current.title });
@@ -124,7 +143,9 @@ export function deadlinesRouter(): Router {
             dueOn: nextDue,
             salonId: current.salonId,
             recurrence: current.recurrence,
-            remindDays: current.remindDays,
+            allDay: current.allDay,
+            dueTime: current.dueTime,
+            reminders: current.reminders,
             url: current.url,
             notes: current.notes,
           })

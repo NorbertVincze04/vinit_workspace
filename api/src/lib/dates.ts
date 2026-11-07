@@ -49,3 +49,23 @@ export function monthRange(from: string, to: string): string[] {
   for (let i = 0; i <= monthsBetween(from, to) && i < 240; i++) out.push(monthOf(addMonths(monthStart(from), i)));
   return out;
 }
+
+/** Offset of Bucharest from UTC at an instant, in ms (+2h winter, +3h summer). */
+function bucharestOffset(utcMs: number): number {
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat('en-US', { timeZone: 'Europe/Bucharest', hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' })
+      .formatToParts(new Date(utcMs))
+      .map((p) => [p.type, p.value]),
+  );
+  const asUtc = Date.UTC(+parts.year, +parts.month - 1, +parts.day, +parts.hour, +parts.minute, +parts.second);
+  return asUtc - Math.floor(utcMs / 1000) * 1000;
+}
+
+/** "2026-11-12" + "14:30" in Bucharest → the instant (Date). */
+export function bucharestTime(iso: string, hhmm: string): Date {
+  const [y, m, d] = iso.split('-').map(Number);
+  const [h, min] = hhmm.split(':').map(Number);
+  const guess = Date.UTC(y, m - 1, d, h, min);
+  const first = guess - bucharestOffset(guess);
+  return new Date(guess - bucharestOffset(first));
+}

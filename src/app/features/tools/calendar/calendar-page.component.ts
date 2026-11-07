@@ -19,11 +19,13 @@ import {
   StatusPillComponent,
 } from '../../../shared/ui';
 import { SalonsStore } from '../salons/salons.store';
-import { Deadline, categoryLabel, deadlineBody, deadlineFields, monthWeeks, whenInfo } from './calendar.model';
+import { Deadline, categoryLabel, deadlineBody, deadlineFields, deadlineValues, monthWeeks, reminderLabel, timeLabel, whenInfo } from './calendar.model';
 import { CalendarStore } from './calendar.store';
 import { MonthGridComponent } from './components/month-grid/month-grid.component';
 
 /** Calendar of deadlines: a month grid (agenda on phones) and the upcoming list. */
+const REPEATS: Record<Deadline['recurrence'], string> = { none: 'Never', monthly: 'Every month', quarterly: 'Every 3 months', yearly: 'Every year' };
+
 @Component({
   selector: 'app-calendar-page',
   standalone: true,
@@ -65,23 +67,34 @@ export class CalendarPageComponent {
   protected readonly when = whenInfo;
   protected readonly category = categoryLabel;
   protected readonly date = formatDate;
+  protected readonly time = timeLabel;
 
-  /** Agenda for phones: the month's deadlines in date order. */
+  /** Phones: the day tapped in the grid (its deadlines are listed under it). */
+  protected readonly picked = signal<string | null>(null);
+
+  /** Agenda for phones: the picked day, or the month's deadlines in date order. */
   protected readonly agenda = computed(() => {
+    const day = this.picked();
     const m = this.month();
-    return this.deadlines().filter((d) => d.dueOn.startsWith(m));
+    return this.deadlines().filter((d) => (day ? d.dueOn === day : d.dueOn.startsWith(m)));
   });
+
+  /** Desktop: a tapped day opens New deadline on it. Phones: the day is picked and listed first. */
+  protected pickDay(day: string): void {
+    if (window.matchMedia('(max-width: 720px)').matches) this.picked.set(this.picked() === day ? null : day);
+    else this.newOn(day);
+  }
 
   protected readonly facts = computed<Fact[]>(() => {
     const d = this.open();
     if (!d) return [];
     const w = whenInfo(d);
     return [
-      { label: 'Due', value: formatDate(d.dueOn), hint: w.text },
+      { label: 'Due', value: `${formatDate(d.dueOn)} · ${timeLabel(d)}`, hint: w.text },
       { label: 'Type', value: categoryLabel(d.category) },
       { label: 'Salon', value: d.salonName ?? '', route: d.salonId ? `/tools/salons/${d.salonId}` : undefined },
-      { label: 'Repeats', value: d.recurrence === 'none' ? 'No' : d.recurrence },
-      { label: 'Reminders', value: d.remindDays.map((n) => (n ? `${n} days before` : 'on the day')).join(', ') },
+      { label: 'Repeats', value: REPEATS[d.recurrence] },
+      { label: 'Reminders', value: d.reminders.length ? d.reminders.map((m) => reminderLabel(m, d.allDay)).join(', ') : 'None' },
       { label: 'From', value: d.sourceType ? 'Generated from the data' : 'Added by hand' },
       { label: 'Link', value: d.url ? 'Open' : '', href: d.url || undefined },
     ];
@@ -91,7 +104,10 @@ export class CalendarPageComponent {
     effect(
       () => {
         const m = this.month();
-        untracked(() => void this.loadMonth(m));
+        untracked(() => {
+          this.picked.set(null);
+          void this.loadMonth(m);
+        });
       },
       { allowSignalWrites: true },
     );
@@ -110,15 +126,18 @@ export class CalendarPageComponent {
     this.view.set(v === 'upcoming' ? 'upcoming' : 'month');
   }
 
-  protected openForm(item: Deadline | null): void {
+  /** New deadline on a day of the month grid. */
+  protected newOn(day: string): void {
+    this.openForm(null, day);
+  }
+
+  protected openForm(item: Deadline | null, day?: string): void {
     const salons = this.salons.salons().filter((s) => s.status !== 'churned').map((s) => ({ value: s.id, label: s.name }));
     this.open.set(null);
     this.form.set({
       item,
-      fields: deadlineFields(salons),
-      values: item
-        ? { title: item.title, dueOn: item.dueOn, category: item.category, recurrence: item.recurrence, remindDays: item.remindDays.join(', '), salonId: item.salonId ?? '', url: item.url, notes: item.notes }
-        : {},
+      fields: deadlineFields(salons, item?.reminders ?? []),
+      values: item ? deadlineValues(item) : day ? { dueOn: day } : {},
     });
   }
 

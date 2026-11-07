@@ -155,10 +155,10 @@ export class SalonAlertsComponent {
       });
     }
 
-    // Deadlines inside their reminder window (14, 3 and 0 days by default) or late.
+    // Deadlines inside their reminder window (the earliest reminder has passed) or late.
     for (const d of this.calendar.upcoming()) {
       // Trials are already in the billing warnings above.
-      if (d.sourceType === 'trial' || d.daysLeft > Math.max(0, ...d.remindDays)) continue;
+      if (d.sourceType === 'trial' || d.daysLeft > Math.ceil(Math.max(0, ...d.reminders) / 1440)) continue;
       const w = whenInfo(d);
       out.push({
         key: `d${d.id}`,

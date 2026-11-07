@@ -12,6 +12,8 @@ export type FieldType =
   | 'date'
   /** Date and time in local time, "YYYY-MM-DDTHH:mm" (convert with fromLocalDateTime()). */
   | 'datetime'
+  /** Time of day, "HH:MM". */
+  | 'time'
   | 'textarea'
   /** Whole or decimal number typed as text ("1250", "49,99"). */
   | 'number'

@@ -15,20 +15,31 @@
 </div>
 
 @if (view() === 'month') {
-  <app-month-grid class="grid-view" [month]="month()" [deadlines]="deadlines()" (open)="open.set($event)" />
-  <!-- Phones: the same month as a list. -->
+  <app-month-grid class="grid-view" [month]="month()" [deadlines]="deadlines()" (open)="open.set($event)" [selected]="picked()" (pick)="pickDay($event)" />
+  <!-- Phones: the picked day (or the whole month) as a list under the grid. -->
+  @if (picked(); as p) {
+    <div class="day-bar">
+      <strong>{{ date(p, { weekday: 'long', day: 'numeric', month: 'long' }) }}</strong>
+      <button appButton variant="ghost" size="sm" type="button" (click)="picked.set(null)">All month</button>
+      <button appButton variant="primary" size="sm" type="button" (click)="newOn(p)"><app-icon name="plus" [size]="14" /> Add</button>
+    </div>
+  }
   <div class="agenda">
     @for (d of agenda(); track d.id) {
       <button type="button" class="row" (click)="open.set(d)">
         <span class="day">{{ date(d.dueOn, { weekday: 'short', day: 'numeric' }) }}</span>
         <span class="what">
-          <span class="title" [class.closed]="d.status !== 'open'">{{ d.title }}</span>
-          <span class="sub">{{ category(d.category) }}{{ d.salonName ? ' · ' + d.salonName : '' }}</span>
+          <span class="title" [attr.data-status]="d.status">{{ d.status === 'done' ? '✓ ' : '' }}{{ d.title }}</span>
+          <span class="sub">{{ time(d) }} · {{ category(d.category) }}{{ d.salonName ? ' · ' + d.salonName : '' }}</span>
         </span>
         <app-status-pill [tone]="when(d).tone">{{ when(d).text }}</app-status-pill>
       </button>
     } @empty {
-      <app-empty-state heading="Nothing due this month" text="Add taxes, accounting or funding deadlines with New deadline." />
+      @if (picked()) {
+        <p class="empty">Nothing on this day.</p>
+      } @else {
+        <app-empty-state heading="Nothing due this month" text="Tap a day to add a deadline on it, or use New deadline." />
+      }
     }
   </div>
 } @else {
@@ -38,7 +49,7 @@
         <span class="day">{{ date(d.dueOn, { day: 'numeric', month: 'short' }) }}</span>
         <span class="what">
           <span class="title">{{ d.title }}</span>
-          <span class="sub">{{ category(d.category) }}{{ d.salonName ? ' · ' + d.salonName : '' }}</span>
+          <span class="sub">{{ time(d) }} · {{ category(d.category) }}{{ d.salonName ? ' · ' + d.salonName : '' }}</span>
         </span>
         <app-status-pill [tone]="when(d).tone">{{ when(d).text }}</app-status-pill>
       </button>
