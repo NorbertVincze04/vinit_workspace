@@ -2,7 +2,7 @@ import { Router } from 'express';
 import type { Knex } from 'knex';
 import { z } from 'zod';
 import { db } from '../../db/knex.js';
-import { HttpError, notFound } from '../../http/errors.js';
+import { notFound } from '../../http/errors.js';
 import { parseBody, parseParams, parseQuery } from '../../http/validate.js';
 import { logActivity } from '../../lib/activity.js';
 import { uuidParams } from '../../lib/schemas.js';
@@ -14,7 +14,7 @@ import {
   salonPatch,
   statusChange,
 } from './salons.schemas.js';
-import { getSalonRow, inUse, makePrimaryDomain, salonRows, setSalonStatus } from './salons.service.js';
+import { createSalon, getSalonRow, inUse, makePrimaryDomain, salonRows, setSalonStatus } from './salons.service.js';
 
 type Row = Record<string, unknown>;
 type OverviewPart = (k: Knex, salon: Row) => Promise<unknown>;
@@ -50,42 +50,8 @@ export function salonsRouter(): Router {
   });
 
   router.post('/', async (req, res) => {
-    const { client, clientId, domain, status, ...salon } = parseBody(salonCreate, req);
-    const userId = req.user?.id;
-    const item = await db.transaction(async (trx) => {
-      let ownerId = clientId;
-      if (client) {
-        const [created] = await trx('clients').insert(client).returning('*');
-        ownerId = created.id as string;
-        await logActivity(trx, { userId, entityType: 'clients', entityId: ownerId, action: 'created', summary: created.name as string });
-      } else {
-        const existing = await trx('clients as c')
-          .leftJoin('salons as s', 's.clientId', 'c.id')
-          .where('c.id', clientId)
-          .first('c.id', 's.id as salonId');
-        if (!existing) throw new HttpError(400, 'validation', 'This client does not exist.', { clientId: 'Pick a client.' });
-        if (existing.salonId) {
-          throw new HttpError(409, 'conflict', 'This client already has a salon (one salon per client).', {
-            clientId: 'Already has a salon.',
-          });
-        }
-      }
-
-      const [row] = await trx('salons')
-        .insert({ ...salon, clientId: ownerId, status: status ?? 'lead' })
-        .returning('*');
-      await trx('salonStatusHistory').insert({ salonId: row.id, fromStatus: null, toStatus: row.status, changedBy: userId ?? null });
-      if (domain) await trx('salonDomains').insert({ salonId: row.id, domain, isPrimary: true });
-      await logActivity(trx, {
-        userId,
-        entityType: 'salons',
-        entityId: row.id as string,
-        salonId: row.id as string,
-        action: 'created',
-        summary: row.name as string,
-      });
-      return getSalonRow(trx, row.id as string);
-    });
+    const input = parseBody(salonCreate, req);
+    const item = await db.transaction(async (trx) => getSalonRow(trx, await createSalon(trx, input, req.user?.id)));
     res.status(201).json({ item });
   });
 

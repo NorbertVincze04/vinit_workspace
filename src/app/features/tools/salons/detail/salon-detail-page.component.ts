@@ -52,6 +52,17 @@ import {
   salonStatus,
 } from '../salons.model';
 import { SalonsStore } from '../salons.store';
+import { kindLabel, sourceLabel, stageInfo } from '../../leads/leads.model';
+
+interface SalonLead {
+  id: string;
+  source: string;
+  sourceDetail: string;
+  createdAt: string;
+  convertedAt: string | null;
+  ownerName: string | null;
+  activities: { id: string; kind: string; body: string; occurredAt: string; fromStage: string | null; toStage: string | null; userName: string | null }[];
+}
 
 type Dialog =
   | { kind: 'salon'; fields: FieldDef[]; values: FormValues }
@@ -113,6 +124,8 @@ export class SalonDetailPageComponent {
     return d ? clientFromOverview(d.client) : null;
   });
   protected readonly status = computed(() => salonStatus(this.salon()?.status ?? 'lead'));
+  /** The lead this salon was converted from, with its contact history. */
+  protected readonly lead = computed(() => (this.data()?.['lead'] as SalonLead | null | undefined) ?? null);
   protected readonly subtitle = computed(() => {
     const s = this.salon();
     return s ? [s.clientName, s.city, s.primaryDomain].filter(Boolean).join(' · ') : '';
@@ -208,6 +221,9 @@ export class SalonDetailPageComponent {
   protected dns = (v: string) => labelOf(DNS_STATUSES, v);
   protected ssl = (v: string) => labelOf(SSL_STATUSES, v);
   protected statusOf = salonStatus;
+  protected sourceLabel = sourceLabel;
+  protected kindLabel = kindLabel;
+  protected stageLabel = (s: string | null) => (s ? stageInfo(s).label : '');
   protected activityLabel = activityLabel;
   protected formatDate = formatDate;
   protected formatDateTime = formatDateTime;

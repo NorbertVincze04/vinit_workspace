@@ -1,0 +1,87 @@
+<app-dialog #dialog size="lg" [heading]="lead()?.businessName || 'Lead'" [subheading]="stage().hint" (closed)="closed.emit()">
+  @if (lead(); as l) {
+    <div class="top">
+      <app-status-pill [tone]="stage().tone">{{ stage().label }}</app-status-pill>
+      @if (l.convertedSalonId) {
+        <a class="salon-link" [routerLink]="['/tools/salons', l.convertedSalonId]" (click)="dialog.close()">
+          Open salon {{ l.convertedSalonName }} →
+        </a>
+      } @else {
+        <label class="move">
+          <span>Move to</span>
+          <select class="input" [value]="l.stage" (change)="moveTo($any($event.target))">
+            @for (s of moveOptions; track s.value) {
+              <option [value]="s.value" [selected]="s.value === l.stage">{{ s.label }}</option>
+            }
+          </select>
+        </label>
+      }
+    </div>
+
+    <app-facts [items]="facts()" />
+    @if (l.notes) {
+      <p class="notes">{{ l.notes }}</p>
+    }
+
+    <section class="log" aria-label="Log a contact">
+      <h3>Log a contact</h3>
+      <app-segmented label="Type of contact" [options]="kinds" [value]="kind()" (valueChange)="kind.set($event)" />
+      <textarea
+        class="input"
+        rows="2"
+        maxlength="5000"
+        aria-label="What happened"
+        placeholder="What happened? e.g. Sent the demo link, they reply next week"
+        [value]="note()"
+        (input)="onInput('note', $event)"
+      ></textarea>
+      <div class="log-row">
+        <label class="follow">
+          <span>Next follow-up</span>
+          <input class="input" type="date" [value]="followUp()" (input)="onInput('followUp', $event)" />
+        </label>
+        <button appButton type="button" [disabled]="!note().trim() || saving()" (click)="logContact()">Save contact</button>
+      </div>
+    </section>
+
+    <section aria-label="History">
+      <h3>History</h3>
+      @if (activities(); as items) {
+        <ol class="history">
+          @for (a of items; track a.id) {
+            <li>
+              <span class="when">{{ formatDateTime(a.occurredAt) }}</span>
+              <span>
+                <strong>{{ kindLabel(a.kind) }}</strong>
+                @if (a.kind === 'stage_change') {
+                  {{ stageLabel(a.fromStage) }} → {{ stageLabel(a.toStage) }}
+                }
+                @if (a.body) {
+                  · {{ a.body }}
+                }
+                @if (a.userName) {
+                  <span class="muted"> · {{ a.userName }}</span>
+                }
+              </span>
+            </li>
+          } @empty {
+            <li class="muted">No contact logged yet.</li>
+          }
+        </ol>
+      } @else {
+        <p class="muted">Loading…</p>
+      }
+    </section>
+  }
+
+  <div dialogFooter class="footer">
+    @if (lead(); as l) {
+      <button appButton variant="ghost" type="button" (click)="remove.emit(l)">Delete</button>
+      <span class="spacer"></span>
+      <button appButton type="button" (click)="edit.emit(l)">Edit</button>
+      @if (!l.convertedSalonId) {
+        <button appButton variant="primary" type="button" (click)="convert.emit(l)">Convert to salon</button>
+      }
+    }
+  </div>
+</app-dialog>

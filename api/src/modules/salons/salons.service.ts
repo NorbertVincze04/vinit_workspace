@@ -1,7 +1,8 @@
 import type { Knex } from 'knex';
 import { HttpError, notFound } from '../../http/errors.js';
 import { logActivity } from '../../lib/activity.js';
-import type { SalonStatus } from './salons.schemas.js';
+import type { z } from 'zod';
+import type { SalonStatus, salonCreate } from './salons.schemas.js';
 
 type Db = Knex | Knex.Transaction;
 type Row = Record<string, unknown>;
@@ -115,3 +116,32 @@ export async function makePrimaryDomain(trx: Knex.Transaction, salonId: string, 
 
 /** 409 with a readable message (instead of the generic foreign-key one). */
 export const inUse = (message: string): HttpError => new HttpError(409, 'in_use', message);
+
+export type SalonCreateInput = z.infer<typeof salonCreate>;
+
+/**
+ * Creates a salon for an existing client (clientId) or together with a new client, with its first
+ * history entry and primary domain. Shared by POST /salons and lead conversion. Returns the salon id.
+ */
+export async function createSalon(trx: Knex.Transaction, input: SalonCreateInput, userId?: string | null): Promise<string> {
+  const { client, clientId, domain, status, ...salon } = input;
+  let ownerId = clientId;
+  if (client) {
+    const [created] = await trx('clients').insert(client).returning('*');
+    ownerId = created.id as string;
+    await logActivity(trx, { userId, entityType: 'clients', entityId: ownerId, action: 'created', summary: created.name as string });
+  } else {
+    const existing = await trx('clients as c').leftJoin('salons as s', 's.clientId', 'c.id').where('c.id', clientId).first('c.id', 's.id as salonId');
+    if (!existing) throw new HttpError(400, 'validation', 'This client does not exist.', { clientId: 'Pick a client.' });
+    if (existing.salonId) {
+      throw new HttpError(409, 'conflict', 'This client already has a salon (one salon per client).', { clientId: 'Already has a salon.' });
+    }
+  }
+
+  const [row] = await trx('salons').insert({ ...salon, clientId: ownerId, status: status ?? 'lead' }).returning('*');
+  const id = row.id as string;
+  await trx('salonStatusHistory').insert({ salonId: id, fromStatus: null, toStatus: row.status, changedBy: userId ?? null });
+  if (domain) await trx('salonDomains').insert({ salonId: id, domain, isPrimary: true });
+  await logActivity(trx, { userId, entityType: 'salons', entityId: id, salonId: id, action: 'created', summary: row.name as string });
+  return id;
+}

@@ -5,7 +5,7 @@ import { db } from '../src/db/knex.js';
 import { APP_HEADER, AnyRow, createSalon, planId, signedIn } from './helpers.js';
 
 describe('salon platform endpoints need a session', () => {
-  it.each(['/clients', '/salons', '/plans', '/promotions'])('GET %s → 401', async (path) => {
+  it.each(['/clients', '/salons', '/plans', '/promotions', '/leads'])('GET %s → 401', async (path) => {
     expect((await request(createApp()).get(`/api/v1${path}`)).status).toBe(401);
   });
 });

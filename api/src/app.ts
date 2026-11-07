@@ -9,6 +9,7 @@ import { requireAppHeader, requireAuth } from './modules/auth/auth.middleware.js
 import { resourceRouter } from './lib/resource.js';
 import { authRouter } from './modules/auth/auth.routes.js';
 import { filesRouter } from './modules/files/files.routes.js';
+import { leadsRouter } from './modules/leads/leads.routes.js';
 import { clientsRouter } from './modules/salons/clients.routes.js';
 import { plansRouter, promotionsRouter } from './modules/salons/plans.routes.js';
 import { domainsRouter, salonsRouter } from './modules/salons/salons.routes.js';
@@ -50,6 +51,7 @@ export function createApp(): express.Express {
   secured.use('/domains', domainsRouter());
   secured.use('/plans', plansRouter());
   secured.use('/promotions', promotionsRouter());
+  secured.use('/leads', leadsRouter());
   api.use(secured);
 
   app.use('/api/v1', api);

@@ -1,0 +1,85 @@
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  margin-bottom: 16px;
+}
+.salon-link {
+  font-weight: 600;
+  color: var(--main);
+  text-decoration: none;
+}
+.salon-link:hover {
+  text-decoration: underline;
+}
+.move {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+.move .input {
+  width: auto;
+}
+.notes {
+  white-space: pre-line;
+  font-size: 14px;
+  margin-top: 14px;
+}
+h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 20px 0 8px;
+}
+.log {
+  display: grid;
+  gap: 8px;
+}
+.log-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 8px;
+}
+.follow {
+  display: grid;
+  gap: 4px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.history {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  font-size: 14px;
+}
+.history li {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 10px;
+  overflow-wrap: anywhere;
+}
+.when {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+}
+.spacer {
+  flex: 1;
+}
+@media (max-width: 560px) {
+  .history li {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}

@@ -25,7 +25,8 @@ export function clientFormFields(prefix = '', show?: (v: FormValues) => boolean)
     { key: k('contactPerson'), label: 'Contact person', type: 'text', maxLength: 200, show: when(isCompany) },
     { key: k('phone'), label: 'Phone', type: 'tel', maxLength: 40, show: when() },
     { key: k('email'), label: 'Email', type: 'email', maxLength: 200, show: when() },
-    { key: k('city'), label: 'City', type: 'text', maxLength: 100, show: when() },
+    // Inside a salon form the salon already has a city: this one is only needed when it differs.
+    { key: k('city'), label: prefix ? 'Client city (if different)' : 'City', type: 'text', maxLength: 100, show: when() },
     {
       key: k('businessAddress'),
       label: 'Business address',

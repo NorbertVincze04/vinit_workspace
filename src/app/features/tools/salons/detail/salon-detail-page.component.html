@@ -65,6 +65,33 @@
             }
           </app-panel>
 
+          @if (lead(); as l) {
+            <app-panel heading="From the lead" [meta]="sourceLabel(l.source)">
+              <a panelAction routerLink="/tools/leads">Leads</a>
+              <p class="small muted">
+                First contact {{ formatDate(l.createdAt.slice(0, 10)) }}{{ l.sourceDetail ? ' · ' + l.sourceDetail : '' }}{{
+                  l.ownerName ? ' · ' + l.ownerName : ''
+                }}{{ l.convertedAt ? ' · converted ' + formatDateTime(l.convertedAt) : '' }}
+              </p>
+              <ol class="history">
+                @for (a of l.activities; track a.id) {
+                  <li>
+                    <span class="when">{{ formatDate(a.occurredAt.slice(0, 10)) }}</span>
+                    <span>
+                      <strong>{{ kindLabel(a.kind) }}</strong>
+                      @if (a.kind === 'stage_change') {
+                        {{ stageLabel(a.fromStage) }} → {{ stageLabel(a.toStage) }}
+                      }
+                      @if (a.body) {
+                        · {{ a.body }}
+                      }
+                    </span>
+                  </li>
+                }
+              </ol>
+            </app-panel>
+          }
+
           <app-panel heading="Status history">
             <ol class="history">
               @for (h of data()?.history ?? []; track h.id) {

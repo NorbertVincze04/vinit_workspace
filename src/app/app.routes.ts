@@ -29,6 +29,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/tools/tasks/tasks-page.component').then((m) => m.TasksPageComponent),
       },
       {
+        path: 'tools/leads',
+        title: 'Leads · VINIT Workspace',
+        loadComponent: () => import('./features/tools/leads/leads-page.component').then((m) => m.LeadsPageComponent),
+      },
+      {
         path: 'tools/salons',
         title: 'Salons · VINIT Workspace',
         loadComponent: () => import('./features/tools/salons/salons-page.component').then((m) => m.SalonsPageComponent),

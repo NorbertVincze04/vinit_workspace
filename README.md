@@ -71,6 +71,7 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 | Files | `GET /files`, `POST /files` (multipart, ≤ 50 MB), `GET /files/:id/download`, `DELETE /files/:id` |
 | Clients | `GET/POST /clients`, `GET/PATCH/DELETE /clients/:id` (delete is refused while the client has a salon) |
 | Salons | `GET /salons?status=&q=`, `POST /salons` (with `clientId` or a new `client`), `GET/PATCH/DELETE /salons/:id`, `POST /salons/:id/status` (writes the history), `GET /salons/:id/overview`, `GET /salons/:id/timeline`, `GET/POST /salons/:id/domains`, `PATCH/DELETE /domains/:id` |
+| Leads | `GET /leads?stage=&q=&due=`, `POST /leads`, `GET/PATCH/DELETE /leads/:id`, `POST /leads/:id/move` {stage, position, lostReason}, `POST /leads/:id/activities`, `POST /leads/:id/convert` → {lead, salon}, `POST /leads/import` {rows} |
 | Plans, promotions | `GET /plans`, `PATCH /plans/:id`, `GET/POST /promotions`, `PATCH /promotions/:id` (seeded by the migrations) |
 
 ## Tools
@@ -79,6 +80,7 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 |---|---|---|
 | Overview | `/` | Tool launcher, live figures from every tool, tasks due now (tick them off), payments due in 14 days |
 | Tasks | `/tools/tasks` | Year 1 goals split into tasks, owners, due months, goals editor |
+| Leads | `/tools/leads` | Sales pipeline: board (drag cards between stages) or list, contact log with follow-ups, CSV import (e.g. the prospect list saved as CSV), convert into client + salon |
 | Salons | `/tools/salons` | Every salon (tenant) with client, plan, status and domains; `/tools/salons/:id` is its whole story (overview, status history, timeline) |
 | Clients | `/tools/clients` | The people and companies that pay (one salon each), with business address |
 | Finances | `/tools/finances` | Transactions, recurring payments, investments, accounts, budgets, cash-flow chart, CSV export |

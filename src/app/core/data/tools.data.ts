@@ -13,6 +13,13 @@ export const TOOLS: readonly ToolDefinition[] = [
     route: '/tools/tasks',
   },
   {
+    id: 'leads',
+    title: 'Leads',
+    description: 'Sales pipeline board: contacted, demo, trial, paying.',
+    icon: 'target',
+    route: '/tools/leads',
+  },
+  {
     id: 'salons',
     title: 'Salons',
     description: 'Every salon with its client, plan, domains and full story.',
