@@ -86,7 +86,7 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 
 | Tool | Route | What it does |
 |---|---|---|
-| Overview | `/` | Tool launcher, live figures from every tool, tasks due now (tick them off), payments due in 14 days |
+| Overview | `/` | Tool launcher, live figures from every tool, salons needing attention (overdue payments, trials ending, onboardings over 48h, urgent tickets, lead follow-ups due), tasks due now, payments due in 14 days |
 | Tasks | `/tools/tasks` | Year 1 goals split into tasks, owners, due months, goals editor |
 | Leads | `/tools/leads` | Sales pipeline: board (drag cards between stages) or list, contact log with follow-ups, CSV import (e.g. the prospect list saved as CSV), convert into client + salon |
 | Salons | `/tools/salons` | Every salon (tenant) with client, plan, status and domains; `/tools/salons/:id` is its whole story (overview, status history, timeline) |
@@ -96,7 +96,7 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 | Clients | `/tools/clients` | The people and companies that pay (one salon each), with business address |
 | Finances | `/tools/finances` | Transactions, recurring payments, investments, accounts, budgets, cash-flow chart, CSV export |
 | Marketing | `/tools/marketing` | 12-month content calendar, communication mix vs. target, copy & hashtags |
-| Roadmap | `/tools/roadmap` | Four phase checklists, paying-salon counter vs. break-even |
+| Roadmap | `/tools/roadmap` | Four phase checklists, live paying salons and MRR vs. break-even |
 | Files | `/tools/files` | Upload shared documents (PDF, PowerPoint, Excel, Word, images…), filter, download, delete |
 
 Files are stored in PostgreSQL (metadata in `files`, bytes in `file_blobs`), up to 50 MB per file.

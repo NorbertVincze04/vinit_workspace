@@ -60,3 +60,14 @@ app-card {
   flex-wrap: wrap;
   gap: 16px 40px;
 }
+
+.live-count {
+  font-size: 28px;
+  font-weight: 650;
+  color: var(--ink);
+  text-decoration: none;
+  font-variant-numeric: tabular-nums;
+}
+.live-count:hover {
+  color: var(--main);
+}

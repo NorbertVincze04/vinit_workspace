@@ -25,7 +25,7 @@
   }
 </div>
 
-<app-salon-counter class="page-section" [count]="store.salons()" (countChange)="store.setSalons($event)" />
+<app-salon-counter class="page-section" [count]="billing.paying()" [mrr]="billing.mrr()" [live]="true" />
 
 <div class="extras page-section">
   <app-weekly-rhythm />

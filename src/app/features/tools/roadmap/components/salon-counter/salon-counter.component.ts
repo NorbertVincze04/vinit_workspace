@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { BREAK_EVEN_SALONS, FINANCE } from '../../../../../core/data/finance.data';
 import { percent, plural } from '../../../../../core/utils/format';
 import { RonPipe } from '../../../../../shared/pipes/ron.pipe';
@@ -15,7 +16,7 @@ import { MAX_SALONS } from '../../roadmap.store';
 @Component({
   selector: 'app-salon-counter',
   standalone: true,
-  imports: [CardComponent, NumberStepperComponent, ProgressBarComponent, StatComponent, RonPipe],
+  imports: [CardComponent, NumberStepperComponent, ProgressBarComponent, StatComponent, RonPipe, RouterLink],
   templateUrl: './salon-counter.component.html',
   styleUrl: './salon-counter.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,6 +24,10 @@ import { MAX_SALONS } from '../../roadmap.store';
 export class SalonCounterComponent {
   readonly count = input.required<number>();
   readonly countChange = output<number>();
+  /** Count comes from Subscriptions (no manual stepper). */
+  readonly live = input(false);
+  /** Real MRR in RON when known; otherwise count × Standard price. */
+  readonly mrr = input<number | null>(null);
 
   protected readonly max = MAX_SALONS;
   protected readonly costs = FINANCE.monthlyCosts;
@@ -35,7 +40,7 @@ export class SalonCounterComponent {
   ];
 
   protected readonly progress = computed(() => percent(this.count(), this.goal));
-  protected readonly income = computed(() => this.count() * FINANCE.standardPrice);
+  protected readonly income = computed(() => this.mrr() ?? this.count() * FINANCE.standardPrice);
   protected readonly net = computed(() => this.income() - this.costs);
   protected readonly netTone = computed<StatTone>(() =>
     this.net() > 0 ? 'positive' : this.net() < 0 ? 'negative' : 'default',

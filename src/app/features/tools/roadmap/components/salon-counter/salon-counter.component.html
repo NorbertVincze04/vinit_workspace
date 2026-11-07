@@ -2,15 +2,23 @@
   <div class="top">
     <div class="intro">
       <h2 class="title-md">Salons on the platform</h2>
-      <p class="muted small">Paying salons only. Update this when a salon signs.</p>
+      @if (live()) {
+        <p class="muted small">Paying salons, counted live from Subscriptions (active and past due).</p>
+      } @else {
+        <p class="muted small">Paying salons only. Update this when a salon signs.</p>
+      }
     </div>
-    <app-number-stepper
-      label="number of paying salons"
-      [min]="0"
-      [max]="max"
-      [value]="count()"
-      (valueChange)="countChange.emit($event)"
-    />
+    @if (live()) {
+      <a class="live-count" routerLink="/tools/subscriptions" aria-label="Paying salons, open Subscriptions">{{ count() }}</a>
+    } @else {
+      <app-number-stepper
+        label="number of paying salons"
+        [min]="0"
+        [max]="max"
+        [value]="count()"
+        (valueChange)="countChange.emit($event)"
+      />
+    }
   </div>
 
   <div class="track">

@@ -5,6 +5,7 @@ import { SalonCounterComponent } from './components/salon-counter/salon-counter.
 import { WeeklyRhythmComponent } from './components/weekly-rhythm/weekly-rhythm.component';
 import { PLAN_B } from './roadmap.data';
 import { RoadmapStore } from './roadmap.store';
+import { BillingStore } from '../subscriptions/billing.store';
 
 /** Roadmap tool: four phase checklists, the salon counter and the weekly rhythm. */
 @Component({
@@ -26,5 +27,7 @@ import { RoadmapStore } from './roadmap.store';
 })
 export class RoadmapPageComponent {
   protected readonly store = inject(RoadmapStore);
+  /** Paying salons and MRR, live (decision F: replaces the manual counter). */
+  protected readonly billing = inject(BillingStore);
   protected readonly planB = PLAN_B;
 }
