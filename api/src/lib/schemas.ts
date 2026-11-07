@@ -32,3 +32,36 @@ export const monthKey = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'Use the for
 
 /** ISO timestamp, used only to keep the original creation time when importing. */
 export const timestamp = z.iso.datetime({ offset: true });
+
+/** uuid of a record in the Phase 2+ tables (salons, clients, leads…). */
+export const uuid = z.uuid('Invalid id.');
+export const uuidRef = uuid.nullable();
+
+/** Empty, or a valid e-mail address. */
+export const optionalEmail = z.union([z.literal(''), z.email('Enter a valid e-mail address.').max(200)]);
+export const phone = text(40);
+
+/** A moment in time (ISO with offset), or null. */
+export const optionalTimestamp = timestamp.nullable();
+
+/** "https://Salon.RO/" → "salon.ro". */
+export const domainName = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .transform((v) => v.replace(/^https?:\/\//, '').replace(/\/+$/, ''))
+  .pipe(
+    z
+      .string()
+      .max(253)
+      .regex(/^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/, 'Enter a domain like salonname.ro.'),
+  );
+
+/** Tenant slug of the booking product (shops.slug): "barber-house". */
+export const slug = z
+  .string()
+  .max(63)
+  .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Use lower-case letters, digits and single dashes.');
+
+/** Validated route parameter ":id" for uuid tables. */
+export const uuidParams = z.object({ id: uuid });

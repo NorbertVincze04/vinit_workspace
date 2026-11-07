@@ -1,6 +1,7 @@
 import type { Knex } from 'knex';
 import * as m001 from './001_foundation.js';
 import * as m002 from './002_existing_tools.js';
+import * as m003 from './003_clients_salons.js';
 
 interface Migration {
   name: string;
@@ -15,6 +16,7 @@ interface Migration {
 const MIGRATIONS: readonly Migration[] = [
   { name: '001_foundation', module: m001 },
   { name: '002_existing_tools', module: m002 },
+  { name: '003_clients_salons', module: m003 },
 ];
 
 export const migrationSource: Knex.MigrationSource<Migration> = {

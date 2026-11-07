@@ -56,3 +56,31 @@ export function daysUntil(iso: string): number {
   const target = new Date(`${iso}T00:00:00`).getTime();
   return Math.round((target - today) / 86_400_000);
 }
+
+/** ISO instant → "YYYY-MM-DDTHH:mm" in local time (value of an <input type="datetime-local">). */
+export function toLocalDateTime(iso: string | null | undefined): string {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return `${d.toLocaleDateString('sv-SE')}T${d.toTimeString().slice(0, 5)}`;
+}
+
+/** "YYYY-MM-DDTHH:mm" in local time → ISO instant; '' when empty or invalid. */
+export function fromLocalDateTime(local: string | null | undefined): string {
+  if (!local) return '';
+  const d = new Date(local);
+  return Number.isNaN(d.getTime()) ? '' : d.toISOString();
+}
+
+/** ISO instant → "5 Dec 2026, 14:30". */
+export function formatDateTime(iso: string | null | undefined): string {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+/** Whole hours between two instants (b defaults to now). */
+export function hoursBetween(a: string, b?: string): number {
+  return Math.floor(((b ? new Date(b) : new Date()).getTime() - new Date(a).getTime()) / 3_600_000);
+}

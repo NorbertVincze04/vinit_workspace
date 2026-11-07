@@ -1,12 +1,7 @@
 <app-ledger-row clickable (activate)="edit.emit()">
   <div>
-    <span class="cell-title">{{ client().salon || 'Untitled salon' }}</span>
-    @if (sub()) {
-      <span class="cell-sub">{{ sub() }}</span>
-    }
-    @if (since()) {
-      <span class="cell-sub">Client since {{ since() }}</span>
-    }
+    <span class="cell-title">{{ client().name }}</span>
+    <span class="cell-sub">{{ sub() }}</span>
   </div>
 
   <div class="contact">
@@ -16,30 +11,33 @@
     @if (client().email) {
       <span>{{ client().email }}</span>
     }
-    @if (domain(); as d) {
-      <a [href]="'https://' + d" target="_blank" rel="noopener noreferrer">{{ d }}</a>
-    } @else if (client().domain) {
-      <span>{{ client().domain }}</span>
-    }
-    @if (!hasContact()) {
+    @if (!client().phone && !client().email) {
       <span class="cell-sub">No contact details</span>
     }
   </div>
 
-  <div>
-    <span class="plan">{{ planLabel() }}</span>
-    <span class="cell-sub">{{ client().price ? (client().price | ron) + ' / month' : 'No monthly fee' }}</span>
+  <div class="address">
+    @if (client().businessAddress) {
+      {{ client().businessAddress }}
+    } @else {
+      <span class="missing">Address missing</span>
+    }
   </div>
 
-  <div>
-    <app-status-pill [tone]="status().tone">{{ status().label }}</app-status-pill>
+  <div class="salon">
+    @if (client().salonId) {
+      <a [routerLink]="['/tools/salons', client().salonId]">{{ client().salonName }}</a>
+      <app-status-pill [tone]="status().tone">{{ status().label }}</app-status-pill>
+    } @else {
+      <button appButton variant="ghost" size="sm" type="button" (click)="addSalon.emit()">Add salon</button>
+    }
   </div>
 
   <div class="cell-actions">
-    <button appButton variant="ghost" size="sm" type="button" [attr.aria-label]="'Edit ' + client().salon" (click)="edit.emit()">
+    <button appButton variant="ghost" size="sm" type="button" [attr.aria-label]="'Edit ' + client().name" (click)="edit.emit()">
       Edit
     </button>
-    <button appButton variant="ghost" size="sm" type="button" [attr.aria-label]="'Delete ' + client().salon" (click)="remove.emit()">
+    <button appButton variant="ghost" size="sm" type="button" [attr.aria-label]="'Delete ' + client().name" (click)="remove.emit()">
       Delete
     </button>
   </div>

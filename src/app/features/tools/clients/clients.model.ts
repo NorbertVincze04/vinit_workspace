@@ -1,58 +1,61 @@
-import { FINANCE } from '../../../core/data/finance.data';
+import { FieldMap, field } from '../../../core/api/api-fields';
 import { Entity } from '../../../core/models';
-import { StatusTone } from '../../../shared/ui';
+import { SelectOption } from '../../../shared/ui';
+import type { SalonStatus } from '../salons/salons.model';
 
-export type ClientPlan = 'standard' | 'premium' | 'custom';
-export type ClientStatus = 'lead' | 'demo' | 'beta' | 'active' | 'paused';
-export type ClientSort = 'newest' | 'name';
+export type ClientKind = 'person' | 'company';
 
-/** A salon in the pipeline or on the platform. */
+/** The person or company that pays. Has at most one salon. */
 export interface Client extends Entity {
-  salon: string;
-  owner: string;
-  city: string;
-  phone: string;
+  kind: ClientKind;
+  /** The payer's name: the person, or the company. */
+  name: string;
+  contactPerson: string;
   email: string;
-  domain: string;
-  plan: ClientPlan;
-  /** Monthly price in RON; counts toward MRR while the client is Active. */
-  price: number;
-  status: ClientStatus;
-  /** "YYYY-MM-DD" */
-  since: string;
+  phone: string;
+  /** '' only for records moved from the old browser Clients tool (they never had one). */
+  businessAddress: string;
+  city: string;
+  billingEmail: string;
   notes: string;
+  // from the server
+  salonId: string;
+  salonName: string;
+  salonStatus: SalonStatus | '';
 }
 
-export const CLIENT_PLANS: Readonly<Record<ClientPlan, { label: string; price: number }>> = {
-  standard: { label: 'Standard Barbershop', price: FINANCE.standardPrice },
-  premium: { label: 'Premium Brand', price: FINANCE.premiumPrice },
-  custom: { label: 'Custom', price: 0 },
-};
-
-export const CLIENT_STATUSES: readonly { value: ClientStatus; label: string; tone: StatusTone }[] = [
-  { value: 'lead', label: 'Lead', tone: 'neutral' },
-  { value: 'demo', label: 'Demo booked', tone: 'info' },
-  { value: 'beta', label: 'Beta (free)', tone: 'warn' },
-  { value: 'active', label: 'Active', tone: 'ok' },
-  { value: 'paused', label: 'Paused', tone: 'bad' },
+export const CLIENT_KINDS: readonly SelectOption[] = [
+  { value: 'company', label: 'Company' },
+  { value: 'person', label: 'Person' },
 ];
+
+export const CLIENT_FIELD_MAP: FieldMap<Client> = {
+  kind: field.text(),
+  name: field.text(),
+  contactPerson: field.text(),
+  email: field.text(),
+  phone: field.text(),
+  businessAddress: field.text(),
+  city: field.text(),
+  billingEmail: field.text(),
+  notes: field.text(),
+  salonId: field.readOnly(field.ref()),
+  salonName: field.readOnly(field.text()),
+  salonStatus: field.readOnly(field.text()),
+};
 
 export interface ClientFilters {
   q: string;
-  /** A ClientStatus or 'all'. */
-  status: string;
-  sort: ClientSort;
+  /** 'all' | 'with-salon' | 'without-salon' | 'missing-address' */
+  show: string;
 }
 
-export function statusInfo(status: ClientStatus): { label: string; tone: StatusTone } {
-  return CLIENT_STATUSES.find((s) => s.value === status) ?? CLIENT_STATUSES[0];
-}
-
-/** "https://Salon.ro/" → "Salon.ro"; null when it is not a valid domain. */
+/** "https://Salon.ro/" → "salon.ro"; null when it is not a valid domain. */
 export function cleanDomain(domain: string): string | null {
   const v = String(domain || '')
     .trim()
-    .replace(/^https?:\/\//i, '')
+    .toLowerCase()
+    .replace(/^https?:\/\//, '')
     .replace(/\/+$/, '');
-  return /^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/i.test(v) ? v : null;
+  return /^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/.test(v) ? v : null;
 }

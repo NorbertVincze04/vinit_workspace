@@ -20,3 +20,38 @@ export async function signedIn(email = 'owner@vinit.test') {
   if (res.status !== 200) throw new Error(`login failed: ${res.status} ${JSON.stringify(res.body)}`);
   return { app, agent, user };
 }
+
+export type Agent = Awaited<ReturnType<typeof signedIn>>['agent'];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type AnyRow = Record<string, any>;
+
+/** Id of a seeded plan ("standard", "premium", "custom"). */
+export async function planId(agent: Agent, code: string): Promise<string> {
+  const res = await agent.get('/api/v1/plans');
+  const plan = (res.body.items as { id: string; code: string }[]).find((p) => p.code === code);
+  if (!plan) throw new Error(`no plan ${code}`);
+  return plan.id;
+}
+
+/** Id of a seeded promotion ("early_bird", "beta"…). */
+export async function promotionId(agent: Agent, code: string): Promise<string> {
+  const res = await agent.get('/api/v1/promotions');
+  const promo = (res.body.items as { id: string; code: string }[]).find((p) => p.code === code);
+  if (!promo) throw new Error(`no promotion ${code}`);
+  return promo.id;
+}
+
+/** Creates a salon together with a new client; returns the salon row. */
+export async function createSalon(agent: Agent, salon: AnyRow = {}, client: AnyRow = {}): Promise<AnyRow> {
+  const res = await agent
+    .post('/api/v1/salons')
+    .set(APP_HEADER)
+    .send({
+      name: 'Barber House',
+      city: 'Cluj-Napoca',
+      ...salon,
+      client: { name: `${salon['name'] ?? 'Barber House'} SRL`, businessAddress: 'Str. Memorandumului 1, Cluj-Napoca', ...client },
+    });
+  if (res.status !== 201) throw new Error(`createSalon failed: ${res.status} ${JSON.stringify(res.body)}`);
+  return res.body.item as AnyRow;
+}

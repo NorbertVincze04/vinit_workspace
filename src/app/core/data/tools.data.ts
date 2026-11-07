@@ -13,9 +13,16 @@ export const TOOLS: readonly ToolDefinition[] = [
     route: '/tools/tasks',
   },
   {
+    id: 'salons',
+    title: 'Salons',
+    description: 'Every salon with its client, plan, domains and full story.',
+    icon: 'store',
+    route: '/tools/salons',
+  },
+  {
     id: 'clients',
     title: 'Clients',
-    description: 'Salon pipeline from first contact to paying customer.',
+    description: 'The people and companies that pay, one salon each.',
     icon: 'users',
     route: '/tools/clients',
   },

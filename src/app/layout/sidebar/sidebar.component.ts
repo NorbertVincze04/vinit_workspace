@@ -30,7 +30,7 @@ export class SidebarComponent {
     const status = this.api.status();
     if (status === 'saving') return { text: 'Saving…', failed: false, detail: '' };
     if (status === 'failed') return { text: 'Not saved — check the server', failed: true, detail: this.api.lastError() ?? '' };
-    if (this.storage.writeFailed()) return { text: 'Clients not saved — export a backup', failed: true, detail: '' };
+    if (this.storage.writeFailed()) return { text: 'Settings not saved in this browser', failed: true, detail: '' };
     return { text: 'All changes saved', failed: false, detail: '' };
   });
   protected readonly overview = OVERVIEW_LINK;

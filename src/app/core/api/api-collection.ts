@@ -15,6 +15,15 @@ export interface ApiCollection<T extends { id: string }> {
   add(data: Omit<T, 'id' | 'createdAt' | 'updatedAt'> & { id?: string }): T;
   update(id: string, patch: Partial<Omit<T, 'id'>>): void;
   remove(id: string): void;
+  /**
+   * Creates the record on the server first, then adds the server's row (with computed fields).
+   * Use it when the server does more than store the data. Rejects (after a toast) on failure.
+   */
+  create(body: Record<string, unknown>): Promise<T>;
+  /** Saves a change on the server and takes back the server's row. Rejects (after a toast) on failure. */
+  save(id: string, patch: Partial<Omit<T, 'id'>>): Promise<T>;
+  /** Puts a row the server returned (from any endpoint) into the list, replacing the old copy. */
+  upsertRow(row: Record<string, unknown>): T;
   /** Replaces everything (backup import, reset). Resolves when the server has it. */
   replaceAll(items: readonly T[]): Promise<void>;
   /** Changes the local copy only, to mirror something the server did by itself (e.g. unlinking). */
@@ -26,6 +35,7 @@ export interface ApiCollection<T extends { id: string }> {
 /**
  * Server-backed collection. Must be called in an injection context (a store's field):
  *   readonly posts = apiCollection<Post>('/marketing/posts', POST_FIELDS, 'p');
+ *   readonly salons = apiCollection<Salon>('/salons', SALON_FIELDS, uuid);
  *
  * Changes show up immediately (optimistic) and are written to the API in order. When a write
  * fails, a toast explains why and the list is reloaded from the server so it never lies.
@@ -33,8 +43,10 @@ export interface ApiCollection<T extends { id: string }> {
 export function apiCollection<T extends { id: string }>(
   path: string,
   fields: FieldMap<T>,
-  idPrefix = 'x',
+  /** Prefix for the app's short ids ("t" → tlx3k9…), or a generator such as uuid for uuid tables. */
+  newId: string | (() => string) = 'x',
 ): ApiCollection<T> {
+  const makeId = typeof newId === 'function' ? newId : () => uid(newId);
   const api = inject(ApiService);
   const toast = inject(ToastService);
   const state = signal<readonly T[]>([]);
@@ -44,6 +56,18 @@ export function apiCollection<T extends { id: string }>(
     toast.show(`Not saved: ${apiError(error).message}`, 6000);
     void reload();
   };
+
+  const upsertRow = (row: Record<string, unknown>): T => {
+    const item = fromApi<T>(fields, row);
+    state.update((list) => (list.some((x) => x.id === item.id) ? list.map((x) => (x.id === item.id ? item : x)) : [...list, item]));
+    return item;
+  };
+
+  const loudly = <R>(request: Promise<R>): Promise<R> =>
+    request.catch((error: unknown) => {
+      toast.show(`Not saved: ${apiError(error).message}`, 6000);
+      throw error;
+    });
 
   async function reload(): Promise<void> {
     try {
@@ -68,7 +92,7 @@ export function apiCollection<T extends { id: string }>(
 
     add(data) {
       const now = new Date().toISOString();
-      const item = { ...data, id: data.id || uid(idPrefix), createdAt: now, updatedAt: now } as unknown as T;
+      const item = { ...data, id: data.id || makeId(), createdAt: now, updatedAt: now } as unknown as T;
       state.update((list) => [...list, item]);
       api.write<{ item: Record<string, unknown> }>('POST', path, { ...toApi(fields, item), id: item.id }).then(
         (res) => {
@@ -95,6 +119,20 @@ export function apiCollection<T extends { id: string }>(
         if (!(error instanceof HttpErrorResponse && error.status === 404)) failed(error);
       });
     },
+
+    async create(body) {
+      const res = await loudly(api.write<{ item: Record<string, unknown> }>('POST', path, body));
+      return upsertRow(res.item);
+    },
+
+    async save(id, patch) {
+      const res = await loudly(
+        api.write<{ item: Record<string, unknown> }>('PATCH', `${path}/${encodeURIComponent(id)}`, toApi(fields, patch as Partial<T>)),
+      );
+      return upsertRow(res.item);
+    },
+
+    upsertRow,
 
     async replaceAll(items) {
       state.set([...items]);

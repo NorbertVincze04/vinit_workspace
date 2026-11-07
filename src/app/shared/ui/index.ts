@@ -11,6 +11,7 @@ export * from './confirm-button/confirm-button.component';
 export * from './confirm-dialog/confirm-dialog.component';
 export * from './dialog/dialog.component';
 export * from './empty-state/empty-state.component';
+export * from './facts/facts.component';
 export * from './form-field/field.types';
 export * from './form-field/select-field.component';
 export * from './form-field/text-field.component';

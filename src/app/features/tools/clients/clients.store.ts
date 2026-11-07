@@ -1,78 +1,92 @@
-import { Injectable, computed, signal } from '@angular/core';
-import { FINANCE } from '../../../core/data/finance.data';
-import { EntityData } from '../../../core/models';
-import { percent } from '../../../core/utils/format';
-import { persistedCollection } from '../../../core/utils/persisted-collection';
+import { Injectable, Injector, computed, inject, signal } from '@angular/core';
+import { ApiService, apiError } from '../../../core/api/api.service';
+import { apiCollection } from '../../../core/api/api-collection';
+import { ToastService } from '../../../core/services/toast.service';
+import { uuid } from '../../../core/utils/id';
 import { matchesSearch } from '../../../core/utils/text';
 import { ChipOption } from '../../../shared/ui';
-import { CLIENT_STATUSES, Client, ClientFilters } from './clients.model';
+import { SalonsStore } from '../salons/salons.store';
+import { CLIENT_FIELD_MAP, Client, ClientFilters } from './clients.model';
 
-/** Clients tool state. Saved in localStorage under "vinit.clients.v1". */
+/** Clients: the people and companies that pay. Saved on the server; one client has at most one salon. */
 @Injectable({ providedIn: 'root' })
 export class ClientsStore {
-  private readonly collection = persistedCollection<Client>('clients.v1', 'c');
+  private readonly api = inject(ApiService);
+  private readonly toast = inject(ToastService);
+  private readonly injector = inject(Injector);
+  private readonly collection = apiCollection<Client>('/clients', CLIENT_FIELD_MAP, uuid);
 
   readonly clients = this.collection.items;
-  readonly filters = signal<ClientFilters>({ q: '', status: 'all', sort: 'newest' });
+  readonly loaded = this.collection.loaded;
+  readonly filters = signal<ClientFilters>({ q: '', show: 'all' });
 
-  readonly active = computed(() => this.clients().filter((c) => c.status === 'active'));
-  /** Monthly recurring revenue from Active clients. */
-  readonly mrr = computed(() => this.active().reduce((sum, c) => sum + (Number(c.price) || 0), 0));
-  readonly breakEvenPercent = computed(() => percent(this.mrr(), FINANCE.monthlyCosts));
+  /** Clients a new salon can be attached to. */
+  readonly withoutSalon = computed(() => this.clients().filter((c) => !c.salonId));
+  readonly missingAddress = computed(() => this.clients().filter((c) => !c.businessAddress));
 
-  readonly statusChips = computed<ChipOption[]>(() => {
+  readonly chips = computed<ChipOption[]>(() => {
     const list = this.clients();
-    return [
+    const chips: ChipOption[] = [
       { value: 'all', label: 'All', count: list.length },
-      ...CLIENT_STATUSES.map((s) => ({
-        value: s.value,
-        label: s.label,
-        count: list.filter((c) => c.status === s.value).length,
-      })),
+      { value: 'with-salon', label: 'With salon', count: list.length - this.withoutSalon().length },
+      { value: 'without-salon', label: 'No salon yet', count: this.withoutSalon().length },
     ];
+    if (this.missingAddress().length) chips.push({ value: 'missing-address', label: 'Address missing', count: this.missingAddress().length });
+    return chips;
   });
 
   readonly visible = computed(() => {
-    const { q, status, sort } = this.filters();
+    const { q, show } = this.filters();
     return this.clients()
-      .filter((c) => status === 'all' || c.status === status)
-      .filter((c) => matchesSearch(q, c.salon, c.owner, c.city, c.domain, c.phone, c.email))
-      .sort((a, b) =>
-        sort === 'name'
-          ? a.salon.localeCompare(b.salon, 'ro')
-          : String(b.createdAt).localeCompare(String(a.createdAt)),
-      );
+      .filter(
+        (c) =>
+          show === 'all' ||
+          (show === 'with-salon' && !!c.salonId) ||
+          (show === 'without-salon' && !c.salonId) ||
+          (show === 'missing-address' && !c.businessAddress),
+      )
+      .filter((c) => matchesSearch(q, c.name, c.contactPerson, c.city, c.email, c.phone, c.salonName, c.businessAddress))
+      .sort((a, b) => a.name.localeCompare(b.name, 'ro'));
   });
+
+  get(id: string): Client | undefined {
+    return this.collection.get(id);
+  }
 
   setFilters(patch: Partial<ClientFilters>): void {
     this.filters.update((f) => ({ ...f, ...patch }));
   }
 
   clearFilters(): void {
-    this.filters.update((f) => ({ ...f, q: '', status: 'all' }));
+    this.filters.set({ q: '', show: 'all' });
   }
 
-  add(data: EntityData<Client>): Client {
-    return this.collection.add(data);
+  create(body: Partial<Client>): Promise<Client> {
+    return this.collection.create(body as Record<string, unknown>);
   }
 
-  update(id: string, data: Partial<EntityData<Client>>): void {
-    this.collection.update(id, data);
+  async update(id: string, patch: Partial<Client>): Promise<Client> {
+    const client = await this.collection.save(id, patch);
+    // The salon list shows the client's name and contact details.
+    if (client.salonId) void this.salons().refresh(client.salonId);
+    return client;
   }
 
-  remove(id: string): void {
-    this.collection.remove(id);
+  async remove(id: string): Promise<void> {
+    try {
+      await this.api.write('DELETE', `/clients/${id}`);
+    } catch (error) {
+      this.toast.show(`Not deleted: ${apiError(error).message}`, 6000);
+      throw error;
+    }
+    this.collection.setLocal((list) => list.filter((c) => c.id !== id));
   }
 
-  snapshot(): { clients: readonly Client[] } {
-    return { clients: this.clients() };
+  reload(): Promise<void> {
+    return this.collection.reload();
   }
 
-  /** Replaces all clients with a backup. Returns false for an invalid file. */
-  importState(data: unknown): boolean {
-    const list = (data as { clients?: unknown } | null)?.clients;
-    if (!Array.isArray(list)) return false;
-    this.collection.replaceAll(list as Client[]);
-    return true;
+  private salons(): SalonsStore {
+    return this.injector.get(SalonsStore);
   }
 }

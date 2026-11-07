@@ -17,7 +17,7 @@ import { CheckboxComponent } from '../checkbox/checkbox.component';
 import { DialogComponent } from '../dialog/dialog.component';
 import { SelectOption } from '../form-field/field.types';
 import { SegmentedComponent } from '../segmented/segmented.component';
-import { FieldDef, FormValue, FormValues } from './form.model';
+import { FieldDef, FormValue, FormValues, isEmail } from './form.model';
 
 /**
  * Create / edit dialog generated from field definitions. Show it with @if; it emits (saved) with the
@@ -74,6 +74,10 @@ export class FormDialogComponent implements OnInit {
 
   protected fieldId(f: FieldDef): string {
     return `${this.formId}-${f.key}`;
+  }
+
+  protected req(f: FieldDef): boolean {
+    return typeof f.required === 'function' ? f.required(this.values()) : !!f.required;
   }
 
   protected spanOf(f: FieldDef): string {
@@ -144,7 +148,7 @@ export class FormDialogComponent implements OnInit {
       case 'number': {
         let n = parseAmount(raw);
         if (n === null) {
-          if (f.required) return { error: `${f.label} is required.` };
+          if (this.req(f)) return { error: `${f.label} is required.` };
           n = 0;
         }
         if (Number.isNaN(n)) return { error: `${f.label} must be a number, like 1250 or 49,99.` };
@@ -161,12 +165,18 @@ export class FormDialogComponent implements OnInit {
         const options = this.optionsOf(f);
         const value = typeof raw === 'string' ? raw : '';
         const valid = options.some((o) => o.value === value) ? value : (options[0]?.value ?? '');
-        if (f.required && !valid) return { error: `${f.label} is required.` };
+        if (this.req(f) && !valid) return { error: `${f.label} is required.` };
         return valid;
       }
       default: {
         const value = String(raw ?? '').trim();
-        if (f.required && !value) return { error: `${f.label} is required.` };
+        if (this.req(f) && !value) return { error: `${f.label} is required.` };
+        if (!value) return value;
+        const max = f.maxLength ?? (f.type === 'textarea' ? 4000 : 300);
+        if (value.length > max) return { error: `${f.label} can have at most ${max} characters.` };
+        if (f.type === 'email' && !isEmail(value)) return { error: `${f.label} must be a valid e-mail address.` };
+        const problem = f.validate?.(value, this.values());
+        if (problem) return { error: problem };
         return value;
       }
     }

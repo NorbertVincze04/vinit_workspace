@@ -6,6 +6,8 @@
 export interface FieldCodec {
   /** Field name in the API (defaults to the app's name). */
   api?: string;
+  /** Computed by the server (joined names, totals): read, never sent. */
+  readOnly?: boolean;
   toApi(value: unknown): unknown;
   fromApi(value: unknown): unknown;
 }
@@ -33,6 +35,10 @@ export const field = {
   date: (api?: string): FieldCodec => ({ api, toApi: (v) => (v ? String(v) : null), fromApi: str }),
   /** Link to another record: '' in the app ⇄ null in the API. */
   ref: (api?: string): FieldCodec => ({ api, toApi: (v) => (v ? String(v) : null), fromApi: str }),
+  /** ISO instant or '' in the app ⇄ timestamptz or null in the API. */
+  timestamp: (api?: string): FieldCodec => ({ api, toApi: (v) => (v ? String(v) : null), fromApi: str }),
+  /** Server-computed value: read with the given codec, never sent back. */
+  readOnly: (codec: FieldCodec): FieldCodec => ({ ...codec, readOnly: true }),
   list: (api?: string): FieldCodec => ({
     api,
     toApi: (v) => (Array.isArray(v) ? v.map(String) : []),
@@ -49,6 +55,7 @@ export function toApi<T>(fields: FieldMap<T>, source: Partial<T>, options: { met
   for (const key of Object.keys(fields) as (keyof T & string)[]) {
     if (!(key in src) || src[key] === undefined) continue;
     const codec = fields[key]!;
+    if (codec.readOnly) continue;
     out[codec.api ?? key] = codec.toApi(src[key]);
   }
   if (options.meta) {

@@ -1,21 +1,23 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
-import { formatDate } from '../../../../../core/utils/date';
-import { RonPipe } from '../../../../../shared/pipes/ron.pipe';
+import { RouterLink } from '@angular/router';
 import { ButtonComponent, LedgerRowComponent, StatusPillComponent } from '../../../../../shared/ui';
-import { CLIENT_PLANS, Client, cleanDomain, statusInfo } from '../../clients.model';
+import { salonStatus } from '../../../salons/salons.model';
+import { Client } from '../../clients.model';
 
-/** One client in the ledger: salon, contact, package, status, actions. */
+/** One client in the ledger: who pays, how to reach them, address, their salon. */
 @Component({
   selector: 'app-client-row',
   standalone: true,
-  imports: [LedgerRowComponent, StatusPillComponent, ButtonComponent, RonPipe],
+  imports: [LedgerRowComponent, StatusPillComponent, ButtonComponent, RouterLink],
   templateUrl: './client-row.component.html',
   styles: `
     :host { display: block; }
-    .plan { display: block; font-weight: 600; }
-    .contact { display: grid; font-size: 13.5px; }
-    .contact a { color: var(--main); text-decoration: none; overflow-wrap: anywhere; }
-    .contact a:hover { text-decoration: underline; }
+    .contact { display: grid; font-size: 13.5px; overflow-wrap: anywhere; }
+    .address { font-size: 13.5px; overflow-wrap: anywhere; }
+    .missing { color: var(--red); font-weight: 600; font-size: 13px; }
+    .salon { display: grid; justify-items: start; gap: 4px; }
+    .salon a { font-weight: 600; color: var(--main); text-decoration: none; }
+    .salon a:hover { text-decoration: underline; }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -24,14 +26,11 @@ export class ClientRowComponent {
 
   readonly edit = output<void>();
   readonly remove = output<void>();
+  readonly addSalon = output<void>();
 
-  protected readonly status = computed(() => statusInfo(this.client().status));
-  protected readonly planLabel = computed(() => (CLIENT_PLANS[this.client().plan] ?? CLIENT_PLANS.custom).label);
-  protected readonly domain = computed(() => cleanDomain(this.client().domain));
-  protected readonly sub = computed(() => [this.client().owner, this.client().city].filter(Boolean).join(' · '));
-  protected readonly since = computed(() => formatDate(this.client().since));
-  protected readonly hasContact = computed(() => {
+  protected readonly sub = computed(() => {
     const c = this.client();
-    return !!(c.phone || c.email || c.domain);
+    return [c.kind === 'person' ? 'Person' : 'Company', c.contactPerson, c.city].filter(Boolean).join(' · ');
   });
+  protected readonly status = computed(() => salonStatus(this.client().salonStatus));
 }

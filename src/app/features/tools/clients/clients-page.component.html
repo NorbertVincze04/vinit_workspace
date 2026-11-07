@@ -1,59 +1,57 @@
-<app-page-header title="Clients" description="Salon pipeline from first contact to paying customer.">
+<app-page-header title="Clients" description="The people and companies that pay. Each client has one salon.">
   <div pageActions>
-    <app-backup-menu [store]="store" name="clients" />
     <button appButton variant="primary" type="button" (click)="openNew()">
       <app-icon name="plus" [size]="16" /> New client
     </button>
   </div>
 </app-page-header>
 
-<app-clients-overview
-  [total]="store.clients().length"
-  [active]="store.active().length"
-  [mrr]="store.mrr()"
-  [breakEvenPercent]="store.breakEvenPercent()"
-/>
+@if (store.clients().length) {
+  <div class="toolbar">
+    <app-text-field
+      class="grow"
+      type="search"
+      label="Search clients"
+      labelMode="hidden"
+      placeholder="Search name, contact, city, salon, phone"
+      [value]="store.filters().q"
+      (valueChange)="store.setFilters({ q: $event })"
+    />
+    <app-chip-group
+      label="Filter clients"
+      [options]="store.chips()"
+      [value]="store.filters().show"
+      (valueChange)="store.setFilters({ show: $event })"
+    />
+  </div>
+  <app-inline-stats class="summary" [items]="summary()" />
+}
 
-<div class="toolbar">
-  <app-text-field
-    class="grow"
-    type="search"
-    label="Search clients"
-    labelMode="hidden"
-    placeholder="Search salon, owner, city, domain, phone"
-    [value]="store.filters().q"
-    (valueChange)="store.setFilters({ q: $event })"
-  />
-  <app-select-field
-    label="Sort"
-    labelMode="hidden"
-    [options]="sortOptions"
-    [value]="store.filters().sort"
-    (valueChange)="setSort($event)"
-  />
-  <app-chip-group
-    label="Filter by status"
-    [options]="store.statusChips()"
-    [value]="store.filters().status"
-    (valueChange)="store.setFilters({ status: $event })"
-  />
-</div>
-
-@if (!store.clients().length) {
-  <app-empty-state heading="No clients yet" text="Add the first salon you talk to and track it from lead to active.">
+@if (!store.loaded()) {
+  <app-empty-state heading="Loading clients…" text="Reading the list from the VINIT server." />
+} @else if (!store.clients().length) {
+  <app-empty-state
+    heading="No clients yet"
+    text="A client is whoever pays for a salon. Add one here, or create a salon and its client together on the Salons page."
+  >
     <button appButton variant="primary" type="button" (click)="openNew()">Add client</button>
   </app-empty-state>
 } @else if (!store.visible().length) {
-  <app-empty-state heading="No clients match" text="Try a different search or status filter.">
+  <app-empty-state heading="No clients match" text="Try a different search or filter.">
     <button appButton type="button" (click)="store.clearFilters()">Clear filters</button>
   </app-empty-state>
 } @else {
   <app-ledger
-    [headers]="['Salon', 'Contact', 'Package', 'Status', '']"
-    columns="minmax(0, 2fr) minmax(0, 1.7fr) minmax(0, 1.1fr) 130px auto"
+    [headers]="['Client', 'Contact', 'Business address', 'Salon', '']"
+    columns="minmax(0, 1.6fr) minmax(0, 1.4fr) minmax(0, 1.6fr) minmax(0, 1.2fr) auto"
   >
     @for (client of store.visible(); track client.id) {
-      <app-client-row [client]="client" (edit)="openEdit(client)" (remove)="deleting.set(client)" />
+      <app-client-row
+        [client]="client"
+        (edit)="openEdit(client)"
+        (remove)="askDelete(client)"
+        (addSalon)="openAddSalon(client)"
+      />
     }
   </app-ledger>
 }
@@ -69,10 +67,21 @@
   />
 }
 
+@if (salonForm(); as s) {
+  <app-form-dialog
+    heading="Add salon"
+    [subheading]="'For ' + s.client.name"
+    [fields]="s.fields"
+    saveLabel="Add salon"
+    (saved)="addSalon($event)"
+    (closed)="salonForm.set(null)"
+  />
+}
+
 @if (deleting(); as client) {
   <app-confirm-dialog
     heading="Delete client?"
-    [message]="'“' + (client.salon || 'This client') + '” and all of its details will be removed. This can’t be undone.'"
+    [message]="'“' + client.name + '” and its details will be removed. This can’t be undone.'"
     cancelLabel="Keep client"
     (confirmed)="confirmDelete(client)"
     (closed)="deleting.set(null)"

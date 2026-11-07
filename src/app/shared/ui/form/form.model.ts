@@ -10,6 +10,8 @@ export type FieldType =
   | 'email'
   | 'tel'
   | 'date'
+  /** Date and time in local time, "YYYY-MM-DDTHH:mm" (convert with fromLocalDateTime()). */
+  | 'datetime'
   | 'textarea'
   /** Whole or decimal number typed as text ("1250", "49,99"). */
   | 'number'
@@ -28,7 +30,8 @@ export interface FieldDef {
   key: string;
   label: string;
   type: FieldType;
-  required?: boolean;
+  /** true, or a rule on the other values (e.g. a reason only when the status is churned). */
+  required?: boolean | ((values: FormValues) => boolean);
   /** Grid columns to span (the dialog has 2 or 4 columns). */
   span?: 1 | 2 | 3 | 4 | 'full';
   placeholder?: string;
@@ -45,7 +48,14 @@ export interface FieldDef {
   integer?: boolean;
   // check fields
   checkLabel?: string;
+  // text fields (email fields are checked for a valid address automatically)
+  maxLength?: number;
+  /** Extra rule for a non-empty text value: return an error message, or null when it is fine. */
+  validate?: (value: string, values: FormValues) => string | null;
 }
+
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+export const isEmail = (value: string): boolean => EMAIL.test(value);
 
 // ---- helpers to read form values back into entity fields ----
 

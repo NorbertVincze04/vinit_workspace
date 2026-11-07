@@ -9,6 +9,9 @@ import { requireAppHeader, requireAuth } from './modules/auth/auth.middleware.js
 import { resourceRouter } from './lib/resource.js';
 import { authRouter } from './modules/auth/auth.routes.js';
 import { filesRouter } from './modules/files/files.routes.js';
+import { clientsRouter } from './modules/salons/clients.routes.js';
+import { plansRouter, promotionsRouter } from './modules/salons/plans.routes.js';
+import { domainsRouter, salonsRouter } from './modules/salons/salons.routes.js';
 import { roadmapRouter } from './modules/roadmap/roadmap.routes.js';
 import { settingsRouter } from './modules/settings/settings.routes.js';
 import { TOOL_RESOURCES } from './modules/tools/tools.resources.js';
@@ -41,6 +44,12 @@ export function createApp(): express.Express {
   secured.use('/roadmap', roadmapRouter());
   secured.use('/files', filesRouter());
   for (const resource of TOOL_RESOURCES) secured.use(`/${resource.name}`, resourceRouter(resource));
+  // Salon platform (Phase 2+): everything links to a salon.
+  secured.use('/clients', clientsRouter());
+  secured.use('/salons', salonsRouter());
+  secured.use('/domains', domainsRouter());
+  secured.use('/plans', plansRouter());
+  secured.use('/promotions', promotionsRouter());
   api.use(secured);
 
   app.use('/api/v1', api);

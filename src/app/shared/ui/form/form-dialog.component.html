@@ -22,7 +22,7 @@
             </div>
           }
           @case ('select') {
-            <label class="label" [for]="fieldId(f)">{{ f.label }}{{ f.required ? ' *' : '' }}</label>
+            <label class="label" [for]="fieldId(f)">{{ f.label }}{{ req(f) ? ' *' : '' }}</label>
             <select class="input" [id]="fieldId(f)" (change)="onInput(f, $event)">
               @for (option of optionsOf(f); track option.value) {
                 <option [value]="option.value" [selected]="option.value === text(f)">{{ option.label }}</option>
@@ -30,11 +30,11 @@
             </select>
           }
           @case ('textarea') {
-            <label class="label" [for]="fieldId(f)">{{ f.label }}{{ f.required ? ' *' : '' }}</label>
+            <label class="label" [for]="fieldId(f)">{{ f.label }}{{ req(f) ? ' *' : '' }}</label>
             <textarea
               class="input"
               rows="3"
-              maxlength="4000"
+              [attr.maxlength]="f.maxLength ?? 4000"
               [id]="fieldId(f)"
               [placeholder]="f.placeholder || ''"
               [value]="text(f)"
@@ -42,7 +42,7 @@
             ></textarea>
           }
           @case ('number') {
-            <label class="label" [for]="fieldId(f)">{{ f.label }}{{ f.required ? ' *' : '' }}</label>
+            <label class="label" [for]="fieldId(f)">{{ f.label }}{{ req(f) ? ' *' : '' }}</label>
             <input
               class="input"
               type="text"
@@ -55,13 +55,13 @@
             />
           }
           @default {
-            <label class="label" [for]="fieldId(f)">{{ f.label }}{{ f.required ? ' *' : '' }}</label>
+            <label class="label" [for]="fieldId(f)">{{ f.label }}{{ req(f) ? ' *' : '' }}</label>
             <input
               class="input"
               autocomplete="off"
-              maxlength="300"
+              [attr.maxlength]="f.maxLength ?? 300"
               [id]="fieldId(f)"
-              [type]="f.type"
+              [type]="f.type === 'datetime' ? 'datetime-local' : f.type"
               [placeholder]="f.placeholder || ''"
               [value]="text(f)"
               (input)="onInput(f, $event)"

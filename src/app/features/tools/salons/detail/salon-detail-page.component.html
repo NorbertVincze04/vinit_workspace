@@ -1,0 +1,161 @@
+<a class="back" routerLink="/tools/salons"><span aria-hidden="true">←</span> Salons</a>
+
+@if (salon(); as s) {
+  <app-page-header [title]="s.name" [description]="subtitle()">
+    <div pageActions>
+      <app-status-pill [tone]="status().tone">{{ status().label }}</app-status-pill>
+      <button appButton variant="primary" type="button" (click)="changeStatus()">Change status</button>
+      <app-menu ariaLabel="More salon actions">
+        <button appMenuItem type="button" (click)="editSalon()">Edit salon</button>
+        <button appMenuItem type="button" (click)="editClient()">Edit client</button>
+        <button appMenuItem tone="danger" type="button" (click)="deleting.set('salon')">Delete salon…</button>
+      </app-menu>
+    </div>
+  </app-page-header>
+
+  <app-tabs label="Salon sections" [options]="tabs()" [(value)]="tab" />
+
+  <div class="tab-body">
+    @switch (tab()) {
+      @case ('overview') {
+        <div class="grid">
+          <app-panel heading="Salon">
+            <button panelAction appButton variant="ghost" size="sm" type="button" (click)="editSalon()">Edit</button>
+            <app-facts [items]="salonFacts()" />
+            @if (s.notes) {
+              <p class="notes">{{ s.notes }}</p>
+            }
+          </app-panel>
+
+          <app-panel heading="Client (who pays)">
+            <button panelAction appButton variant="ghost" size="sm" type="button" (click)="editClient()">Edit</button>
+            <app-facts [items]="clientFacts()" />
+          </app-panel>
+
+          <app-panel heading="Domains" [meta]="(data()?.domains?.length ?? 0) + ''" [flush]="!!data()?.domains?.length">
+            <button panelAction appButton variant="ghost" size="sm" type="button" (click)="editDomain(null)">Add domain</button>
+            @for (d of data()?.domains ?? []; track d.id) {
+              <div class="domain">
+                <div class="domain-main">
+                  <a [href]="'https://' + d.domain" target="_blank" rel="noopener noreferrer">{{ d.domain }}</a>
+                  @if (d.isPrimary) {
+                    <span class="tag">Primary</span>
+                  }
+                </div>
+                <div class="pills">
+                  <app-status-pill [tone]="dns(d.dnsStatus).tone">{{ dns(d.dnsStatus).label }}</app-status-pill>
+                  <app-status-pill [tone]="ssl(d.sslStatus).tone">{{ ssl(d.sslStatus).label }}</app-status-pill>
+                </div>
+                <p class="domain-sub">
+                  {{ d.registrar || 'Registrar not set' }}
+                  @if (d.expiresOn) {
+                    · expires {{ formatDate(d.expiresOn) }}{{ d.autoRenew ? ' (auto-renew)' : '' }}
+                  }
+                  @if (d.passwordManagerRef) {
+                    · login: {{ d.passwordManagerRef }}
+                  }
+                </p>
+                <div class="domain-actions">
+                  <button appButton variant="ghost" size="sm" type="button" (click)="editDomain(d)">Edit</button>
+                  <button appButton variant="ghost" size="sm" type="button" (click)="deleting.set(d)">Remove</button>
+                </div>
+              </div>
+            } @empty {
+              <p class="muted small">No domain yet. Each salon gets its own (e.g. barberhouse.ro).</p>
+            }
+          </app-panel>
+
+          <app-panel heading="Status history">
+            <ol class="history">
+              @for (h of data()?.history ?? []; track h.id) {
+                <li>
+                  <span class="when">{{ formatDate(h.changedOn) }}</span>
+                  <span>
+                    @if (h.fromStatus) {
+                      {{ statusOf(h.fromStatus).label }} →
+                    } @else {
+                      Added as
+                    }
+                    <strong>{{ statusOf(h.toStatus).label }}</strong>
+                    @if (h.reason) {
+                      <span class="muted"> · {{ h.reason }}</span>
+                    }
+                    @if (h.changedByName) {
+                      <span class="muted"> · {{ h.changedByName }}</span>
+                    }
+                  </span>
+                </li>
+              }
+            </ol>
+          </app-panel>
+        </div>
+      }
+      @case ('timeline') {
+        @if (timeline(); as items) {
+          @if (items.length) {
+            <app-ledger [headers]="['When', 'What', 'Who']" columns="170px minmax(0, 1fr) 140px">
+              @for (t of items; track t.id) {
+                <app-ledger-row>
+                  <span class="cell-sub num">{{ formatDateTime(t.occurredAt) }}</span>
+                  <div>
+                    <span>{{ t.summary }}</span>
+                    <span class="cell-sub">{{ activityLabel(t) }}</span>
+                  </div>
+                  <span class="cell-sub">{{ t.userName || 'System' }}</span>
+                </app-ledger-row>
+              }
+            </app-ledger>
+          } @else {
+            <app-empty-state heading="Nothing yet" text="Every change to this salon will be listed here." />
+          }
+        } @else {
+          <app-empty-state heading="Loading the timeline…" text="" />
+        }
+      }
+    }
+  </div>
+} @else if (error()) {
+  <app-empty-state heading="Could not open this salon" [text]="error()">
+    <a appButton routerLink="/tools/salons">Back to salons</a>
+  </app-empty-state>
+} @else {
+  <app-empty-state heading="Loading…" text="Reading the salon from the VINIT server." />
+}
+
+@if (dialog(); as d) {
+  @if (d.kind === 'salon') {
+    <app-form-dialog heading="Edit salon" [fields]="d.fields" [initial]="d.values" saveLabel="Save salon" (saved)="saved($event)" (closed)="dialog.set(null)" />
+  } @else if (d.kind === 'client') {
+    <app-form-dialog heading="Edit client" [fields]="clientFields" [initial]="d.values" saveLabel="Save client" (saved)="saved($event)" (closed)="dialog.set(null)" />
+  } @else if (d.kind === 'status') {
+    <app-form-dialog
+      heading="Change status"
+      subheading="The change is kept in the salon's history (used for churn and retention)."
+      [fields]="statusFields"
+      [initial]="d.values"
+      saveLabel="Change status"
+      (saved)="saved($event)"
+      (closed)="dialog.set(null)"
+    />
+  } @else if (d.kind === 'domain') {
+    <app-form-dialog
+      [heading]="d.domain ? 'Edit domain' : 'Add domain'"
+      [fields]="domainFields"
+      [initial]="d.values"
+      saveLabel="Save domain"
+      (saved)="saved($event)"
+      (closed)="dialog.set(null)"
+    />
+  }
+}
+
+@if (deleting(); as target) {
+  <app-confirm-dialog
+    [heading]="target === 'salon' ? 'Delete salon?' : 'Remove domain?'"
+    [message]="deleteMessage(target)"
+    [confirmLabel]="target === 'salon' ? 'Delete salon' : 'Remove'"
+    cancelLabel="Keep it"
+    (confirmed)="confirmDelete()"
+    (closed)="deleting.set(null)"
+  />
+}

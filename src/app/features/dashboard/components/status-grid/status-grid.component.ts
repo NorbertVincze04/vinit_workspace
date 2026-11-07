@@ -3,10 +3,11 @@ import { BREAK_EVEN_SALONS, FINANCE } from '../../../../core/data/finance.data';
 import { formatRon, percent } from '../../../../core/utils/format';
 import { KpiCardComponent } from '../../../../shared/components';
 import { StatTone } from '../../../../shared/ui';
-import { ClientsStore } from '../../../tools/clients/clients.store';
 import { FinancesStore } from '../../../tools/finances/finances.store';
 import { MarketingStore } from '../../../tools/marketing/marketing.store';
 import { RoadmapStore } from '../../../tools/roadmap/roadmap.store';
+import { PlansStore } from '../../../tools/salons/plans.store';
+import { SalonsStore } from '../../../tools/salons/salons.store';
 import { TasksStore } from '../../../tools/tasks/tasks.store';
 
 interface Kpi {
@@ -50,12 +51,20 @@ const kpi = (k: Partial<Kpi> & Pick<Kpi, 'label' | 'value' | 'route'>): Kpi => (
 export class StatusGridComponent {
   private readonly roadmap = inject(RoadmapStore);
   private readonly tasks = inject(TasksStore);
-  private readonly clients = inject(ClientsStore);
+  private readonly salons = inject(SalonsStore);
+  private readonly plans = inject(PlansStore);
+
+  /** Until subscriptions exist: the plan price of each active salon. */
+  private readonly mrr = computed(() =>
+    this.salons.active().reduce((sum, s) => sum + (this.plans.plan(s.planId)?.monthlyPrice ?? 0), 0),
+  );
   private readonly finances = inject(FinancesStore);
   private readonly marketing = inject(MarketingStore);
 
   protected readonly kpis = computed<Kpi[]>(() => {
-    const active = this.clients.active().length;
+    const active = this.salons.active().length;
+    const mrr = this.mrr();
+    const costsPercent = percent(mrr, FINANCE.monthlyCosts);
     const goal = FINANCE.year1Salons;
     const business = this.finances.businessThisMonth();
     const tasks = this.tasks.overall();
@@ -66,7 +75,7 @@ export class StatusGridComponent {
 
     return [
       kpi({
-        label: 'Active clients',
+        label: 'Active salons',
         value: `${active} / ${goal}`,
         hint:
           active < BREAK_EVEN_SALONS
@@ -75,14 +84,14 @@ export class StatusGridComponent {
               ? `Break-even reached · ${goal - active} to goal`
               : 'Year 1 goal reached',
         percent: percent(active, goal),
-        route: '/tools/clients',
+        route: '/tools/salons',
       }),
       kpi({
         label: 'Monthly recurring revenue',
-        value: formatRon(this.clients.mrr()),
-        hint: `${this.clients.breakEvenPercent()}% of ${formatRon(FINANCE.monthlyCosts)} costs`,
-        percent: this.clients.breakEvenPercent(),
-        route: '/tools/clients',
+        value: formatRon(mrr),
+        hint: `${costsPercent}% of ${formatRon(FINANCE.monthlyCosts)} costs`,
+        percent: costsPercent,
+        route: '/tools/salons',
       }),
       kpi({
         label: 'Business result this month',

@@ -31,8 +31,8 @@ and survives restarts and rebuilds. After pulling code changes: `docker compose 
 
 **Moving your old browser data:** before the server existed, everything was saved in the browser. Open the Overview in
 the browser that has your latest data and click **Move to the server** (one time). Tasks, Finances, Marketing,
-Roadmap, settings and files are copied; nothing in the browser is deleted. **Clients** still saves in the browser until
-Phase 2 reshapes it into clients + salons.
+Roadmap, settings and files are copied; nothing in the browser is deleted. Records from the old browser **Clients** tool
+are moved separately (see the Salons page) because they become clients, salons, leads and subscriptions.
 
 Security notes: the app is served over plain http on your home network, so only use it on networks you trust. The
 database port is only reachable from the PC itself. Passwords are bcrypt-hashed; sessions are httpOnly cookies.
@@ -69,6 +69,9 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 | Roadmap | `GET /roadmap`, `PUT /roadmap/steps/:stepId`, `PUT /roadmap` |
 | Settings | `GET /settings`, `PUT /settings/:key` (`plan.start`, `finances.rates`, `roadmap.salons`) |
 | Files | `GET /files`, `POST /files` (multipart, ≤ 50 MB), `GET /files/:id/download`, `DELETE /files/:id` |
+| Clients | `GET/POST /clients`, `GET/PATCH/DELETE /clients/:id` (delete is refused while the client has a salon) |
+| Salons | `GET /salons?status=&q=`, `POST /salons` (with `clientId` or a new `client`), `GET/PATCH/DELETE /salons/:id`, `POST /salons/:id/status` (writes the history), `GET /salons/:id/overview`, `GET /salons/:id/timeline`, `GET/POST /salons/:id/domains`, `PATCH/DELETE /domains/:id` |
+| Plans, promotions | `GET /plans`, `PATCH /plans/:id`, `GET/POST /promotions`, `PATCH /promotions/:id` (seeded by the migrations) |
 
 ## Tools
 
@@ -76,7 +79,8 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 |---|---|---|
 | Overview | `/` | Tool launcher, live figures from every tool, tasks due now (tick them off), payments due in 14 days |
 | Tasks | `/tools/tasks` | Year 1 goals split into tasks, owners, due months, goals editor |
-| Clients | `/tools/clients` | Salon pipeline (lead → active), MRR vs. monthly costs |
+| Salons | `/tools/salons` | Every salon (tenant) with client, plan, status and domains; `/tools/salons/:id` is its whole story (overview, status history, timeline) |
+| Clients | `/tools/clients` | The people and companies that pay (one salon each), with business address |
 | Finances | `/tools/finances` | Transactions, recurring payments, investments, accounts, budgets, cash-flow chart, CSV export |
 | Marketing | `/tools/marketing` | 12-month content calendar, communication mix vs. target, copy & hashtags |
 | Roadmap | `/tools/roadmap` | Four phase checklists, paying-salon counter vs. break-even |
@@ -103,7 +107,7 @@ src/
       data/               tools.data.ts (tool registry → sidebar + overview), finance.data.ts (plan numbers),
                           phases.data.ts (Build/Prove/Sell/Scale)
       models/             TypeScript interfaces (Entity = id/createdAt/updatedAt base)
-      services/           StorageService (per-device prefs + Clients), ThemeService, ToastService,
+      services/           StorageService (per-device prefs), ThemeService, ToastService,
                           PlanCalendarService (shared Month 1), LocalDataService (one-time move of old browser data)
       utils/              persistedSignal(), persistedCollection(), date/format/text helpers, file (JSON/CSV)
     shared/

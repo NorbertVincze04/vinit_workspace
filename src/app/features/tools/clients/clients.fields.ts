@@ -1,62 +1,80 @@
-import { FINANCE } from '../../../core/data/finance.data';
-import { EntityData } from '../../../core/models';
-import { todayISO } from '../../../core/utils/date';
-import { FieldDef, FormValues, asNumber, asString } from '../../../shared/ui';
-import { CLIENT_PLANS, CLIENT_STATUSES, Client, ClientPlan, ClientStatus } from './clients.model';
+import { FieldDef, FormValues, asString } from '../../../shared/ui';
+import { CLIENT_KINDS, Client } from './clients.model';
 
-/** Fields of the create / edit client dialog. */
-export const CLIENT_FIELDS: readonly FieldDef[] = [
-  { key: 'salon', label: 'Salon name', type: 'text', required: true, span: 'full' },
-  { key: 'owner', label: 'Owner / contact person', type: 'text' },
-  { key: 'city', label: 'City', type: 'text' },
-  { key: 'phone', label: 'Phone', type: 'tel' },
-  { key: 'email', label: 'Email', type: 'email' },
-  { key: 'domain', label: 'Domain', type: 'text', span: 'full', placeholder: 'salonname.ro' },
-  {
-    key: 'plan',
-    label: 'Package',
-    type: 'select',
-    default: 'standard',
-    options: (Object.keys(CLIENT_PLANS) as ClientPlan[]).map((p) => ({
-      value: p,
-      label: CLIENT_PLANS[p].price ? `${CLIENT_PLANS[p].label} (${CLIENT_PLANS[p].price} RON)` : CLIENT_PLANS[p].label,
-    })),
-    // Picking a package fills in its price (custom keeps whatever was typed).
-    onChange: (v) => {
-      const plan = asString(v['plan']) as ClientPlan;
-      return plan !== 'custom' ? { price: CLIENT_PLANS[plan].price } : {};
+const isCompany = (v: FormValues): boolean => v['kind'] !== 'person';
+
+/**
+ * Client form. `prefix` lets the same fields sit inside another form (the "New salon" dialog
+ * uses "client." keys), `show` hides them all when that form does not need them.
+ */
+export function clientFormFields(prefix = '', show?: (v: FormValues) => boolean): FieldDef[] {
+  const k = (key: string): string => prefix + key;
+  const when = (extra?: (v: FormValues) => boolean) => (v: FormValues) => (!show || show(v)) && (!extra || extra(strip(v, prefix)));
+  return [
+    { key: k('kind'), label: 'Client is a', type: 'switch', default: 'company', options: CLIENT_KINDS, span: 'full', show: when() },
+    {
+      key: k('name'),
+      label: 'Name (company or person)',
+      type: 'text',
+      required: true,
+      maxLength: 200,
+      span: 'full',
+      placeholder: 'Barber House SRL',
+      show: when(),
     },
-  },
-  {
-    key: 'price',
-    label: 'Monthly price (RON)',
-    type: 'number',
-    default: FINANCE.standardPrice,
-    hint: 'Counts toward MRR once the client is Active.',
-  },
-  { key: 'status', label: 'Status', type: 'select', default: 'lead', options: CLIENT_STATUSES },
-  { key: 'since', label: 'Client since', type: 'date', default: todayISO },
-  {
-    key: 'notes',
-    label: 'Notes',
-    type: 'textarea',
-    span: 'full',
-    placeholder: 'Barbers, preferences, feedback from the demo',
-  },
+    { key: k('contactPerson'), label: 'Contact person', type: 'text', maxLength: 200, show: when(isCompany) },
+    { key: k('phone'), label: 'Phone', type: 'tel', maxLength: 40, show: when() },
+    { key: k('email'), label: 'Email', type: 'email', maxLength: 200, show: when() },
+    { key: k('city'), label: 'City', type: 'text', maxLength: 100, show: when() },
+    {
+      key: k('businessAddress'),
+      label: 'Business address',
+      type: 'text',
+      required: true,
+      maxLength: 500,
+      span: 'full',
+      placeholder: 'Street, number, city, county',
+      hint: 'Registered address of the business, used on invoices and contracts.',
+      show: when(),
+    },
+    {
+      key: k('billingEmail'),
+      label: 'Billing email',
+      type: 'email',
+      maxLength: 200,
+      span: 'full',
+      hint: 'Only if invoices go to a different address.',
+      show: when(),
+    },
+  ];
+}
+
+export const CLIENT_FIELDS: readonly FieldDef[] = [
+  ...clientFormFields(),
+  { key: 'notes', label: 'Notes', type: 'textarea', span: 'full' },
 ];
 
-export function clientFromForm(v: FormValues): EntityData<Client> {
-  return {
-    salon: asString(v['salon']),
-    owner: asString(v['owner']),
-    city: asString(v['city']),
-    phone: asString(v['phone']),
-    email: asString(v['email']),
-    domain: asString(v['domain']),
-    plan: (asString(v['plan']) || 'custom') as ClientPlan,
-    price: asNumber(v['price']),
-    status: (asString(v['status']) || 'lead') as ClientStatus,
-    since: asString(v['since']),
-    notes: asString(v['notes']),
+/** Form values (optionally under a prefix) → API body for a client. */
+export function clientBody(v: FormValues, prefix = ''): Partial<Client> {
+  const s = strip(v, prefix);
+  const body: Partial<Client> = {
+    kind: (asString(s['kind']) || 'company') as Client['kind'],
+    name: asString(s['name']),
+    contactPerson: asString(s['kind']) === 'person' ? '' : asString(s['contactPerson']),
+    phone: asString(s['phone']),
+    email: asString(s['email']),
+    city: asString(s['city']),
+    businessAddress: asString(s['businessAddress']),
+    billingEmail: asString(s['billingEmail']),
   };
+  if (!prefix) body.notes = asString(s['notes']);
+  return body;
+}
+
+/** { "client.name": "x" } with prefix "client." → { name: "x" }. */
+function strip(v: FormValues, prefix: string): FormValues {
+  if (!prefix) return v;
+  const out: FormValues = {};
+  for (const [key, value] of Object.entries(v)) if (key.startsWith(prefix)) out[key.slice(prefix.length)] = value;
+  return out;
 }

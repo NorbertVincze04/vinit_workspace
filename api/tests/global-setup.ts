@@ -1,3 +1,5 @@
+import { REFERENCE_TABLES, SNAPSHOT_SCHEMA } from './reference-tables.js';
+
 /** Rebuilds the test database schema from scratch once per test run. */
 export default async function setup(): Promise<void> {
   process.env.NODE_ENV = 'test';
@@ -10,6 +12,11 @@ export default async function setup(): Promise<void> {
   try {
     await knex.raw('DROP SCHEMA public CASCADE; CREATE SCHEMA public;');
     await knex.migrate.latest(migrationConfig);
+    // Keep a copy of the seeded reference data so each test can start from it (see setup.ts).
+    await knex.raw(`DROP SCHEMA IF EXISTS ${SNAPSHOT_SCHEMA} CASCADE; CREATE SCHEMA ${SNAPSHOT_SCHEMA};`);
+    for (const table of REFERENCE_TABLES) {
+      await knex.raw(`CREATE TABLE ${SNAPSHOT_SCHEMA}.${table} AS TABLE public.${table}`);
+    }
   } catch (error) {
     throw new Error(
       `Could not prepare the test database (is it running? → docker compose up -d db): ${(error as Error).message}`,
