@@ -75,6 +75,8 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 | Subscriptions | `POST /salons/:id/subscriptions`, `GET /subscriptions?status=`, `GET/PATCH /subscriptions/:id`, `POST /subscriptions/:id/change` {kind: upgrade, downgrade, price_change, pause, resume, cancel, trial_converted, past_due, end}, `GET /subscriptions/warnings`, `GET /metrics/mrr?from=&to=` |
 | Payments | `GET /payments?status=&salonId=`, `POST /payments`, `PATCH/DELETE /payments/:id`, `POST /payments/:id/mark-paid` (adds the income to Finances), `POST /payments/:id/reopen`, `POST /payments/generate` {month} |
 | Onboarding | `POST /salons/:id/onboarding`, `GET /onboardings?open=`, `GET/PATCH/DELETE /onboardings/:id`, `POST /onboardings/:id/steps`, `POST /onboardings/:id/go-live`, `PATCH/DELETE /onboarding-steps/:id`, `GET/PUT /onboarding-template` |
+| Support | `GET/POST /tickets`, `GET/PATCH/DELETE /tickets/:id`, `GET/POST /time-entries`, `PATCH/DELETE /time-entries/:id`, `GET /salons/:id/sessions`, `POST /salons/:id/bill-extra-work` |
+| Team | `GET /users` (names for pickers) |
 | Plans, promotions | `GET /plans`, `PATCH /plans/:id`, `GET/POST /promotions`, `PATCH /promotions/:id` (seeded by the migrations) |
 
 ## Tools
@@ -87,6 +89,7 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 | Salons | `/tools/salons` | Every salon (tenant) with client, plan, status and domains; `/tools/salons/:id` is its whole story (overview, status history, timeline) |
 | Onboarding | `/tools/onboarding` | Salons being set up: checklist from a template, the 48h clock from when the client's materials arrive, blocked reasons, go-live; average time to live |
 | Subscriptions | `/tools/subscriptions` | MRR (now and month by month), who pays what, Early Bird places, payments to collect (create the month's in one click, mark paid → Finances income), warnings: trials ending, overdue, past due, salons without a subscription |
+| Support | `/tools/support` | Tickets (T-0001…) by priority and status, time logged on them; the salon page shows included sessions left (counted per meeting), unbilled extra work (100 RON/h, exact minutes) and a "Bill extra work" button |
 | Clients | `/tools/clients` | The people and companies that pay (one salon each), with business address |
 | Finances | `/tools/finances` | Transactions, recurring payments, investments, accounts, budgets, cash-flow chart, CSV export |
 | Marketing | `/tools/marketing` | 12-month content calendar, communication mix vs. target, copy & hashtags |

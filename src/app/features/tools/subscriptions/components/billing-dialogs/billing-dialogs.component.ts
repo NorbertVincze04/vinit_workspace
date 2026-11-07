@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { ToastService } from '../../../../../core/services/toast.service';
-import { formatRon } from '../../../../../core/utils/format';
+import { formatMoney } from '../../../../../core/utils/format';
 import { ConfirmDialogComponent, FieldDef, FormDialogComponent, FormValues, asNumber, asString } from '../../../../../shared/ui';
 import { PlansStore } from '../../../salons/plans.store';
 import { SalonsStore } from '../../../salons/salons.store';
@@ -120,7 +120,7 @@ export class BillingDialogsComponent {
   private readonly toast = inject(ToastService);
 
   protected readonly paidFields = MARK_PAID_FIELDS;
-  protected readonly money = formatRon;
+  protected readonly money = (ron: number) => formatMoney(ron);
   protected readonly title = changeTitle;
 
   /** Salons without a running subscription. */

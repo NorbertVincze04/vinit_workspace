@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { formatDate } from '../../../../../core/utils/date';
-import { RonPipe } from '../../../../../shared/pipes/ron.pipe';
+import { formatMoney } from '../../../../../core/utils/format';
 import { ButtonComponent, LedgerRowComponent, MenuComponent, MenuItemComponent, StatusPillComponent } from '../../../../../shared/ui';
 import { Payment, kindLabel, paymentStatus } from '../../billing.model';
 
@@ -11,7 +11,7 @@ export type PaymentAction = 'paid' | 'reopen' | 'waive' | 'delete';
 @Component({
   selector: 'app-payment-row',
   standalone: true,
-  imports: [LedgerRowComponent, StatusPillComponent, ButtonComponent, MenuComponent, MenuItemComponent, RonPipe, RouterLink],
+  imports: [LedgerRowComponent, StatusPillComponent, ButtonComponent, MenuComponent, MenuItemComponent, RouterLink],
   template: `
     <app-ledger-row>
       @if (showSalon()) {
@@ -27,7 +27,7 @@ export type PaymentAction = 'paid' | 'reopen' | 'waive' | 'delete';
           }
         </div>
       }
-      <span class="cell-num">{{ payment().amount | ron }}</span>
+      <span class="cell-num">{{ money(payment().amount) }}</span>
       <div>
         <span>{{ due() }}</span>
         @if (payment().paidOn) {
@@ -64,6 +64,8 @@ export class PaymentRowComponent {
   readonly showSalon = input(true);
   readonly act = output<PaymentAction>();
 
+  /** Exact to the ban (extra work is rarely a round number). */
+  protected readonly money = (ron: number) => formatMoney(ron);
   protected readonly status = computed(() => paymentStatus(this.payment()));
   protected readonly due = computed(() => formatDate(this.payment().dueOn));
   protected readonly paid = computed(() => formatDate(this.payment().paidOn));

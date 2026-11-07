@@ -57,6 +57,11 @@ export const routes: Routes = [
           import('./features/tools/subscriptions/subscriptions-page.component').then((m) => m.SubscriptionsPageComponent),
       },
       {
+        path: 'tools/support',
+        title: 'Support · VINIT Workspace',
+        loadComponent: () => import('./features/tools/support/support-page.component').then((m) => m.SupportPageComponent),
+      },
+      {
         path: 'tools/clients',
         title: 'Clients · VINIT Workspace',
         loadComponent: () =>

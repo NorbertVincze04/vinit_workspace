@@ -56,6 +56,8 @@ import { kindLabel, sourceLabel, stageInfo } from '../../leads/leads.model';
 import { SalonBilling } from '../../subscriptions/billing.model';
 import { BillingDialogsComponent, BillingRequest } from '../../subscriptions/components/billing-dialogs/billing-dialogs.component';
 import { SalonBillingComponent } from './salon-billing.component';
+import { SalonSupportComponent } from './salon-support.component';
+import { SalonSupport } from '../../support/support.model';
 import { OnboardingChecklistComponent } from '../../onboarding/components/onboarding-checklist/onboarding-checklist.component';
 import { Onboarding } from '../../onboarding/onboarding.model';
 import { OnboardingStore } from '../../onboarding/onboarding.store';
@@ -102,6 +104,7 @@ type Dialog =
     SalonBillingComponent,
     BillingDialogsComponent,
     OnboardingChecklistComponent,
+    SalonSupportComponent,
   ],
   templateUrl: './salon-detail-page.component.html',
   styleUrl: './salon-detail-page.component.css',
@@ -127,6 +130,7 @@ export class SalonDetailPageComponent {
   protected readonly dialog = signal<Dialog | null>(null);
   protected readonly billingRequest = signal<BillingRequest | null>(null);
   protected readonly onboarding = computed(() => (this.data()?.['onboarding'] as Onboarding | null | undefined) ?? null);
+  protected readonly support = computed(() => (this.data()?.['support'] as SalonSupport | undefined) ?? null);
   protected readonly billing = computed(() => (this.data()?.['billing'] as SalonBilling | undefined) ?? null);
   protected readonly deleting = signal<'salon' | SalonDomain | null>(null);
 
@@ -150,6 +154,7 @@ export class SalonDetailPageComponent {
     { value: 'overview', label: 'Overview' },
     { value: 'onboarding', label: this.onboarding()?.status === 'done' ? 'Onboarding ✓' : 'Onboarding' },
     { value: 'billing', label: 'Subscription & payments', count: this.billing()?.payments.filter((p) => p['status'] === 'due').length || undefined },
+    { value: 'support', label: 'Support & time', count: this.support()?.tickets.filter((t) => ['open', 'in_progress', 'waiting_client'].includes(t.status)).length || undefined },
     { value: 'timeline', label: 'Timeline' },
   ]);
 

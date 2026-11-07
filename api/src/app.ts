@@ -8,9 +8,11 @@ import { errorHandler, notFoundHandler } from './http/errors.js';
 import { requireAppHeader, requireAuth } from './modules/auth/auth.middleware.js';
 import { resourceRouter } from './lib/resource.js';
 import { authRouter } from './modules/auth/auth.routes.js';
+import { usersRouter } from './modules/auth/users.routes.js';
 import { filesRouter } from './modules/files/files.routes.js';
 import { metricsRouter, paymentsRouter, salonSubscriptionsRouter, subscriptionsRouter } from './modules/billing/billing.routes.js';
 import { onboardingRouter, salonOnboardingRouter } from './modules/onboarding/onboarding.routes.js';
+import { supportRouter } from './modules/support/support.routes.js';
 import { leadsRouter } from './modules/leads/leads.routes.js';
 import { clientsRouter } from './modules/salons/clients.routes.js';
 import { plansRouter, promotionsRouter } from './modules/salons/plans.routes.js';
@@ -43,6 +45,7 @@ export function createApp(): express.Express {
   // Everything below needs a signed-in user.
   const secured = Router();
   secured.use(requireAuth);
+  secured.use('/users', usersRouter());
   secured.use('/settings', settingsRouter());
   secured.use('/roadmap', roadmapRouter());
   secured.use('/files', filesRouter());
@@ -60,6 +63,7 @@ export function createApp(): express.Express {
   secured.use('/metrics', metricsRouter());
   secured.use('/salons/:id/onboarding', salonOnboardingRouter());
   secured.use(onboardingRouter());
+  secured.use(supportRouter());
   api.use(secured);
 
   app.use('/api/v1', api);

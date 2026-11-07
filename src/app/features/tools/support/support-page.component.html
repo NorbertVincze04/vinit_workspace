@@ -1,0 +1,66 @@
+<app-page-header title="Support" description="Tickets from salons and the time spent on them: included sessions, billable extra work, internal.">
+  <div pageActions>
+    <button appButton variant="primary" type="button" (click)="openNew()">
+      <app-icon name="plus" [size]="16" /> New ticket
+    </button>
+  </div>
+</app-page-header>
+
+<app-inline-stats class="summary" [items]="summary()" />
+
+<app-tabs label="Support sections" [options]="tabs()" [(value)]="tab" />
+
+<div class="tab-body">
+  @switch (tab()) {
+    @case ('tickets') {
+      <div class="toolbar">
+        <app-chip-group label="Filter tickets" [options]="chips()" [(value)]="filter" />
+      </div>
+      @if (!store.loaded()) {
+        <app-empty-state heading="Loading…" text="Reading tickets from the VINIT server." />
+      } @else if (!store.tickets().length) {
+        <app-empty-state heading="No tickets yet" text="When a salon asks for something (a bug, a change, a question), open a ticket and log the time on it.">
+          <button appButton variant="primary" type="button" (click)="openNew()">New ticket</button>
+        </app-empty-state>
+      } @else if (!visible().length) {
+        <app-empty-state heading="Nothing here" text="No ticket matches this filter." />
+      } @else {
+        <app-ledger [headers]="['Ticket', 'Priority', 'Status', 'Time']" [numeric]="[3]" columns="minmax(0, 2.4fr) 100px 150px 80px">
+          @for (t of visible(); track t.id) {
+            <app-ticket-row [ticket]="t" (open)="openId.set(t.id)" />
+          }
+        </app-ledger>
+      }
+    }
+    @case ('time') {
+      <app-panel heading="Time logged" meta="this month and last; log time from a ticket or a salon's Support tab">
+        <app-time-list [entries]="store.recentEntries()" [showSalon]="true" (remove)="removeEntry($event)" />
+      </app-panel>
+    }
+  }
+</div>
+
+@if (openId(); as id) {
+  <app-ticket-dialog [ticketId]="id" (edit)="openEdit($event)" (remove)="deleting.set($event)" (closed)="openId.set(null)" />
+}
+
+@if (form(); as f) {
+  <app-form-dialog
+    [heading]="f.ticket ? 'Edit ticket' : 'New ticket'"
+    [fields]="f.fields"
+    [initial]="f.values"
+    saveLabel="Save ticket"
+    (saved)="save($event)"
+    (closed)="form.set(null)"
+  />
+}
+
+@if (deleting(); as t) {
+  <app-confirm-dialog
+    heading="Delete ticket?"
+    [message]="no(t.number) + ' “' + t.title + '” will be removed. Time logged on it stays on the salon.'"
+    cancelLabel="Keep it"
+    (confirmed)="confirmDelete(t)"
+    (closed)="deleting.set(null)"
+  />
+}

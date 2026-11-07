@@ -132,6 +132,9 @@
       @case ('billing') {
         <app-salon-billing [billing]="billing()" [salonId]="s.id" [salonPlanId]="s.planId" (request)="billingRequest.set($event)" />
       }
+      @case ('support') {
+        <app-salon-support [support]="support()" [salonId]="s.id" (changed)="load()" />
+      }
       @case ('timeline') {
         @if (timeline(); as items) {
           @if (items.length) {
