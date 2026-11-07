@@ -7,6 +7,8 @@ import { ONBOARDING_HOURS, clockOf } from '../../../tools/onboarding/onboarding.
 import { OnboardingStore } from '../../../tools/onboarding/onboarding.store';
 import { BillingStore } from '../../../tools/subscriptions/billing.store';
 import { SupportStore } from '../../../tools/support/support.store';
+import { CalendarStore } from '../../../tools/calendar/calendar.store';
+import { categoryLabel, whenInfo } from '../../../tools/calendar/calendar.model';
 import { ticketNo } from '../../../tools/support/support.model';
 
 interface Alert {
@@ -41,7 +43,7 @@ const SHOWN = 8;
   standalone: true,
   imports: [RouterLink, PanelComponent, StatusPillComponent],
   template: `
-    <app-panel heading="Salons: needs attention" [meta]="alerts().length ? alerts().length + '' : ''" [flush]="true">
+    <app-panel heading="Needs attention" [meta]="alerts().length ? alerts().length + '' : ''" [flush]="true">
       @if (alerts().length) {
         <ul>
           @for (a of shown(); track a.key) {
@@ -58,7 +60,7 @@ const SHOWN = 8;
           <button class="more" type="button" (click)="all.set(true)">Show {{ alerts().length - shownCount() }} more</button>
         }
       } @else {
-        <p class="empty">Nothing urgent: no late payments, trials ending, late onboardings, urgent tickets or follow-ups due.</p>
+        <p class="empty">Nothing urgent: no late payments, trials ending, late onboardings, urgent tickets, follow-ups or deadlines due.</p>
       }
     </app-panel>
   `,
@@ -86,6 +88,7 @@ export class SalonAlertsComponent {
   private readonly onboarding = inject(OnboardingStore);
   private readonly support = inject(SupportStore);
   private readonly leads = inject(LeadsStore);
+  private readonly calendar = inject(CalendarStore);
 
   protected readonly all = signal(false);
 
@@ -143,6 +146,22 @@ export class SalonAlertsComponent {
         text: days < 0 ? `Follow-up was due ${formatDate(l.nextFollowUpOn)}` : 'Follow-up due today',
         route: '/tools/leads',
         rank: days < 0 ? 3 : 4,
+      });
+    }
+
+    // Deadlines inside their reminder window (14, 3 and 0 days by default) or late.
+    for (const d of this.calendar.upcoming()) {
+      // Trials are already in the billing warnings above.
+      if (d.sourceType === 'trial' || d.daysLeft > Math.max(0, ...d.remindDays)) continue;
+      const w = whenInfo(d);
+      out.push({
+        key: `d${d.id}`,
+        tag: w.text,
+        tone: w.tone,
+        title: d.title,
+        text: [categoryLabel(d.category), d.salonName].filter(Boolean).join(' · '),
+        route: '/tools/calendar',
+        rank: d.daysLeft < 0 ? 0 : d.daysLeft <= 3 ? 2 : 4,
       });
     }
 

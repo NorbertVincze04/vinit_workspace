@@ -69,6 +69,13 @@ export const TOOLS: readonly ToolDefinition[] = [
     route: '/tools/contracts',
   },
   {
+    id: 'calendar',
+    title: 'Calendar',
+    description: 'Deadlines: taxes, funding, domains, contracts, trials.',
+    icon: 'calendar',
+    route: '/tools/calendar',
+  },
+  {
     id: 'clients',
     title: 'Clients',
     description: 'The people and companies that pay, one salon each.',

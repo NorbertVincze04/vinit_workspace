@@ -1,4 +1,5 @@
 import { db } from './db/knex.js';
+import { regenerateDeadlines } from './modules/deadlines/deadlines.service.js';
 import { ensureSnapshots } from './modules/kpis/kpis.service.js';
 
 type Job = { name: string; run: () => Promise<unknown> };
@@ -7,7 +8,10 @@ type Job = { name: string; run: () => Promise<unknown> };
  * Background work that must happen even though the PC isn't always on: every job runs at start-up
  * and then every few hours, and each one is idempotent (it only does what is missing).
  */
-const JOBS: Job[] = [{ name: 'KPI snapshots', run: () => ensureSnapshots(db) }];
+const JOBS: Job[] = [
+  { name: 'KPI snapshots', run: () => ensureSnapshots(db) },
+  { name: 'Deadlines', run: () => regenerateDeadlines(db) },
+];
 
 const EVERY_MS = 6 * 60 * 60 * 1000;
 

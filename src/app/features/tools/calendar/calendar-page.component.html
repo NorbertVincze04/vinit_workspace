@@ -1,0 +1,89 @@
+<app-page-header
+  title="Calendar"
+  description="Everything that is due: taxes and funding you add, plus domain, SSL, contract, trial and minimum-term dates taken from the salons."
+>
+  <div pageActions>
+    <button appButton variant="primary" type="button" (click)="openForm(null)"><app-icon name="plus" [size]="16" /> New deadline</button>
+  </div>
+</app-page-header>
+
+<div class="toolbar">
+  <app-segmented label="View" [options]="views" [value]="view()" (valueChange)="setView($event)" />
+  @if (view() === 'month') {
+    <app-month-switcher [(value)]="month" />
+  }
+</div>
+
+@if (view() === 'month') {
+  <app-month-grid class="grid-view" [month]="month()" [deadlines]="deadlines()" (open)="open.set($event)" />
+  <!-- Phones: the same month as a list. -->
+  <div class="agenda">
+    @for (d of agenda(); track d.id) {
+      <button type="button" class="row" (click)="open.set(d)">
+        <span class="day">{{ date(d.dueOn, { weekday: 'short', day: 'numeric' }) }}</span>
+        <span class="what">
+          <span class="title" [class.closed]="d.status !== 'open'">{{ d.title }}</span>
+          <span class="sub">{{ category(d.category) }}{{ d.salonName ? ' · ' + d.salonName : '' }}</span>
+        </span>
+        <app-status-pill [tone]="when(d).tone">{{ when(d).text }}</app-status-pill>
+      </button>
+    } @empty {
+      <app-empty-state heading="Nothing due this month" text="Add taxes, accounting or funding deadlines with New deadline." />
+    }
+  </div>
+} @else {
+  <app-panel heading="Next 30 days and late" [meta]="store.upcoming().length + ''" [flush]="store.upcoming().length > 0">
+    @for (d of store.upcoming(); track d.id) {
+      <button type="button" class="row" (click)="open.set(d)">
+        <span class="day">{{ date(d.dueOn, { day: 'numeric', month: 'short' }) }}</span>
+        <span class="what">
+          <span class="title">{{ d.title }}</span>
+          <span class="sub">{{ category(d.category) }}{{ d.salonName ? ' · ' + d.salonName : '' }}</span>
+        </span>
+        <app-status-pill [tone]="when(d).tone">{{ when(d).text }}</app-status-pill>
+      </button>
+    } @empty {
+      <p class="empty">Nothing due in the next 30 days.</p>
+    }
+  </app-panel>
+}
+
+@if (open(); as d) {
+  <app-dialog #dlg [heading]="d.title" [subheading]="when(d).text" (closed)="open.set(null)">
+    <app-facts [items]="facts()" />
+    @if (d.notes) {
+      <p class="notes">{{ d.notes }}</p>
+    }
+    @if (d.sourceType) {
+      <p class="muted small">This date comes from the salon's data: change it there (domain, contract or subscription).</p>
+    }
+    <div dialogFooter class="footer">
+      @if (!d.sourceType) {
+        <button appButton variant="ghost" type="button" (click)="dlg.close(); deleting.set(d)">Delete</button>
+        <button appButton variant="ghost" type="button" (click)="openForm(d)">Edit</button>
+      }
+      <span class="spacer"></span>
+      @if (d.status === 'open') {
+        <button appButton type="button" (click)="setStatus(d, 'dismissed', dlg)">Dismiss</button>
+        <button appButton variant="primary" type="button" (click)="markDone(d, dlg)">Done</button>
+      } @else {
+        <button appButton type="button" (click)="setStatus(d, 'open', dlg)">Open again</button>
+      }
+    </div>
+  </app-dialog>
+}
+
+@if (form(); as f) {
+  <app-form-dialog
+    [heading]="f.item ? 'Edit deadline' : 'New deadline'"
+    [fields]="f.fields"
+    [initial]="f.values"
+    saveLabel="Save deadline"
+    (saved)="save($event)"
+    (closed)="form.set(null)"
+  />
+}
+
+@if (deleting(); as d) {
+  <app-confirm-dialog heading="Delete deadline?" [message]="'“' + d.title + '” will be removed.'" cancelLabel="Keep it" (confirmed)="confirmDelete(d)" (closed)="deleting.set(null)" />
+}

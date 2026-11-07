@@ -77,6 +77,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/tools/contracts/contracts-page.component').then((m) => m.ContractsPageComponent),
       },
       {
+        path: 'tools/calendar',
+        title: 'Calendar · VINIT Workspace',
+        loadComponent: () => import('./features/tools/calendar/calendar-page.component').then((m) => m.CalendarPageComponent),
+      },
+      {
         path: 'tools/clients',
         title: 'Clients · VINIT Workspace',
         loadComponent: () =>

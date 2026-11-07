@@ -82,6 +82,7 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 | KPIs | `GET /kpis?month=` (+ targets), `GET /kpis/history?from=&to=`, `PUT /kpis/snapshots/:month` (recompute a closed month) |
 | Feature requests | `GET/POST /feature-requests?status=`, `GET/PATCH/DELETE /feature-requests/:id`, `POST /feature-requests/:id/votes` {salonId | leadId}, `DELETE /feature-votes/:id`, `POST /tickets/:id/to-feature-request`, `GET /roadmap-steps` |
 | Contracts | `GET/POST /contracts?salonId=&status=&kind=`, `GET/PATCH/DELETE /contracts/:id`, `GET /contracts/compliance`; files: `POST /files` with `salonId` / `contractId`, `GET /files?salonId=&contractId=` |
+| Deadlines | `GET /deadlines?from=&to=&status=&salonId=`, `GET /deadlines/upcoming?days=`, `POST /deadlines`, `PATCH/DELETE /deadlines/:id`, `POST /deadlines/:id/done`, `POST /deadlines/regenerate` |
 | Import | `POST /import/legacy-clients` {records} (old browser Clients list → leads / salons; skips records moved before) |
 | Plans, promotions | `GET /plans`, `PATCH /plans/:id`, `GET/POST /promotions`, `PATCH /promotions/:id` (seeded by the migrations) |
 
@@ -99,6 +100,7 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 | Support | `/tools/support` | Tickets (T-0001…) by priority and status, time logged on them; the salon page shows included sessions left (counted per meeting), unbilled extra work (100 RON/h, exact minutes) and a "Bill extra work" button |
 | Feature requests | `/tools/features` | What salons and leads ask for, ranked by the MRR of the paying salons that asked, then votes; linked to a roadmap step; shipping it notes it in each salon's story; change-request tickets become requests in one click |
 | Contracts | `/tools/contracts` | Subscription contracts, DPAs (GDPR), custom projects, addenda (numbered VIN-2026-001…) with their files; missing paperwork per salon; signing the subscription contract starts the onboarding. The salon page has a Contracts & files tab |
+| Calendar | `/tools/calendar` | Deadlines: month grid (agenda on phones) and upcoming list; manual ones repeat monthly/quarterly/yearly; domain, SSL, contract renewal, trial and minimum-term dates are generated from the salons |
 | Clients | `/tools/clients` | The people and companies that pay (one salon each), with business address |
 | Finances | `/tools/finances` | Transactions, recurring payments, investments, accounts, budgets, cash-flow chart, CSV export |
 | Marketing | `/tools/marketing` | 12-month content calendar, communication mix vs. target, copy & hashtags |
