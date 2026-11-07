@@ -40,3 +40,9 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# VINIT API / Docker
+.env
+api/.env
+api/node_modules
+backups/

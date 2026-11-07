@@ -1,0 +1,28 @@
+# VINIT Workspace on your own PC.
+#   docker compose up -d --build   → start everything (open http://localhost:8080, or http://<pc-ip>:8080 from a phone)
+#   docker compose stop            → stop it (data is kept in the "pgdata" volume)
+#   docker compose up -d db        → only the database (for `npm start` + `npm run dev` while developing)
+# Secrets come from ./.env (copy .env.example). Nothing here talks to a paid cloud service.
+name: vinit
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vinit
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+      POSTGRES_DB: vinit
+    # Only reachable from this PC (not from the network).
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/db-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vinit -d vinit"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  pgdata:
