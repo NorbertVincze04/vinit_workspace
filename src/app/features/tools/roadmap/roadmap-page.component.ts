@@ -1,11 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import {
-  PhaseCardComponent,
-  PhaseRailComponent,
-  ProgressSummaryComponent,
-  SaveStatusComponent,
-} from '../../../shared/components';
-import { CardComponent, CheckboxComponent, GridComponent, PageHeaderComponent } from '../../../shared/ui';
+import { BackupMenuComponent, PhaseCardComponent, ProgressSummaryComponent } from '../../../shared/components';
+import { CheckboxComponent, PageHeaderComponent, PanelComponent } from '../../../shared/ui';
 import { SalonCounterComponent } from './components/salon-counter/salon-counter.component';
 import { WeeklyRhythmComponent } from './components/weekly-rhythm/weekly-rhythm.component';
 import { PLAN_B } from './roadmap.data';
@@ -17,15 +12,13 @@ import { RoadmapStore } from './roadmap.store';
   standalone: true,
   imports: [
     PageHeaderComponent,
-    ProgressSummaryComponent,
-    PhaseRailComponent,
-    PhaseCardComponent,
-    GridComponent,
-    CardComponent,
+    PanelComponent,
     CheckboxComponent,
+    ProgressSummaryComponent,
+    PhaseCardComponent,
+    BackupMenuComponent,
     SalonCounterComponent,
     WeeklyRhythmComponent,
-    SaveStatusComponent,
   ],
   templateUrl: './roadmap-page.component.html',
   styleUrl: './roadmap-page.component.css',

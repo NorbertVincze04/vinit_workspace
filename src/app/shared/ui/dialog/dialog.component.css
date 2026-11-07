@@ -26,10 +26,10 @@ dialog::backdrop {
   padding: 20px 22px 0;
 }
 .head h2 {
-  font-size: 26px;
+  font-size: 17px;
 }
 .head p {
-  margin-top: 6px;
+  margin-top: 4px;
   font-size: 14px;
   color: var(--muted);
 }

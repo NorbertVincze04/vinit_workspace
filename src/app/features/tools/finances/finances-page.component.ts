@@ -1,18 +1,18 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ToastService } from '../../../core/services/toast.service';
 import { formatDate, monthName, shiftMonth } from '../../../core/utils/date';
-import { downloadCsv, downloadJson, readJsonFile } from '../../../core/utils/file';
-import { BackupActionsComponent, BarChartComponent, SaveStatusComponent } from '../../../shared/components';
+import { downloadCsv } from '../../../core/utils/file';
+import { BackupMenuComponent, BarChartComponent } from '../../../shared/components';
 import {
   ButtonComponent,
-  CardComponent,
   ConfirmDialogComponent,
   FormDialogComponent,
   FormValues,
-  GridComponent,
   IconComponent,
+  MenuItemComponent,
   MonthSwitcherComponent,
   PageHeaderComponent,
+  PanelComponent,
   TabsComponent,
   asNumber,
   toFormValues,
@@ -47,17 +47,16 @@ interface PendingDelete {
   standalone: true,
   imports: [
     PageHeaderComponent,
+    PanelComponent,
     ButtonComponent,
     IconComponent,
-    CardComponent,
-    GridComponent,
+    MenuItemComponent,
     TabsComponent,
     MonthSwitcherComponent,
     FormDialogComponent,
     ConfirmDialogComponent,
-    BackupActionsComponent,
+    BackupMenuComponent,
     BarChartComponent,
-    SaveStatusComponent,
     FinanceOverviewComponent,
     CategorySpendingComponent,
     TransactionsPanelComponent,
@@ -142,18 +141,5 @@ export class FinancesPageComponent {
   protected exportCsv(): void {
     const period = this.store.txFilters().period === 'month' ? this.store.month() : 'all';
     downloadCsv(this.store.csvRows(), `vinit-finances-${period}.csv`);
-  }
-
-  protected exportBackup(): void {
-    downloadJson(this.store.snapshot(), 'vinit-finances-backup.json');
-  }
-
-  protected async importBackup(file: File): Promise<void> {
-    try {
-      const ok = this.store.importState(await readJsonFile(file));
-      this.toast.show(ok ? 'Finances imported' : 'That file is not a VINIT finances backup.');
-    } catch {
-      this.toast.show('That file is not a VINIT finances backup.');
-    }
   }
 }

@@ -15,8 +15,8 @@ import { ToastService } from '../../../core/services/toast.service';
   styles: `
     :host { position: fixed; inset: auto 0 0 0; z-index: 200; display: flex; justify-content: center;
       padding: 0 16px 18px; pointer-events: none; }
-    .toast { padding: 10px 16px; font-size: 14px; font-weight: 500; color: var(--bg); background: var(--ink);
-      border-radius: var(--radius-md); box-shadow: var(--shadow-lg); pointer-events: auto; }
+    .toast { max-width: 560px; padding: 10px 16px; font-size: 14px; font-weight: 500; color: var(--bg);
+      background: var(--ink); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); pointer-events: auto; }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

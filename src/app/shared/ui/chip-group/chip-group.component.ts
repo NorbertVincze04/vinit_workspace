@@ -28,11 +28,13 @@ export interface ChipOption {
   `,
   styles: `
     .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-    .chip { padding: 6px 12px; font-size: 13px; font-weight: 500; color: var(--ink); background: var(--surface);
+    .chip { height: 30px; padding: 0 11px; font-size: 13px; font-weight: 500; color: var(--muted); background: var(--surface);
       border: 1px solid var(--line); border-radius: var(--radius-pill); cursor: pointer; }
-    .chip:hover { border-color: var(--main); }
-    .chip[aria-pressed='true'] { color: var(--on-second); background: var(--second); border-color: var(--second); }
-    .n { margin-left: 4px; opacity: 0.75; font-variant-numeric: tabular-nums; }
+    .chip:hover { color: var(--ink); border-color: var(--line-strong); }
+    .chip[aria-pressed='true'] { color: var(--main-ink); background: var(--main-soft);
+      border-color: color-mix(in srgb, var(--main) 45%, transparent); }
+    .n { margin-left: 4px; opacity: 0.7; font-variant-numeric: tabular-nums; }
+    @media (pointer: coarse) { .chip { height: 36px; } }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

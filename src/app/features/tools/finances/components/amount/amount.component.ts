@@ -19,11 +19,11 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   `,
   styles: `
     :host { display: grid; justify-items: end; text-align: right; font-variant-numeric: tabular-nums; }
-    .amt { font-weight: 700; font-size: 15.5px; white-space: nowrap; }
+    .amt { font-weight: 600; font-size: 14px; white-space: nowrap; }
     .amt[data-kind='income'], .amt[data-kind='positive'] { color: var(--good); }
     .amt[data-kind='negative'] { color: var(--red); }
     .sub { font-size: 12.5px; color: var(--muted); }
-    .lbl { display: none; font-size: 11px; font-family: var(--font-mono); text-transform: uppercase; color: var(--muted); }
+    .lbl { display: none; font-size: 12px; color: var(--muted); }
     @media (max-width: 760px) { :host { justify-items: start; text-align: left; } .lbl { display: block; } }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

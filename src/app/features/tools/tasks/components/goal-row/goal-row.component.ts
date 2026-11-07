@@ -19,7 +19,7 @@ import { GoalStat } from '../../tasks.model';
   styles: `
     :host { display: grid; grid-template-columns: var(--goal-columns); gap: 10px; align-items: center; }
     .progress { display: grid; gap: 4px; }
-    .count { text-align: right; font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+    .count { text-align: right; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
     @media (max-width: 760px) {
       :host { grid-template-columns: 1fr auto; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
       app-text-field, .progress { grid-column: 1 / -1; }

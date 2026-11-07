@@ -10,17 +10,18 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   selector: 'app-empty-state',
   standalone: true,
   template: `
-    <h3 class="title-sm">{{ heading() }}</h3>
+    <h3>{{ heading() }}</h3>
     @if (text()) {
       <p>{{ text() }}</p>
     }
     <div class="actions"><ng-content /></div>
   `,
   styles: `
-    :host { display: grid; gap: 8px; justify-items: start; padding: 36px 24px; background: var(--surface);
-      border: 1px dashed var(--line); border-radius: var(--radius-lg); }
-    p { max-width: 56ch; color: var(--muted); }
-    .actions { margin-top: 6px; }
+    :host { display: grid; gap: 4px; justify-items: center; padding: 40px 24px; text-align: center;
+      background: var(--surface); border: 1px dashed var(--line-strong); border-radius: var(--radius-lg); }
+    h3 { font-size: 15px; }
+    p { max-width: 52ch; color: var(--muted); }
+    .actions { margin-top: 12px; }
     .actions:empty { display: none; }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

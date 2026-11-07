@@ -39,12 +39,12 @@ import { AmountComponent } from '../amount/amount.component';
   templateUrl: './transactions-panel.component.html',
   styles: `
     .date { display: grid; justify-items: center; line-height: 1.1; font-size: 12px; color: var(--muted); }
-    .date strong { font-family: var(--font-display); font-size: 22px; color: var(--ink); }
+    .date strong { font-size: 17px; font-weight: 600; color: var(--ink); }
     .pills { display: flex; flex-wrap: wrap; gap: 6px; }
     /* Phones: the ledger stacks cells, so show the date inline ("3 Nov") above the description. */
     @media (max-width: 760px) {
       .date { grid-auto-flow: column; justify-content: start; align-items: baseline; gap: 5px; font-size: 13px; }
-      .date strong { font-size: 18px; }
+      .date strong { font-size: 15px; }
     }
     app-inline-stats { margin-bottom: 10px; }
   `,

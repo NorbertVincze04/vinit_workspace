@@ -1,36 +1,27 @@
-<app-card padding="sm">
-  <div class="bar">
-    <app-text-field
-      class="search"
-      type="search"
-      label="Search tasks"
-      labelMode="hidden"
-      placeholder="Search tasks…"
-      [value]="filters().q"
-      (valueChange)="filtersChange.emit({ q: $event })"
-    />
-    <app-select-field
-      label="Filter by goal"
-      labelMode="hidden"
-      [options]="goalOptions()"
-      [value]="filters().goal"
-      (valueChange)="filtersChange.emit({ goal: $event })"
-    />
-    <app-select-field
-      label="Filter by owner"
-      labelMode="hidden"
-      [options]="ownerOptions"
-      [value]="filters().owner"
-      (valueChange)="filtersChange.emit({ owner: $event })"
-    />
-    <app-checkbox [checked]="filters().hideDone" (checkedChange)="filtersChange.emit({ hideDone: $event })">
-      Hide done
-    </app-checkbox>
-    <app-plan-start-field />
-
-    <div class="actions">
-      <app-backup-actions (exportBackup)="exportBackup.emit()" (importBackup)="importBackup.emit($event)" />
-      <app-confirm-button label="Reset" confirmLabel="Click again: erase my changes" size="sm" (confirmed)="reset.emit()" />
-    </div>
-  </div>
-</app-card>
+<app-text-field
+  class="search"
+  type="search"
+  label="Search tasks"
+  labelMode="hidden"
+  placeholder="Search tasks"
+  [value]="filters().q"
+  (valueChange)="filtersChange.emit({ q: $event })"
+/>
+<app-select-field
+  label="Filter by goal"
+  labelMode="hidden"
+  [options]="goalOptions()"
+  [value]="filters().goal"
+  (valueChange)="filtersChange.emit({ goal: $event })"
+/>
+<app-select-field
+  label="Filter by owner"
+  labelMode="hidden"
+  [options]="ownerOptions"
+  [value]="filters().owner"
+  (valueChange)="filtersChange.emit({ owner: $event })"
+/>
+<app-checkbox [checked]="filters().hideDone" (checkedChange)="filtersChange.emit({ hideDone: $event })">
+  Hide done
+</app-checkbox>
+<app-plan-start-field class="push" />

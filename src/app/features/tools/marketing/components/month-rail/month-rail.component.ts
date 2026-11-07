@@ -31,13 +31,13 @@ interface RailItem {
     </div>
   `,
   styles: `
-    :host { display: block; overflow-x: auto; margin-bottom: 18px; padding-bottom: 4px; }
+    :host { display: block; overflow-x: auto; margin-bottom: 16px; padding-bottom: 4px; }
     .rail { display: grid; grid-template-columns: repeat(13, minmax(76px, 1fr)); gap: 6px; min-width: 1000px; }
     .m { display: grid; gap: 5px; min-width: 0; padding: 9px 10px 10px; text-align: left; color: var(--ink);
       background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); cursor: pointer; }
-    .m:hover { border-color: var(--main); }
-    .m[aria-pressed='true'] { border-color: var(--second); box-shadow: 0 0 0 1px var(--second); }
-    .name { font-family: var(--font-display); font-size: 18px; font-weight: 700; line-height: 1.1; }
+    .m:hover { border-color: var(--line-strong); }
+    .m[aria-pressed='true'] { background: var(--main-soft); border-color: var(--main); box-shadow: 0 0 0 1px var(--main); }
+    .name { font-size: 14px; font-weight: 600; line-height: 1.2; }
     .sub, .count { font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .count { font-variant-numeric: tabular-nums; }
     .count.short { color: var(--tone-warn-fg); font-weight: 600; }

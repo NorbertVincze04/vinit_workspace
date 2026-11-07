@@ -1,13 +1,14 @@
 .hint {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   font-size: 13px;
   color: var(--muted);
 }
 
-.error {
-  margin: -8px 0 16px;
-  font-size: 13.5px;
-  color: var(--red);
+.phases {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(290px, 100%), 1fr));
+  gap: 12px;
+  align-items: start;
 }
 
 .tasks {
@@ -17,8 +18,11 @@
   gap: 2px;
 }
 
-.add {
-  margin-top: 6px;
-  border-style: dashed;
+.none {
+  font-size: 13px;
   color: var(--muted);
+}
+
+.add {
+  justify-self: start;
 }

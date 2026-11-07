@@ -1,0 +1,67 @@
+<app-page-header title="Files" description="Shared documents for the team. Files stay in this browser.">
+  <div pageActions>
+    <button appButton variant="primary" type="button" [disabled]="store.uploading() > 0" (click)="zone.open()">
+      Upload files
+    </button>
+  </div>
+</app-page-header>
+
+<app-upload-zone
+  #zone
+  [busy]="store.uploading() > 0"
+  [hint]="'PDF, PowerPoint, Excel, Word, images and more · up to ' + maxSize + ' each'"
+  (files)="upload($event)"
+/>
+
+@if (store.items().length) {
+  <div class="toolbar">
+    <app-text-field
+      class="grow"
+      type="search"
+      label="Search files"
+      labelMode="hidden"
+      placeholder="Search by name or type"
+      [value]="store.filters().q"
+      (valueChange)="store.setFilters({ q: $event })"
+    />
+    <app-chip-group
+      label="Filter by file type"
+      [options]="store.kindChips()"
+      [value]="store.filters().kind"
+      (valueChange)="setKind($event)"
+    />
+  </div>
+  <app-inline-stats class="summary" [items]="summary()" />
+}
+
+@if (!store.items().length) {
+  <app-empty-state
+    heading="No files yet"
+    text="Upload the documents the team needs, such as the financial model, the pitch deck or signed agreements."
+  />
+} @else if (!store.visible().length) {
+  <app-empty-state heading="No files match" text="Try a different search or file type.">
+    <button appButton type="button" (click)="store.clearFilters()">Clear filters</button>
+  </app-empty-state>
+} @else {
+  <app-ledger [headers]="['Name', 'Size', 'Added', '']" [numeric]="[1]" columns="minmax(0, 1fr) 90px 120px auto">
+    @for (item of store.visible(); track item.id) {
+      <app-file-row
+        [file]="item"
+        [busy]="downloadingId() === item.id"
+        (download)="download(item)"
+        (remove)="deleting.set(item)"
+      />
+    }
+  </app-ledger>
+}
+
+@if (deleting(); as item) {
+  <app-confirm-dialog
+    heading="Delete file?"
+    [message]="'“' + item.name + '” will be removed for everyone using this browser. This can’t be undone.'"
+    cancelLabel="Keep file"
+    (confirmed)="confirmDelete(item)"
+    (closed)="deleting.set(null)"
+  />
+}

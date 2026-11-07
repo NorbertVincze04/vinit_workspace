@@ -1,97 +1,89 @@
-<div class="container">
-  <app-page-header
-    eyebrow="VINIT SaaS Solutions · Year 1"
-    title="Marketing plan"
-    lede="Posts, ads, outreach and emails for each of the 12 months, with the exact copy to publish. Tracked against the monthly plan and the communication mix from the business plan."
-  >
-    <div pageActions>
-      <app-plan-start-field />
-      <app-backup-actions (exportBackup)="exportBackup()" (importBackup)="importBackup($event)" />
-      <button appButton variant="primary" type="button" (click)="openNew()">
-        <app-icon name="plus" [size]="16" /> New content
-      </button>
-    </div>
-  </app-page-header>
-
-  <app-marketing-overview [totals]="store.totals()" [mix]="store.mix()" />
-
-  <app-month-rail
-    [value]="store.filters().month"
-    [stats]="store.monthStats()"
-    [monthLabel]="monthLabel"
-    (valueChange)="selectMonth($event)"
-  />
-
-  @if (selectedStats(); as stats) {
-    <app-month-brief [month]="store.filters().month" [label]="monthLabel(store.filters().month)" [stats]="stats" />
-  }
-
-  <div class="toolbar">
-    <app-text-field
-      class="grow"
-      type="search"
-      label="Search content"
-      labelMode="hidden"
-      placeholder="Search title, caption, hashtags, keywords"
-      [value]="store.filters().q"
-      (valueChange)="store.setFilters({ q: $event })"
-    />
-    <app-select-field
-      label="Filter by format"
-      labelMode="hidden"
-      [options]="formatOptions"
-      [value]="store.filters().format"
-      (valueChange)="store.setFilters({ format: $event })"
-    />
-    <app-chip-group
-      label="Filter by status"
-      [options]="store.statusChips()"
-      [value]="store.filters().status"
-      (valueChange)="store.setFilters({ status: $event })"
-    />
+<app-page-header title="Marketing" description="Content calendar for the 12 months, with the copy to publish.">
+  <div pageActions>
+    <app-plan-start-field />
+    <app-backup-menu [store]="store" name="marketing" />
+    <button appButton variant="primary" type="button" (click)="openNew()">
+      <app-icon name="plus" [size]="16" /> New content
+    </button>
   </div>
+</app-page-header>
 
-  @if (!store.posts().length) {
-    <app-empty-state
-      heading="No content planned yet"
-      text="Add a post, ad, DM batch or email. Each item gets a month, format, platforms and the exact copy to publish."
-    >
-      <button appButton variant="primary" type="button" (click)="openNew()">Add the first item</button>
-    </app-empty-state>
-  } @else if (!store.groups().length) {
-    <app-empty-state heading="Nothing matches" text="Try another search, status or format, or pick All months." />
-  } @else {
-    @for (group of store.groups(); track group.month) {
-      <section class="group">
-        @if (!store.filters().month) {
-          <div class="ghead">
-            <h3>
-              Month {{ group.month }} · {{ monthLabel(group.month) }}
-              <span>· {{ monthPlan[group.month - 1].theme }}</span>
-            </h3>
-            <p>{{ group.stats.appearances }} / {{ monthPlan[group.month - 1].target }} appearances · {{ group.stats.published }} published</p>
-          </div>
-        }
-        <app-ledger columns="112px minmax(0, 1fr) auto">
-          @for (post of group.posts; track post.id) {
-            <app-post-item
-              [post]="post"
-              [expanded]="expanded().has(post.id)"
-              (expandedChange)="toggle(post.id, $event)"
-              (statusChange)="setStatus(post, $event)"
-              (edit)="openEdit(post)"
-              (duplicate)="duplicate(post)"
-              (remove)="deleting.set(post)"
-              (copyCaption)="copyCaption(post)"
-            />
-          }
-        </app-ledger>
-      </section>
-    }
-  }
+<app-marketing-overview [totals]="store.totals()" [mix]="store.mix()" />
 
-  <app-save-status message="Saved automatically in this browser. Use Export backup to keep a copy." />
+<app-month-rail
+  [value]="store.filters().month"
+  [stats]="store.monthStats()"
+  [monthLabel]="monthLabel"
+  (valueChange)="selectMonth($event)"
+/>
+
+@if (selectedStats(); as stats) {
+  <app-month-brief [month]="store.filters().month" [label]="monthLabel(store.filters().month)" [stats]="stats" />
+}
+
+<div class="toolbar">
+  <app-text-field
+    class="grow"
+    type="search"
+    label="Search content"
+    labelMode="hidden"
+    placeholder="Search title, caption, hashtags, keywords"
+    [value]="store.filters().q"
+    (valueChange)="store.setFilters({ q: $event })"
+  />
+  <app-select-field
+    label="Filter by format"
+    labelMode="hidden"
+    [options]="formatOptions"
+    [value]="store.filters().format"
+    (valueChange)="store.setFilters({ format: $event })"
+  />
+  <app-chip-group
+    label="Filter by status"
+    [options]="store.statusChips()"
+    [value]="store.filters().status"
+    (valueChange)="store.setFilters({ status: $event })"
+  />
 </div>
+
+@if (!store.posts().length) {
+  <app-empty-state
+    heading="No content planned yet"
+    text="Add a post, ad, DM batch or email. Each item gets a month, format, platforms and the exact copy to publish."
+  >
+    <button appButton variant="primary" type="button" (click)="openNew()">Add the first item</button>
+  </app-empty-state>
+} @else if (!store.groups().length) {
+  <app-empty-state heading="Nothing matches" text="Try another search, status or format, or pick All months." />
+} @else {
+  @for (group of store.groups(); track group.month) {
+    <section class="group">
+      @if (!store.filters().month) {
+        <div class="ghead">
+          <h3>
+            Month {{ group.month }} · {{ monthLabel(group.month) }}
+            <span>· {{ monthPlan[group.month - 1].theme }}</span>
+          </h3>
+          <p>{{ group.stats.appearances }} / {{ monthPlan[group.month - 1].target }} appearances · {{ group.stats.published }} published</p>
+        </div>
+      }
+      <app-ledger columns="112px minmax(0, 1fr) auto">
+        @for (post of group.posts; track post.id) {
+          <app-post-item
+            [post]="post"
+            [expanded]="expanded().has(post.id)"
+            (expandedChange)="toggle(post.id, $event)"
+            (statusChange)="setStatus(post, $event)"
+            (edit)="openEdit(post)"
+            (duplicate)="duplicate(post)"
+            (remove)="deleting.set(post)"
+            (copyCaption)="copyCaption(post)"
+          />
+        }
+      </app-ledger>
+    </section>
+  }
+}
 
 @if (form(); as f) {
   <app-form-dialog

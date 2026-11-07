@@ -11,8 +11,7 @@
   margin: 0 2px 8px;
 }
 .ghead h3 {
-  font-size: 20px;
-  text-transform: none;
+  font-size: 14px;
   color: var(--ink);
 }
 .ghead h3 span {

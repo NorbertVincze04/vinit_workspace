@@ -19,7 +19,6 @@ import { AmountComponent } from '../amount/amount.component';
   template: `
     <div class="toolbar">
       <app-inline-stats class="grow" [items]="store.recurringSummary()" />
-      <button appButton size="sm" variant="primary" type="button" (click)="add.emit()">New recurring</button>
     </div>
 
     @if (!store.recurringRows().length) {

@@ -1,16 +1,94 @@
+/* Wide screens: fixed sidebar on the left, the page scrolls on the right. */
 :host {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
   min-height: 100vh;
   min-height: 100dvh;
-  /* Safety net: nothing may widen the page sideways on phones. `clip` (unlike `hidden`)
-     does not create a scroll container, so the sticky header and section nav keep working. */
   overflow-x: clip;
 }
 
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+}
+
 main {
-  flex: 1;
+  min-width: 0;
   outline: none;
+}
+
+.content {
+  width: 100%;
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding: 28px var(--gutter) 64px;
+}
+
+.topbar,
+.backdrop {
+  display: none;
+}
+
+/* Narrow screens: a top bar with a menu button; the sidebar slides in as a drawer. */
+@media (max-width: 960px) {
+  :host {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: var(--topbar-h);
+    padding: 0 8px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 60;
+    width: min(280px, 86vw);
+    box-shadow: var(--shadow-lg);
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition:
+      transform 0.2s ease,
+      visibility 0s linear 0.2s;
+  }
+  .sidebar.is-open {
+    transform: none;
+    visibility: visible;
+    transition: transform 0.2s ease;
+  }
+
+  .backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgb(10 14 20 / 0.45);
+  }
+
+  .content {
+    padding-top: 20px;
+  }
 }
 
 .skip-link {
@@ -19,7 +97,7 @@ main {
   left: 8px;
   z-index: 100;
   padding: 8px 14px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   background: var(--main);
   color: var(--on-main);
   font-weight: 600;

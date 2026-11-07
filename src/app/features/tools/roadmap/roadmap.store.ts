@@ -7,7 +7,7 @@ import { ROADMAP_PLAN } from './roadmap.data';
 
 export const MAX_SALONS = 500;
 
-interface RoadmapState {
+export interface RoadmapState {
   done: Record<string, boolean>;
   salons: number;
 }
@@ -88,5 +88,16 @@ export class RoadmapStore {
 
   setSalons(count: number): void {
     this.state.update((s) => ({ ...s, salons: clamp(Math.round(count), 0, MAX_SALONS) }));
+  }
+
+  snapshot(): RoadmapState {
+    return { done: { ...this.state().done }, salons: this.state().salons };
+  }
+
+  /** Replaces progress with a backup. Returns false if the data is not a valid backup. */
+  importState(data: unknown): boolean {
+    if (!isRoadmapState(data)) return false;
+    this.state.set({ done: { ...data.done }, salons: clamp(Math.round(data.salons), 0, MAX_SALONS) });
+    return true;
   }
 }

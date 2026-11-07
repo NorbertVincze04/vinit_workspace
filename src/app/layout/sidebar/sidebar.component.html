@@ -1,0 +1,52 @@
+<a class="brand" routerLink="/" aria-label="VINIT Workspace, overview" (click)="navigate.emit()">
+  <app-logo [size]="24" />
+  <span class="brand-name">VINIT <span class="brand-sub">Workspace</span></span>
+</a>
+
+<nav class="nav" aria-label="Workspace">
+  <a
+    class="link"
+    [routerLink]="overview.route"
+    routerLinkActive="is-active"
+    ariaCurrentWhenActive="page"
+    [routerLinkActiveOptions]="{ exact: true }"
+    (click)="navigate.emit()"
+  >
+    <app-icon [name]="overview.icon" [size]="18" />
+    {{ overview.label }}
+  </a>
+
+  <p class="group" id="nav-tools">Tools</p>
+  <ul aria-labelledby="nav-tools">
+    @for (link of tools; track link.route) {
+      <li>
+        <a
+          class="link"
+          [routerLink]="link.route"
+          routerLinkActive="is-active"
+          ariaCurrentWhenActive="page"
+          (click)="navigate.emit()"
+        >
+          <app-icon [name]="link.icon" [size]="18" />
+          {{ link.label }}
+        </a>
+      </li>
+    }
+  </ul>
+</nav>
+
+<div class="foot">
+  <p class="save" [class.failed]="storage.writeFailed()" role="status">
+    <span class="dot" aria-hidden="true"></span>
+    {{ storage.writeFailed() ? 'Not saved — export a backup' : 'Saved in this browser' }}
+  </p>
+  <button
+    type="button"
+    class="link"
+    [attr.aria-label]="theme.effective() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'"
+    (click)="theme.toggle()"
+  >
+    <app-icon [name]="theme.effective() === 'dark' ? 'sun' : 'moon'" [size]="18" />
+    {{ theme.effective() === 'dark' ? 'Light mode' : 'Dark mode' }}
+  </button>
+</div>

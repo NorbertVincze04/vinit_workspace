@@ -19,7 +19,6 @@ import { AmountComponent } from '../amount/amount.component';
   template: `
     <div class="toolbar">
       <app-inline-stats class="grow" [items]="store.accounts.items().length ? store.accountSummary() : []" />
-      <button appButton size="sm" variant="primary" type="button" (click)="add.emit()">New account</button>
     </div>
 
     @if (!store.accountRows().length) {

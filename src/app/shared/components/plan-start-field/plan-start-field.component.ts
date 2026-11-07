@@ -13,7 +13,7 @@ import { TextFieldComponent } from '../../ui';
   template: `
     <app-text-field
       type="month"
-      label="Month 1 ="
+      label="Plan starts"
       labelMode="inline"
       [value]="plan.start()"
       (valueChange)="plan.setStart($event)"

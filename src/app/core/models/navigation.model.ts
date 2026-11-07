@@ -1,15 +1,13 @@
 import type { IconName } from '../../shared/ui/icon/icons';
 
-export type ToolStatus = 'live' | 'soon';
-
-/** A workspace tool. Live tools get a route and show up in the header automatically. */
+/** A workspace tool, listed in the sidebar and on the overview. */
 export interface ToolDefinition {
   id: string;
   title: string;
+  /** One short line shown on the overview launcher. */
   description: string;
   icon: IconName;
-  status: ToolStatus;
-  route?: string;
+  route: string;
 }
 
 export interface NavLink {

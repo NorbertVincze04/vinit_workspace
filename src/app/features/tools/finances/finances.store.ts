@@ -203,6 +203,11 @@ export class FinancesStore {
       }),
   );
 
+  /** Active recurring payments that are overdue or due within the next 14 days. */
+  readonly dueSoon = computed<RecurringRow[]>(() =>
+    this.recurringRows().filter((row) => row.canLog && daysUntil(row.item.nextDate) <= 14),
+  );
+
   readonly recurringSummary = computed<InlineStat[]>(() => {
     let out = 0;
     let inc = 0;

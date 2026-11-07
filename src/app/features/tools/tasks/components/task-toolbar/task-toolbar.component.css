@@ -1,13 +1,9 @@
 :host {
-  display: block;
-  margin-bottom: 10px;
-}
-
-.bar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  gap: 8px 10px;
+  margin-bottom: 8px;
 }
 
 .search {
@@ -15,25 +11,19 @@
 }
 
 app-select-field {
-  flex: 0 1 220px;
+  flex: 0 1 200px;
 }
 
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+.push {
   margin-left: auto;
 }
 
-/* Phones: filters share the width evenly; actions sit on their own line, left-aligned. */
+/* Phones: filters share the width evenly. */
 @media (max-width: 560px) {
   app-select-field {
     flex: 1 1 140px;
   }
-  .actions {
-    flex-basis: 100%;
+  .push {
     margin-left: 0;
-    padding-top: 8px;
-    border-top: 1px solid var(--line);
   }
 }

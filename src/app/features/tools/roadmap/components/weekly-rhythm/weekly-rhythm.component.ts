@@ -1,32 +1,33 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { CardComponent } from '../../../../../shared/ui';
+import { PanelComponent } from '../../../../../shared/ui';
 import { WEEKLY_RHYTHM } from '../../roadmap.data';
 
 /** Suggested weekly sales & marketing pace. */
 @Component({
   selector: 'app-weekly-rhythm',
   standalone: true,
-  imports: [CardComponent],
+  imports: [PanelComponent],
   template: `
-    <app-card padding="lg">
-      <h2 class="title-md">Weekly rhythm</h2>
+    <app-panel heading="Weekly rhythm" meta="Suggested pace">
       <dl class="rhythm">
         @for (item of rhythm; track item.label) {
           <div>
-            <dt class="eyebrow">{{ item.label }}</dt>
+            <dt>{{ item.label }}</dt>
             <dd>{{ item.value }}</dd>
           </div>
         }
       </dl>
-      <p class="muted small">Suggested pace. Direct outreach costs time, not money, so it comes first.</p>
-    </app-card>
+      <p class="muted small">Direct outreach costs time, not money, so it comes first.</p>
+    </app-panel>
   `,
   styles: `
-    :host { display: block; min-width: 0; height: 100%; }
-    app-card { height: 100%; }
-    .rhythm { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-    .rhythm div { display: flex; flex-direction: column-reverse; justify-content: flex-end; }
-    dd { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 44px; line-height: 1; }
+    :host { display: block; min-width: 0; }
+    app-panel { height: 100%; }
+    .rhythm { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; }
+    /* Label comes first in the markup (dt before dd); the number is shown on top. */
+    .rhythm div { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: 2px; }
+    dd { margin: 0; font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    dt { font-size: 12.5px; color: var(--muted); }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

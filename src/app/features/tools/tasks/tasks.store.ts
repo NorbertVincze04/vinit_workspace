@@ -4,6 +4,7 @@ import { PhaseId, PhaseProgress } from '../../../core/models';
 import { PlanCalendarService } from '../../../core/services/plan-calendar.service';
 import { isMonthKey } from '../../../core/utils/date';
 import { percent } from '../../../core/utils/format';
+import { matchesSearch } from '../../../core/utils/text';
 import { uid } from '../../../core/utils/id';
 import { persistedSignal } from '../../../core/utils/persisted-signal';
 import { SelectOption } from '../../../shared/ui';
@@ -87,6 +88,19 @@ export class TasksStore {
   );
 
   readonly shownCount = computed(() => this.columns().reduce((sum, c) => sum + c.visible.length, 0));
+
+  /**
+   * Open tasks due by the current plan month (or Month 1 before the plan starts),
+   * most urgent first: earliest due month, then priority.
+   */
+  readonly dueNow = computed<TaskView[]>(() => {
+    const horizon = Math.max(this.currentMonth(), 1);
+    const rank: Record<string, number> = { High: 0, Medium: 1, Low: 2 };
+    return this.state()
+      .tasks.filter((t) => !t.done && t.due <= horizon)
+      .sort((a, b) => a.due - b.due || (rank[a.prio] ?? 1) - (rank[b.prio] ?? 1))
+      .map((t) => this.toView(t));
+  });
 
   readonly overdueCount = computed(
     () => this.state().tasks.filter((t) => !t.done && t.due < this.currentMonth()).length,
@@ -201,11 +215,7 @@ export class TasksStore {
       return false;
     }
     if (f.owner && t.owner !== f.owner) return false;
-    if (f.q) {
-      const haystack = `${t.text} ${t.notes || ''}`.toLowerCase();
-      if (!haystack.includes(f.q.toLowerCase())) return false;
-    }
-    return true;
+    return matchesSearch(f.q, t.text, t.notes);
   }
 
   private toView(task: Task): TaskView {

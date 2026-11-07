@@ -9,7 +9,7 @@ import { Injectable, signal } from '@angular/core';
 export class StorageService {
   private readonly prefix = 'vinit.';
 
-  /** True when the last write failed — shown to the user by <app-save-status>. */
+  /** True when the last write failed — shown in the sidebar. */
   readonly writeFailed = signal(false);
 
   read(key: string): unknown {

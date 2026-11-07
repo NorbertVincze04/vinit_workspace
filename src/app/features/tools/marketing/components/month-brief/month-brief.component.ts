@@ -32,13 +32,13 @@ import { MonthStats } from '../../marketing.model';
     </app-card>
   `,
   styles: `
-    :host { display: block; margin-bottom: 18px; }
+    :host { display: block; margin-bottom: 16px; }
     .grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 14px 30px; }
     .left { display: grid; gap: 6px; align-content: start; }
-    .el { font-size: 13.5px; font-weight: 600; color: var(--heading); }
+    .el { font-size: 13px; color: var(--muted); }
     .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
     .stats { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 18px; align-content: start; }
-    dd { margin: 0; font-family: var(--font-display); font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    dd { margin: 0; font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; }
     dd.short { color: var(--tone-warn-fg); }
     dd.over { color: var(--red); }
     @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }

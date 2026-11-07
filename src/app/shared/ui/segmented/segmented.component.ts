@@ -20,7 +20,7 @@ import { SelectOption } from '../form-field/field.types';
   styles: `
     .seg { display: grid; grid-template-columns: repeat(var(--seg-count), minmax(0, 1fr)); gap: 3px; padding: 3px;
       background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-md); }
-    button { padding: 8px 6px; font-size: 14px; font-weight: 600; color: var(--muted); background: none;
+    button { padding: 6px; font-size: 13.5px; font-weight: 500; color: var(--muted); background: none;
       border: 0; border-radius: var(--radius-sm); cursor: pointer; }
     button[aria-pressed='true'] { color: var(--ink); background: var(--surface); box-shadow: var(--shadow-sm); }
   `,

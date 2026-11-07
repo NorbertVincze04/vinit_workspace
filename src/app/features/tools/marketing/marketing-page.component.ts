@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { PlanCalendarService } from '../../../core/services/plan-calendar.service';
 import { ToastService } from '../../../core/services/toast.service';
-import { downloadJson, readJsonFile } from '../../../core/utils/file';
-import { BackupActionsComponent, PlanStartFieldComponent, SaveStatusComponent } from '../../../shared/components';
+import { BackupMenuComponent, PlanStartFieldComponent } from '../../../shared/components';
 import {
   ButtonComponent,
   ChipGroupComponent,
@@ -41,9 +40,8 @@ import { MarketingStore } from './marketing.store';
     EmptyStateComponent,
     FormDialogComponent,
     ConfirmDialogComponent,
-    BackupActionsComponent,
+    BackupMenuComponent,
     PlanStartFieldComponent,
-    SaveStatusComponent,
     MarketingOverviewComponent,
     MonthRailComponent,
     MonthBriefComponent,
@@ -132,19 +130,6 @@ export class MarketingPageComponent {
       this.toast.show('Caption copied');
     } catch {
       this.toast.show('Copy isn’t available here. Select the text and copy it.');
-    }
-  }
-
-  protected exportBackup(): void {
-    downloadJson(this.store.snapshot(), 'vinit-marketing-backup.json');
-  }
-
-  protected async importBackup(file: File): Promise<void> {
-    try {
-      const ok = this.store.importState(await readJsonFile(file));
-      this.toast.show(ok ? 'Marketing plan imported' : 'That file is not a VINIT marketing backup.');
-    } catch {
-      this.toast.show('That file is not a VINIT marketing backup.');
     }
   }
 }

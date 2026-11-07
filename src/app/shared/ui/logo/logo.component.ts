@@ -24,7 +24,7 @@ import { ChangeDetectionStrategy, Component, booleanAttribute, computed, input }
     .left { fill: var(--logo-left); }
     .right { fill: var(--logo-right); }
     .word {
-      font-family: var(--font-body); font-weight: 500; letter-spacing: 0.22em;
+      font-family: var(--font-body); font-weight: 600; letter-spacing: 0.18em;
       font-size: calc(var(--logo-size) * 0.66); line-height: 1; color: var(--main);
     }
   `,

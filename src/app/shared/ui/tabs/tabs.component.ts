@@ -25,10 +25,10 @@ import { ChipOption } from '../chip-group/chip-group.component';
        margin, which overflowed by 1px and showed a stray vertical scrollbar. */
     .tabs { display: flex; gap: 2px; overflow-x: auto; overflow-y: hidden; scrollbar-width: thin;
       overscroll-behavior-x: contain; box-shadow: inset 0 -1px 0 var(--line); }
-    .tab { flex: none; padding: 10px 14px 11px; font-size: 14.5px; font-weight: 600; white-space: nowrap;
+    .tab { flex: none; padding: 9px 12px 10px; font-size: 14px; font-weight: 500; white-space: nowrap;
       color: var(--muted); background: none; border: 0; border-bottom: 2px solid transparent; cursor: pointer; }
     .tab:hover { color: var(--ink); }
-    .tab[aria-selected='true'] { color: var(--heading); border-bottom-color: var(--main); }
+    .tab[aria-selected='true'] { color: var(--ink); font-weight: 600; border-bottom-color: var(--main); }
     .n { margin-left: 5px; font-weight: 500; color: var(--muted); font-variant-numeric: tabular-nums; }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

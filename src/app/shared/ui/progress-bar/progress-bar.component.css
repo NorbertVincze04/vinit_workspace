@@ -1,22 +1,22 @@
 :host {
   display: block;
-  height: 12px;
+  height: 8px;
   overflow: hidden;
   border-radius: var(--radius-pill);
   background: var(--progress-track);
 }
 
 :host([data-size="xs"]) {
-  height: 6px;
+  height: 4px;
 }
 :host([data-size="sm"]) {
-  height: 10px;
+  height: 6px;
 }
 :host([data-size="md"]) {
-  height: 16px;
+  height: 8px;
 }
 :host([data-size="lg"]) {
-  height: 22px;
+  height: 10px;
 }
 
 .fill {

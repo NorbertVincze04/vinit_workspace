@@ -1,3 +1,10 @@
+.phases {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
+  gap: 12px;
+  align-items: start;
+}
+
 .steps {
   list-style: none;
   padding: 0;
@@ -6,15 +13,20 @@
 }
 
 .milestone {
-  display: grid;
-  gap: 4px;
-  padding-top: 12px;
-  border-top: 1px dashed var(--line);
+  padding-top: 10px;
+  font-size: 13px;
+  border-top: 1px solid var(--line);
 }
-.milestone strong {
-  font-weight: 600;
+.milestone span {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
 }
 
 .extras {
-  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 12px;
+  align-items: stretch;
 }

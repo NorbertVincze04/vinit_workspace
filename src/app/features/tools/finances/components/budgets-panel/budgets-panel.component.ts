@@ -19,7 +19,6 @@ import { FinancesStore } from '../../finances.store';
   template: `
     <div class="toolbar">
       <app-inline-stats class="grow" [items]="store.budgets.items().length ? store.budgetSummary() : []" />
-      <button appButton size="sm" variant="primary" type="button" (click)="add.emit()">New budget</button>
     </div>
 
     @if (!store.budgetRows().length) {

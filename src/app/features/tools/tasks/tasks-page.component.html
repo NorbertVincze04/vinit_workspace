@@ -1,72 +1,70 @@
-<div class="container">
-  <app-page-header
-    eyebrow="VINIT SaaS Solutions · Year 1 task worksheet"
-    title="Every goal, one task at a time"
-    lede="Your first-year goals split into small tasks over 12 months. Tick tasks off, click the text to rename, use ⋯ to change goal, owner, phase or due month, and + Add task to add more."
-  >
-    <app-progress-summary
-      [label]="store.overall().done + ' of ' + store.overall().total + ' tasks'"
-      [percent]="store.overall().percent"
-    />
-  </app-page-header>
-
-  <app-phase-rail [bands]="store.bands()" />
-
-  <app-task-toolbar
-    [filters]="store.filters()"
-    [goalOptions]="store.goalFilterOptions()"
-    (filtersChange)="store.setFilters($event)"
-    (exportBackup)="exportBackup()"
-    (importBackup)="importBackup($event)"
-    (reset)="reset()"
+<app-page-header title="Tasks" description="Year 1 goals split into tasks. Click a task to rename it, ⋯ for details.">
+  <div pageActions>
+    <app-backup-menu [store]="store" name="tasks">
+      <button appMenuItem tone="danger" type="button" (click)="resetting.set(true)">
+        <app-icon name="refresh" [size]="16" /> Reset to the plan…
+      </button>
+    </app-backup-menu>
+  </div>
+  <app-progress-summary
+    [label]="store.overall().done + ' of ' + store.overall().total + ' tasks done'"
+    [percent]="store.overall().percent"
   />
+</app-page-header>
 
-  <p class="hint" aria-live="polite">{{ hint() }}</p>
-  @if (importError()) {
-    <p class="error" role="alert">{{ importError() }}</p>
+<app-task-toolbar
+  [filters]="store.filters()"
+  [goalOptions]="store.goalFilterOptions()"
+  (filtersChange)="store.setFilters($event)"
+/>
+<p class="hint" aria-live="polite">{{ hint() }}</p>
+
+<div class="phases">
+  @for (column of store.columns(); track column.phase.id) {
+    <app-phase-card [phase]="column.phase" [done]="column.done" [total]="column.total" unit="tasks" [current]="column.current">
+      @if (column.visible.length) {
+        <ul class="tasks">
+          @for (view of column.visible; track view.task.id) {
+            <li>
+              <app-task-item
+                [view]="view"
+                [goalOptions]="store.goalOptions()"
+                [monthOptions]="store.monthOptions()"
+                [expanded]="expanded().has(view.task.id)"
+                [autofocus]="view.task.id === newTaskId()"
+                (expandedChange)="setExpanded(view.task.id, $event)"
+                (changed)="store.updateTask(view.task.id, $event)"
+                (removed)="store.deleteTask(view.task.id)"
+              />
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="none">{{ column.total ? 'No tasks match the filters.' : 'No tasks yet.' }}</p>
+      }
+      <button appButton variant="ghost" size="sm" class="add" type="button" (click)="addTask(column.phase.id)">
+        <app-icon name="plus" [size]="16" /> Add task
+      </button>
+    </app-phase-card>
   }
-
-  <app-grid min="300px">
-    @for (column of store.columns(); track column.phase.id) {
-      <app-phase-card
-        [phase]="column.phase"
-        [count]="column.done + ' of ' + column.total + ' tasks done'"
-        [current]="column.current"
-      >
-        @if (column.visible.length) {
-          <ul class="tasks">
-            @for (view of column.visible; track view.task.id) {
-              <li>
-                <app-task-item
-                  [view]="view"
-                  [goalOptions]="store.goalOptions()"
-                  [monthOptions]="store.monthOptions()"
-                  [expanded]="expanded().has(view.task.id)"
-                  [autofocus]="view.task.id === newTaskId()"
-                  (expandedChange)="setExpanded(view.task.id, $event)"
-                  (changed)="store.updateTask(view.task.id, $event)"
-                  (removed)="store.deleteTask(view.task.id)"
-                />
-              </li>
-            }
-          </ul>
-        } @else {
-          <p class="muted small">{{ column.total ? 'No tasks match the filters.' : 'No tasks yet.' }}</p>
-        }
-        <button appButton block class="add" type="button" (click)="addTask(column.phase.id)">
-          <app-icon name="plus" [size]="16" /> Add task
-        </button>
-      </app-phase-card>
-    }
-  </app-grid>
-
-  <app-goals-panel
-    [goals]="store.goalStats()"
-    (add)="store.addGoal()"
-    (rename)="store.updateGoal($event.id, { name: $event.name })"
-    (retarget)="store.updateGoal($event.id, { target: $event.target })"
-    (remove)="store.deleteGoal($event)"
-  />
-
-  <app-save-status message="Saved automatically in this browser. Use Export backup to keep a copy." />
 </div>
+
+<app-goals-panel
+  class="page-section"
+  [goals]="store.goalStats()"
+  (add)="store.addGoal()"
+  (rename)="store.updateGoal($event.id, { name: $event.name })"
+  (retarget)="store.updateGoal($event.id, { target: $event.target })"
+  (remove)="store.deleteGoal($event)"
+/>
+
+@if (resetting()) {
+  <app-confirm-dialog
+    heading="Reset tasks?"
+    message="All goals and tasks go back to the original Year 1 plan. Your changes and ticks will be lost."
+    confirmLabel="Reset tasks"
+    cancelLabel="Cancel"
+    (confirmed)="reset()"
+    (closed)="resetting.set(false)"
+  />
+}

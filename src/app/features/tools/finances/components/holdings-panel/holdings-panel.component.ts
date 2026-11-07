@@ -18,7 +18,6 @@ import { AmountComponent } from '../amount/amount.component';
   template: `
     <div class="toolbar">
       <app-inline-stats class="grow" [items]="store.holdings.items().length ? store.holdingSummary() : []" />
-      <button appButton size="sm" variant="primary" type="button" (click)="add.emit()">New investment</button>
     </div>
 
     @if (!store.holdingRows().length) {

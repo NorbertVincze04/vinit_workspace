@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { PhaseId } from '../../../core/models';
-import { downloadJson, readJsonFile } from '../../../core/utils/file';
+import { ToastService } from '../../../core/services/toast.service';
+import { BackupMenuComponent, PhaseCardComponent, ProgressSummaryComponent } from '../../../shared/components';
 import {
-  PhaseCardComponent,
-  PhaseRailComponent,
-  ProgressSummaryComponent,
-  SaveStatusComponent,
-} from '../../../shared/components';
-import { ButtonComponent, GridComponent, IconComponent, PageHeaderComponent } from '../../../shared/ui';
+  ButtonComponent,
+  ConfirmDialogComponent,
+  IconComponent,
+  MenuItemComponent,
+  PageHeaderComponent,
+} from '../../../shared/ui';
 import { GoalsPanelComponent } from './components/goals-panel/goals-panel.component';
 import { TaskItemComponent } from './components/task-item/task-item.component';
 import { TaskToolbarComponent } from './components/task-toolbar/task-toolbar.component';
@@ -19,16 +20,16 @@ import { TasksStore } from './tasks.store';
   standalone: true,
   imports: [
     PageHeaderComponent,
-    ProgressSummaryComponent,
-    PhaseRailComponent,
-    PhaseCardComponent,
-    GridComponent,
     ButtonComponent,
     IconComponent,
+    MenuItemComponent,
+    ConfirmDialogComponent,
+    BackupMenuComponent,
+    ProgressSummaryComponent,
+    PhaseCardComponent,
     TaskToolbarComponent,
     TaskItemComponent,
     GoalsPanelComponent,
-    SaveStatusComponent,
   ],
   templateUrl: './tasks-page.component.html',
   styleUrl: './tasks-page.component.css',
@@ -36,18 +37,19 @@ import { TasksStore } from './tasks.store';
 })
 export class TasksPageComponent {
   protected readonly store = inject(TasksStore);
+  private readonly toast = inject(ToastService);
 
   /** Ids of tasks whose details panel is open (UI state only, not saved). */
   protected readonly expanded = signal<ReadonlySet<string>>(new Set());
   protected readonly newTaskId = signal<string | null>(null);
-  protected readonly importError = signal('');
+  protected readonly resetting = signal(false);
 
   protected readonly hint = computed(() => {
     const overdue = this.store.overdueCount();
     return (
-      `Month 1 = ${this.store.monthLabel(1)}. ` +
-      (overdue ? `${overdue} overdue. ` : '') +
-      `Showing ${this.store.shownCount()} of ${this.store.overall().total} tasks.`
+      `Showing ${this.store.shownCount()} of ${this.store.overall().total} tasks` +
+      (overdue ? ` · ${overdue} overdue` : '') +
+      ` · Month 1 = ${this.store.monthLabel(1)}`
     );
   });
 
@@ -66,23 +68,9 @@ export class TasksPageComponent {
     this.newTaskId.set(id);
   }
 
-  protected exportBackup(): void {
-    downloadJson(this.store.snapshot(), 'vinit-tasks-backup.json');
-  }
-
-  protected async importBackup(file: File): Promise<void> {
-    try {
-      const ok = this.store.importState(await readJsonFile(file));
-      this.importError.set(ok ? '' : 'That file is not a valid VINIT tasks backup.');
-      if (ok) this.expanded.set(new Set());
-    } catch {
-      this.importError.set('That file is not a valid VINIT tasks backup.');
-    }
-  }
-
   protected reset(): void {
     this.store.reset();
     this.expanded.set(new Set());
-    this.importError.set('');
+    this.toast.show('Tasks reset to the plan');
   }
 }

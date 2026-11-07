@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ToastService } from '../../../core/services/toast.service';
-import { downloadJson, readJsonFile } from '../../../core/utils/file';
-import { BackupActionsComponent, SaveStatusComponent } from '../../../shared/components';
+import { BackupMenuComponent } from '../../../shared/components';
 import {
   ButtonComponent,
   ChipGroupComponent,
@@ -38,8 +37,7 @@ import { ClientsOverviewComponent } from './components/clients-overview/clients-
     EmptyStateComponent,
     FormDialogComponent,
     ConfirmDialogComponent,
-    BackupActionsComponent,
-    SaveStatusComponent,
+    BackupMenuComponent,
     ClientsOverviewComponent,
     ClientRowComponent,
   ],
@@ -87,18 +85,5 @@ export class ClientsPageComponent {
 
   protected setSort(value: string): void {
     this.store.setFilters({ sort: value as ClientSort });
-  }
-
-  protected exportBackup(): void {
-    downloadJson(this.store.snapshot(), 'vinit-clients-backup.json');
-  }
-
-  protected async importBackup(file: File): Promise<void> {
-    try {
-      const ok = this.store.importState(await readJsonFile(file));
-      this.toast.show(ok ? 'Clients imported' : 'That file is not a VINIT clients backup.');
-    } catch {
-      this.toast.show('That file is not a VINIT clients backup.');
-    }
   }
 }

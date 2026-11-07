@@ -2,28 +2,25 @@
   display: inline-block;
   justify-self: start; /* don't stretch when placed in a grid (e.g. inside a card) */
   max-width: 100%;
-  padding: 2px 8px;
-  font-family: var(--font-mono);
-  font-size: 10.5px;
+  padding: 1px 7px;
+  font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  line-height: 18px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   border: 1px solid transparent;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   background: var(--main-soft);
-  color: var(--ink);
+  color: var(--main-ink);
 }
-
 :host([data-variant="solid"]) {
   background: var(--main);
   color: var(--on-main);
 }
 :host([data-variant="second"]) {
   background: var(--second-soft);
-  color: var(--heading);
+  color: var(--tone-info-fg);
 }
 :host([data-variant="outline"]) {
   background: transparent;
@@ -36,7 +33,6 @@
   color: var(--muted);
 }
 :host([data-variant="danger"]) {
-  background: transparent;
-  border-color: var(--red);
-  color: var(--red);
+  background: var(--tone-bad-bg);
+  color: var(--tone-bad-fg);
 }

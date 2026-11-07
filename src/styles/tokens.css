@@ -1,47 +1,52 @@
 /*
- * Design tokens — the only place colours, fonts, radii and spacing are defined.
+ * Design tokens — the only place colours, type, radii and spacing are defined.
  * Components read these variables; change a value here and the whole app follows.
  */
 :root {
-  /* Brand */
-  --main: #0e9899;
-  --main-soft: #d9f0f0;
+  /* Brand. --main is the interactive accent (buttons, links, focus); --brand is the logo teal. */
+  --brand: #0e9899;
+  --main: #0b7f80;
+  --main-hover: #096b6c;
+  --main-soft: #e3f3f3;
+  --main-ink: #075e5f;
+  --on-main: #ffffff;
   --second: #35398c;
-  --second-soft: #e4e5f4;
-  --on-main: #05181d;
+  --second-soft: #e7e8f5;
   --on-second: #ffffff;
 
   /* Surfaces & text */
-  --bg: #edf0f5;
+  --bg: #f4f5f7;
   --surface: #ffffff;
-  --surface-2: #f6f8fb;
-  --ink: #0e1a2e;
-  --muted: #566277;
-  --line: #d3dae5;
-  --heading: #35398c;
+  --surface-2: #f8f9fb;
+  --hover: #f1f3f5;
+  --ink: #161d29;
+  --heading: var(--ink);
+  --muted: #5d6676;
+  --line: #e2e5ea;
+  --line-strong: #cdd2da;
 
-  /* Progress bars & meters: simple neutral */
-  --progress-track: #dde3ec;
-  --progress-fill: #66738a;
+  /* Progress bars & meters */
+  --progress-track: #e6e9ee;
+  --progress-fill: #0b7f80;
 
   /* Status */
-  --good: #0b7f80;
-  --red: #c93636;
-  --amber: #b7791f;
+  --good: #0b7a5a;
+  --red: #c4372f;
+  --amber: #a86b0c;
 
   /* Status pills (tinted background + readable text) */
-  --tone-neutral-bg: #e8edf2;
-  --tone-neutral-fg: #44516a;
-  --tone-info-bg: #e4e5f6;
+  --tone-neutral-bg: #eef0f3;
+  --tone-neutral-fg: #4a5466;
+  --tone-info-bg: #e8e9f7;
   --tone-info-fg: #35398c;
-  --tone-warn-bg: #fbefd2;
+  --tone-warn-bg: #fbf0d9;
   --tone-warn-fg: #7a5200;
-  --tone-ok-bg: #ddf3ea;
+  --tone-ok-bg: #e0f3ea;
   --tone-ok-fg: #0b6b47;
-  --tone-teal-bg: #d9f0f0;
+  --tone-teal-bg: #dff1f1;
   --tone-teal-fg: #075e5f;
-  --tone-bad-bg: #f6e1e1;
-  --tone-bad-fg: #8a3a3a;
+  --tone-bad-bg: #f9e3e1;
+  --tone-bad-fg: #9a2f28;
 
   /* Chart series (validated for colour-blind separation, light surface) */
   --chart-1: #0e9899; /* income */
@@ -49,113 +54,119 @@
   --chart-3: #5157b8; /* invested */
 
   /* Logo */
-  --logo-left: var(--main);
+  --logo-left: var(--brand);
   --logo-right: var(--second);
 
-  /* Typography */
-  --font-display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif;
-  --font-body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  /* Typography: one UI family; tabular numbers where figures line up. */
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
   /* Shape */
-  --radius-sm: 8px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
   --radius-pill: 999px;
-  --shadow-sm: 0 1px 2px rgb(14 26 46 / 0.06);
-  --shadow-md: 0 10px 30px rgb(14 26 46 / 0.08);
-  --shadow-lg: 0 1px 2px rgb(14 26 46 / 0.06), 0 16px 40px rgb(14 26 46 / 0.16);
+  --shadow-sm: 0 1px 2px rgb(16 24 40 / 0.05);
+  --shadow-md: 0 4px 12px rgb(16 24 40 / 0.08);
+  --shadow-lg: 0 1px 3px rgb(16 24 40 / 0.08), 0 12px 32px rgb(16 24 40 / 0.14);
 
   /* Layout */
-  --container: 1200px;
+  --sidebar-w: 236px;
+  --topbar-h: 56px;
+  --content-max: 1240px;
   --gutter: 16px;
-  --header-h: 64px;
-  --section-pad: clamp(32px, 4.5vw, 52px);
 
   color-scheme: light;
 }
 
 @media (min-width: 760px) {
   :root {
-    --gutter: 24px;
+    --gutter: 32px;
   }
 }
 
-/* Dark theme: follows the OS unless the user picked "light" in the header. */
+/* Dark theme: follows the OS unless the user picked a theme in the sidebar. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --main: #1fb5b6;
-    --main-soft: #0f3238;
-    --second: #5b60c4;
-    --second-soft: #1d2150;
-    --bg: #0a111f;
-    --surface: #131c2e;
-    --surface-2: #0f1727;
-    --ink: #e8edf6;
-    --muted: #97a3b8;
-    --line: #25314a;
-    --heading: #e8edf6;
-    --progress-track: #25314a;
-    --progress-fill: #97a3b8;
-    --good: #3fd0d1;
-    --red: #ef5e5d;
+    --main: #2bb0b1;
+    --main-hover: #3fc4c5;
+    --main-soft: #123536;
+    --main-ink: #7fdcdc;
+    --on-main: #04191a;
+    --second: #6d72d6;
+    --second-soft: #20244f;
+    --bg: #0e1218;
+    --surface: #161b23;
+    --surface-2: #1a2029;
+    --hover: #1f2631;
+    --ink: #e6e9ef;
+    --muted: #9aa3b2;
+    --line: #2a313d;
+    --line-strong: #3a4250;
+    --progress-track: #2a313d;
+    --progress-fill: #2bb0b1;
+    --good: #4fd1a1;
+    --red: #f06b62;
     --amber: #e0a93e;
-    --tone-neutral-bg: #1c2638;
-    --tone-neutral-fg: #a9b4c6;
-    --tone-info-bg: #1f2250;
-    --tone-info-fg: #b3b6f5;
+    --tone-neutral-bg: #222934;
+    --tone-neutral-fg: #b2bbc9;
+    --tone-info-bg: #232756;
+    --tone-info-fg: #b9bcf5;
     --tone-warn-bg: #3a2d0f;
     --tone-warn-fg: #ebc25e;
     --tone-ok-bg: #12362b;
     --tone-ok-fg: #6fd6a5;
-    --tone-teal-bg: #0f3238;
+    --tone-teal-bg: #113436;
     --tone-teal-fg: #7ee0e0;
-    --tone-bad-bg: #3a2020;
-    --tone-bad-fg: #f0a8a8;
+    --tone-bad-bg: #3d2222;
+    --tone-bad-fg: #f3a9a3;
     --chart-1: #1fa8a9;
     --chart-2: #c97a38;
     --chart-3: #7c82de;
     --logo-right: var(--ink);
-    --shadow-md: 0 10px 30px rgb(0 0 0 / 0.35);
-    --shadow-lg: 0 1px 2px rgb(0 0 0 / 0.4), 0 16px 40px rgb(0 0 0 / 0.5);
+    --shadow-md: 0 4px 12px rgb(0 0 0 / 0.35);
+    --shadow-lg: 0 1px 3px rgb(0 0 0 / 0.4), 0 12px 32px rgb(0 0 0 / 0.5);
     color-scheme: dark;
   }
 }
 
 :root[data-theme="dark"] {
-  --main: #1fb5b6;
-  --main-soft: #0f3238;
-  --second: #5b60c4;
-  --second-soft: #1d2150;
-  --bg: #0a111f;
-  --surface: #131c2e;
-  --surface-2: #0f1727;
-  --ink: #e8edf6;
-  --muted: #97a3b8;
-  --line: #25314a;
-  --heading: #e8edf6;
-  --progress-track: #25314a;
-  --progress-fill: #97a3b8;
-  --good: #3fd0d1;
-  --red: #ef5e5d;
+  --main: #2bb0b1;
+  --main-hover: #3fc4c5;
+  --main-soft: #123536;
+  --main-ink: #7fdcdc;
+  --on-main: #04191a;
+  --second: #6d72d6;
+  --second-soft: #20244f;
+  --bg: #0e1218;
+  --surface: #161b23;
+  --surface-2: #1a2029;
+  --hover: #1f2631;
+  --ink: #e6e9ef;
+  --muted: #9aa3b2;
+  --line: #2a313d;
+  --line-strong: #3a4250;
+  --progress-track: #2a313d;
+  --progress-fill: #2bb0b1;
+  --good: #4fd1a1;
+  --red: #f06b62;
   --amber: #e0a93e;
-  --tone-neutral-bg: #1c2638;
-  --tone-neutral-fg: #a9b4c6;
-  --tone-info-bg: #1f2250;
-  --tone-info-fg: #b3b6f5;
+  --tone-neutral-bg: #222934;
+  --tone-neutral-fg: #b2bbc9;
+  --tone-info-bg: #232756;
+  --tone-info-fg: #b9bcf5;
   --tone-warn-bg: #3a2d0f;
   --tone-warn-fg: #ebc25e;
   --tone-ok-bg: #12362b;
   --tone-ok-fg: #6fd6a5;
-  --tone-teal-bg: #0f3238;
+  --tone-teal-bg: #113436;
   --tone-teal-fg: #7ee0e0;
-  --tone-bad-bg: #3a2020;
-  --tone-bad-fg: #f0a8a8;
+  --tone-bad-bg: #3d2222;
+  --tone-bad-fg: #f3a9a3;
   --chart-1: #1fa8a9;
   --chart-2: #c97a38;
   --chart-3: #7c82de;
   --logo-right: var(--ink);
-  --shadow-md: 0 10px 30px rgb(0 0 0 / 0.35);
-  --shadow-lg: 0 1px 2px rgb(0 0 0 / 0.4), 0 16px 40px rgb(0 0 0 / 0.5);
+  --shadow-md: 0 4px 12px rgb(0 0 0 / 0.35);
+  --shadow-lg: 0 1px 3px rgb(0 0 0 / 0.4), 0 12px 32px rgb(0 0 0 / 0.5);
   color-scheme: dark;
 }
