@@ -19,6 +19,7 @@ import { wikiRouter } from './modules/wiki/wiki.routes.js';
 import { infraRouter } from './modules/infra/infra.routes.js';
 import { activityRouter } from './modules/activity/activity.routes.js';
 import { notificationsRouter } from './modules/notifications/notifications.routes.js';
+import { searchRouter } from './modules/search/search.routes.js';
 import { featuresRouter } from './modules/features/features.routes.js';
 import { kpisRouter } from './modules/kpis/kpis.routes.js';
 import { leadsRouter } from './modules/leads/leads.routes.js';
@@ -82,6 +83,7 @@ export function createApp(): express.Express {
   secured.use('/infra', infraRouter());
   secured.use('/activity', activityRouter());
   secured.use('/notifications', notificationsRouter());
+  secured.use('/search', searchRouter());
   api.use(secured);
 
   app.use('/api/v1', api);

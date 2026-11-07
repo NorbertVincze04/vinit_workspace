@@ -92,6 +92,7 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 | Infra | `GET/POST /infra/services`, `PATCH/DELETE /infra/services/:id`, `GET/PUT /infra/sms-usage?month=`, `DELETE /infra/sms-usage/:id`, `GET/POST /infra/backup-checks`, `GET /infra/health` |
 | Activity | `GET /activity?area=&userId=&salonId=&before=&limit=` → {items, next} (newest first; `next` is the cursor for older entries) |
 | Notifications | `GET /notifications` (own; brings them up to date first), `GET /notifications/count`, `POST /notifications/:id/read`, `POST /notifications/:id/dismiss`, `POST /notifications/read-all`, `POST /notifications/refresh` |
+| Search | `GET /search?q=` → salons, clients, leads, tickets (`T-12`), contracts, feature requests, wiki pages (every word must match; accents ignored) |
 | Import | `POST /import/legacy-clients` {records} (old browser Clients list → leads / salons; skips records moved before) |
 | Plans, promotions | `GET /plans`, `PATCH /plans/:id`, `GET/POST /promotions`, `PATCH /promotions/:id` (seeded by the migrations) |
 
@@ -104,6 +105,7 @@ Wiki, Files).
 
 | Tool | Route | What it does |
 |---|---|---|
+| Search | Ctrl+K anywhere, or Search in the sidebar / the magnifier on phones | Find a salon, client, lead, ticket, contract, feature request, wiki page or tool |
 | Activity | `/activity` | Everything the team changed, by day, area and person; each line opens where it happened |
 | Overview | `/` | Tool launcher, live figures from every tool, salons needing attention (overdue payments, trials ending, onboardings over 48h, urgent tickets, lead follow-ups due), tasks due now, payments due in 14 days |
 | KPIs | `/tools/kpis` | Any month vs. the plan: paying salons (43 break-even, 50 goal), MRR (7.500 RON goal), retention month and year (≥ 70%), trial → paid, onboarding hours (48h), new/churned, leads; 12-month charts and table. Closed months are frozen snapshots |

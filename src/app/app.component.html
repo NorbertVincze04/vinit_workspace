@@ -18,7 +18,10 @@
       <app-logo [size]="22" />
       <span>VINIT</span>
     </a>
-    <app-bell class="topbar-bell" />
+    <button appButton variant="ghost" iconOnly type="button" class="topbar-search" aria-label="Search" (click)="search.open.set(true)">
+      <app-icon name="search" />
+    </button>
+    <app-bell />
   </header>
 
   <app-sidebar id="sidebar" class="sidebar" [class.is-open]="navOpen()" (navigate)="closeNav()" />
@@ -36,4 +39,7 @@
   <router-outlet />
 }
 
+@if (auth.user()) {
+  <app-search-palette />
+}
 <app-toast />

@@ -7,6 +7,7 @@ import { StorageService } from '../../core/services/storage.service';
 import { ThemeService } from '../../core/services/theme.service';
 import { IconComponent, LogoComponent } from '../../shared/ui';
 import { BellComponent } from '../bell/bell.component';
+import { SearchService } from '../search/search-palette.component';
 
 /**
  * Workspace navigation: logo, overview, tools (from the registry), theme switch, save status and sign-out.
@@ -36,6 +37,12 @@ export class SidebarComponent {
   });
   protected readonly overview = OVERVIEW_LINK;
   protected readonly activity = ACTIVITY_LINK;
+  private readonly search = inject(SearchService);
+
+  protected openSearch(): void {
+    this.navigate.emit();
+    this.search.open.set(true);
+  }
   protected readonly groups = TOOL_GROUPS.map((g) => ({ id: g.id, title: g.title, links: g.tools.map(toNavLink) }));
 
   readonly navigate = output<void>();

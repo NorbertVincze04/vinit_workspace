@@ -15,7 +15,10 @@ describe('activity feed', () => {
     await agent.post('/api/v1/tasks').set(APP_HEADER).send({ text: 'Register the SRL' });
 
     const all = (await agent.get('/api/v1/activity')).body;
-    expect(all.items.map((a: AnyRow) => a.entityType)).toEqual(['tasks', 'leads', 'salons', 'clients']);
+    const types = all.items.map((a: AnyRow) => a.entityType);
+    // The salon and its client are saved together (same timestamp), so their order is arbitrary.
+    expect(types.slice(0, 2)).toEqual(['tasks', 'leads']);
+    expect(types.slice(2).sort()).toEqual(['clients', 'salons']);
     expect(all.items[0]).toMatchObject({ userName: user.fullName, summary: 'Register the SRL' });
     expect(all.next).toBeNull();
 
