@@ -1,6 +1,6 @@
 # VINIT Workspace: Salon Platform Plan (Phase 0)
 
-> Status: **approved 2026-11-07, Phase 1 in progress.** Your decisions are in §0. The questions that are still open are in §9.
+> Status: **Phase 1 done, Phase 2 done (2026-11-07), waiting for your OK before Phase 3.** Decisions are in §0; questions settled with the defaults are marked in §9.
 
 ## 0. Decisions (2026-11-07)
 
@@ -14,6 +14,7 @@
 | 6 | Files are stored **in Postgres** (`file_blobs`) |
 | 7 | **Runs on your own machine with Docker.** No Vercel, Railway or other paid hosting. `docker compose up` starts DB + API + web; other devices on your Wi-Fi open `http://<pc-ip>:8080`. Stop it when you don't need it |
 | 8 | Work **straight on `main`**, commit after each module, **never push** |
+| A–F | Accepted defaults (2026-11-07): convert a lead from any stage, then it follows the salon · included sessions one-time per contract · billable time in exact minutes · marking a payment paid adds a Finances income entry · retention = 1 − churned ÷ paying at period start · live paying-salon counter on the Roadmap |
 
 ---
 
@@ -354,16 +355,16 @@ Each module brings: migration, zod schemas, repository/service/controller, API t
 
 Answered 2026-11-07, see §0: client/salon, Clients page, trial/Early Bird, session counting, 48h clock, file storage, Docker/local hosting, git.
 
-Still open (I'll ask again before the phase that needs each one):
+✓ = settled with the default. F: the live counter is done; moving the roadmap steps into the database comes with Feature requests (Phase 3). Still open: G, H, I.
 
 | # | Question | Needed in | Default if you don't mind |
 |---|---|---|---|
-| A | **Lead conversion:** convert at "demo booked" or "trial"? Should the lead's stage then follow the salon (trial → `trial`, first paid payment → `paying`)? | Phase 2 (Leads) | Convert from any stage. The stage follows the salon |
-| B | **Included sessions:** one-time per contract (kickoff + prototype approval) or renewing every period? | Phase 2 (Tickets) | One-time per contract |
-| C | **Billable rounding:** exact minutes, or round up to 15-min blocks? | Phase 2 (Tickets) | Exact minutes |
-| D | **Finances link:** create a Finances income transaction automatically when a payment is marked paid? | Phase 2 (Subscriptions) | Yes |
-| E | **Retention ≥ 70%** = 1 − churned in period ÷ paying salons at period start (monthly and year-to-date)? | Phase 3 (KPIs) | Yes |
-| F | **Roadmap:** move steps into the DB (same ids, same UI) so feature requests can link to them, and replace the manual "paying salons" counter with the live count of active salons? | Phase 2/3 | Yes. Until then the counter stays manual |
+| A ✓ | **Lead conversion:** convert at "demo booked" or "trial"? Should the lead's stage then follow the salon (trial → `trial`, first paid payment → `paying`)? | Phase 2 (Leads) | Convert from any stage. The stage follows the salon |
+| B ✓ | **Included sessions:** one-time per contract (kickoff + prototype approval) or renewing every period? | Phase 2 (Tickets) | One-time per contract |
+| C ✓ | **Billable rounding:** exact minutes, or round up to 15-min blocks? | Phase 2 (Tickets) | Exact minutes |
+| D ✓ | **Finances link:** create a Finances income transaction automatically when a payment is marked paid? | Phase 2 (Subscriptions) | Yes |
+| E ✓ | **Retention ≥ 70%** = 1 − churned in period ÷ paying salons at period start (monthly and year-to-date)? | Phase 3 (KPIs) | Yes |
+| F ½ | **Roadmap:** move steps into the DB (same ids, same UI) so feature requests can link to them, and replace the manual "paying salons" counter with the live count of active salons? | Phase 2/3 | Yes. Until then the counter stays manual |
 | G | **Infra costs:** take each service's monthly cost from a Finances recurring payment (one source of truth)? | Phase 3 (Infra) | Yes |
 | H | **Documents:** fix the 10-vs-43 break-even and 24h-vs-48h wording in the pitch and plan, or leave them? | — | Leave them, the app uses 43 / 48h |
 | I | Should `Business Plan.docx` (untracked, duplicate of the parent folder's copy) go into `.gitignore`? | — | Leave it untracked, never commit it |

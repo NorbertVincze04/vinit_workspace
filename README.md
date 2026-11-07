@@ -134,6 +134,7 @@ src/
     features/
       login/              sign-in page
       dashboard/          overview page + components/ (status-grid, tool-tile, due-tasks, due-payments, local-data-banner)
+      tools/salons/detail the salon page (one tab per module: overview, onboarding, billing, support, timeline)
       tools/<tool>/       <tool>-page.component, <tool>.store.ts, <tool>.model.ts, <tool>.data.ts,
                           <tool>.fields.ts (form definitions) and components/ used only by that tool
       not-found/
@@ -141,7 +142,9 @@ api/                      Express 5 + Knex + PostgreSQL (see "Develop" above)
   src/config.ts           env settings          src/app.ts        routes (public: health, auth; the rest needs a session)
   src/db/                 knex (camelCase ⇄ snake_case), migrations/ (raw SQL, listed in index.ts)
   src/lib/                resource.ts (generic CRUD + bulk replace + activity log), schemas.ts (zod field types)
-  src/modules/            auth, tools (table definitions), settings, roadmap, files
+  src/modules/            auth (+ users), tools (table definitions), settings, roadmap, files,
+                          salons (clients, salons, domains, plans, promotions, old-clients import), leads,
+                          billing (subscriptions, payments, MRR, warnings), onboarding, support (tickets, time)
   src/scripts/            migrate, create-user, set-password, seed-demo, backup/restore
   tests/                  Vitest + supertest
 docker-compose.yml        db (Postgres 16) + api + web (nginx serving the build, proxying /api)
