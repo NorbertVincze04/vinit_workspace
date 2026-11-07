@@ -4,6 +4,7 @@ import { TOOLS } from '../../core/data/tools.data';
 import { PlanCalendarService } from '../../core/services/plan-calendar.service';
 import { PageHeaderComponent } from '../../shared/ui';
 import { DuePaymentsComponent } from './components/due-payments/due-payments.component';
+import { LocalDataBannerComponent } from './components/local-data-banner/local-data-banner.component';
 import { DueTasksComponent } from './components/due-tasks/due-tasks.component';
 import { StatusGridComponent } from './components/status-grid/status-grid.component';
 import { ToolTileComponent } from './components/tool-tile/tool-tile.component';
@@ -12,7 +13,14 @@ import { ToolTileComponent } from './components/tool-tile/tool-tile.component';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [PageHeaderComponent, ToolTileComponent, StatusGridComponent, DueTasksComponent, DuePaymentsComponent],
+  imports: [
+    PageHeaderComponent,
+    LocalDataBannerComponent,
+    ToolTileComponent,
+    StatusGridComponent,
+    DueTasksComponent,
+    DuePaymentsComponent,
+  ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
