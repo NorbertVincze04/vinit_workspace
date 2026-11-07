@@ -1,0 +1,110 @@
+<app-page-header title="Infra" description="What the setup costs each month, SMS against the 1.500 budget, and whether backups really work.">
+  <div pageActions>
+    <button appButton variant="primary" type="button" (click)="openService(null)"><app-icon name="plus" [size]="16" /> New service</button>
+  </div>
+</app-page-header>
+
+@if (store.health()) {
+  <div class="cards">
+    @for (c of cards(); track c.label) {
+      <app-kpi-card [label]="c.label" [value]="c.value" [hint]="c.hint" [tone]="c.tone" [percent]="c.percent" />
+    }
+  </div>
+}
+
+<app-panel heading="Services" [meta]="store.services().length + ''" [flush]="store.services().length > 0">
+  @if (store.services().length) {
+    <app-ledger [headers]="['Service', 'Per month', 'Renews', '']" [numeric]="[1]" columns="minmax(0, 2fr) 150px 120px auto">
+      @for (s of store.services(); track s.id) {
+        <app-ledger-row clickable (activate)="openService(s)">
+          <div>
+            <span class="cell-title">{{ s.name }}{{ s.active ? '' : ' (not in use)' }}</span>
+            <span class="cell-sub">{{ category(s.category) }}{{ s.vendor ? ' · ' + s.vendor : '' }}{{ s.planName ? ' · ' + s.planName : '' }}</span>
+            @if (s.dashboardUrl || s.statusUrl) {
+              <span class="links">
+                @if (s.dashboardUrl) {
+                  <a [href]="s.dashboardUrl" target="_blank" rel="noopener noreferrer">Dashboard</a>
+                }
+                @if (s.statusUrl) {
+                  <a [href]="s.statusUrl" target="_blank" rel="noopener noreferrer">Status</a>
+                }
+              </span>
+            }
+          </div>
+          <div class="cell-num">
+            <span>{{ s.costSource === 'none' ? '—' : money(s.monthlyBani, s.monthlyCurrency) }}</span>
+            <span class="cell-sub">{{ s.costSource === 'finances' ? 'from Finances' : s.costSource === 'estimate' ? 'estimate' : 'no cost set' }}</span>
+          </div>
+          <span>{{ date(s.renewsOn) || '—' }}</span>
+          <div class="cell-actions">
+            <button appButton variant="ghost" size="sm" type="button" (click)="deleting.set(s)">Delete</button>
+          </div>
+        </app-ledger-row>
+      }
+    </app-ledger>
+  } @else {
+    <app-empty-state
+      heading="No services yet"
+      text="Add what you pay for (domains, Twilio, tools…). Link each one to its recurring payment in Finances so the cost is entered once."
+    >
+      <button appButton variant="primary" type="button" (click)="openService(null)">New service</button>
+    </app-empty-state>
+  }
+</app-panel>
+
+<div class="grid">
+  <app-panel heading="SMS usage" [meta]="smsTotal() + ' sent'">
+    <div class="bar">
+      <app-month-switcher [(value)]="smsMonth" />
+      <button appButton size="sm" type="button" (click)="openSms()">Enter SMS sent</button>
+    </div>
+    <ul class="rows">
+      @for (r of smsRows(); track r.id) {
+        <li>
+          <span>{{ r.salonName ?? 'Whole account' }}</span>
+          <strong>{{ r.sent }} SMS</strong>
+          <span class="muted">{{ money(r.costBani, 'RON') }}</span>
+          <button class="x push" type="button" [attr.aria-label]="'Remove ' + (r.salonName ?? 'whole account')" (click)="removeSms(r)">×</button>
+        </li>
+      } @empty {
+        <li class="muted">Nothing entered for this month. Take the numbers from the Twilio console.</li>
+      }
+    </ul>
+  </app-panel>
+
+  <app-panel heading="Backups">
+    <div class="bar">
+      <span class="muted small">npm run db:backup records itself here.</span>
+      <span>
+        <button appButton size="sm" variant="ghost" type="button" (click)="openBackup('backup')">Record backup</button>
+        <button appButton size="sm" type="button" (click)="openBackup('restore_test')">Record restore test</button>
+      </span>
+    </div>
+    <ul class="rows">
+      @for (b of store.backups().slice(0, 10); track b.id) {
+        <li>
+          <app-status-pill [tone]="b.kind === 'backup' ? 'info' : 'ok'">{{ b.kind === 'backup' ? 'Backup' : 'Restore test' }}</app-status-pill>
+          <span>{{ when(b.checkedAt) }}</span>
+          <span class="muted">{{ backupMeta(b) }}</span>
+        </li>
+      } @empty {
+        <li class="muted">No backup recorded yet.</li>
+      }
+    </ul>
+  </app-panel>
+</div>
+
+@if (dialog(); as d) {
+  <app-form-dialog
+    [heading]="d.kind === 'service' ? (d.item ? 'Edit service' : 'New service') : titles[d.kind]"
+    [fields]="d.fields"
+    [initial]="d.values"
+    saveLabel="Save"
+    (saved)="saved($event)"
+    (closed)="dialog.set(null)"
+  />
+}
+
+@if (deleting(); as s) {
+  <app-confirm-dialog heading="Delete service?" [message]="'“' + s.name + '” will be removed. Its Finances payment stays.'" cancelLabel="Keep it" (confirmed)="confirmDelete(s)" (closed)="deleting.set(null)" />
+}

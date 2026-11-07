@@ -25,7 +25,7 @@ and survives restarts and rebuilds. After pulling code changes: `docker compose 
 |---|---|
 | Add a team member (max 3) | `docker compose exec api node --import tsx src/scripts/create-user.ts --email … --name "…"` |
 | Reset a password | `docker compose exec api node --import tsx src/scripts/set-password.ts --email …` |
-| Back up the database | `npm run db:backup` → `backups/vinit-<date>.dump` (includes uploaded files; copy it somewhere safe) |
+| Back up the database | `npm run db:backup` → `backups/vinit-<date>.dump` (includes uploaded files; copy it somewhere safe). It is recorded in Infra › Backups |
 | Restore a backup | `npm run db:restore -- backups/<file>.dump --yes` (replaces everything), then `docker compose restart api` |
 | Try with demo data | `npm --prefix api run db:seed:demo` → database `vinit_demo` (never the real `vinit` database): finances, marketing, and fake salons, leads, subscriptions, an onboarding and tickets. Run the API with `DB_NAME=vinit_demo` and add a login there with `user:create` |
 
@@ -84,6 +84,7 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 | Contracts | `GET/POST /contracts?salonId=&status=&kind=`, `GET/PATCH/DELETE /contracts/:id`, `GET /contracts/compliance`; files: `POST /files` with `salonId` / `contractId`, `GET /files?salonId=&contractId=` |
 | Deadlines | `GET /deadlines?from=&to=&status=&salonId=`, `GET /deadlines/upcoming?days=`, `POST /deadlines`, `PATCH/DELETE /deadlines/:id`, `POST /deadlines/:id/done`, `POST /deadlines/regenerate` |
 | Wiki | `GET /wiki?q=&category=&archived=`, `POST /wiki`, `GET/PUT /wiki/:slug` (PUT with `baseRevision` refuses a stale save), `POST /wiki/:slug/archive`, `GET /wiki/:slug/revisions`, `POST /wiki/:slug/restore/:revision` |
+| Infra | `GET/POST /infra/services`, `PATCH/DELETE /infra/services/:id`, `GET/PUT /infra/sms-usage?month=`, `DELETE /infra/sms-usage/:id`, `GET/POST /infra/backup-checks`, `GET /infra/health` |
 | Import | `POST /import/legacy-clients` {records} (old browser Clients list → leads / salons; skips records moved before) |
 | Plans, promotions | `GET /plans`, `PATCH /plans/:id`, `GET/POST /promotions`, `PATCH /promotions/:id` (seeded by the migrations) |
 
@@ -103,6 +104,7 @@ the Angular stores convert at the boundary (`core/api/api-fields.ts`), so the ap
 | Contracts | `/tools/contracts` | Subscription contracts, DPAs (GDPR), custom projects, addenda (numbered VIN-2026-001…) with their files; missing paperwork per salon; signing the subscription contract starts the onboarding. The salon page has a Contracts & files tab |
 | Calendar | `/tools/calendar` | Deadlines: month grid (agenda on phones) and upcoming list; manual ones repeat monthly/quarterly/yearly; domain, SSL, contract renewal, trial and minimum-term dates are generated from the salons |
 | Wiki | `/tools/wiki` | How-tos and SOPs in Markdown (live preview), search that ignores diacritics, every version kept and restorable, archive; starts with onboarding, plans & offers and backups pages |
+| Infra | `/tools/infra` | Services and their monthly cost (from the linked Finances payment, decision G, or an estimate), SMS against the 1.500 budget, backups and restore tests (`npm run db:backup` records itself), storage; renewals go to the Calendar |
 | Clients | `/tools/clients` | The people and companies that pay (one salon each), with business address |
 | Finances | `/tools/finances` | Transactions, recurring payments, investments, accounts, budgets, cash-flow chart, CSV export |
 | Marketing | `/tools/marketing` | 12-month content calendar, communication mix vs. target, copy & hashtags |

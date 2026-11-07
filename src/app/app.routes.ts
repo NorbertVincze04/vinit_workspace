@@ -92,6 +92,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/tools/wiki/wiki-article.component').then((m) => m.WikiArticleComponent),
       },
       {
+        path: 'tools/infra',
+        title: 'Infra · VINIT Workspace',
+        loadComponent: () => import('./features/tools/infra/infra-page.component').then((m) => m.InfraPageComponent),
+      },
+      {
         path: 'tools/clients',
         title: 'Clients · VINIT Workspace',
         loadComponent: () =>

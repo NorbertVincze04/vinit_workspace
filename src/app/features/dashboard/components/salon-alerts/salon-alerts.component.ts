@@ -8,6 +8,7 @@ import { OnboardingStore } from '../../../tools/onboarding/onboarding.store';
 import { BillingStore } from '../../../tools/subscriptions/billing.store';
 import { SupportStore } from '../../../tools/support/support.store';
 import { CalendarStore } from '../../../tools/calendar/calendar.store';
+import { InfraStore } from '../../../tools/infra/infra.store';
 import { categoryLabel, whenInfo } from '../../../tools/calendar/calendar.model';
 import { ticketNo } from '../../../tools/support/support.model';
 
@@ -89,6 +90,11 @@ export class SalonAlertsComponent {
   private readonly support = inject(SupportStore);
   private readonly leads = inject(LeadsStore);
   private readonly calendar = inject(CalendarStore);
+  private readonly infra = inject(InfraStore);
+
+  constructor() {
+    void this.infra.reload();
+  }
 
   protected readonly all = signal(false);
 
@@ -163,6 +169,21 @@ export class SalonAlertsComponent {
         route: '/tools/calendar',
         rank: d.daysLeft < 0 ? 0 : d.daysLeft <= 3 ? 2 : 4,
       });
+    }
+
+    // Infrastructure: SMS budget, backups that are old or never made.
+    const h = this.infra.health();
+    if (h) {
+      if (h.sms.pct >= 80) {
+        out.push({ key: 'sms', tag: `SMS ${h.sms.pct}%`, tone: h.sms.pct >= 100 ? 'bad' : 'warn', title: 'SMS budget', text: `${h.sms.sent} of ${h.sms.budget} SMS used this month`, route: '/tools/infra', rank: 2 });
+      }
+      const b = h.backups;
+      if (b.lastBackupDays === null || b.lastBackupDays > 7) {
+        out.push({ key: 'backup', tag: 'Backup', tone: b.lastBackupDays === null || b.lastBackupDays > 30 ? 'bad' : 'warn', title: 'Back up the database', text: b.lastBackupDays === null ? 'No backup recorded yet: npm run db:backup' : `Last backup ${b.lastBackupDays} days ago`, route: '/tools/infra', rank: 3 });
+      }
+      if (b.lastRestoreTestDays === null || b.lastRestoreTestDays > 90) {
+        out.push({ key: 'restore', tag: 'Restore test', tone: 'warn', title: 'Test a restore', text: b.lastRestoreTestDays === null ? 'A backup only counts once a restore worked' : `Last restore test ${b.lastRestoreTestDays} days ago`, route: '/tools/infra', rank: 5 });
+      }
     }
 
     return out.sort((a, b) => a.rank - b.rank);

@@ -83,6 +83,13 @@ export const TOOLS: readonly ToolDefinition[] = [
     route: '/tools/wiki',
   },
   {
+    id: 'infra',
+    title: 'Infra',
+    description: 'Monthly service costs, SMS against the budget, backups and restore tests.',
+    icon: 'server',
+    route: '/tools/infra',
+  },
+  {
     id: 'clients',
     title: 'Clients',
     description: 'The people and companies that pay, one salon each.',

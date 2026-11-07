@@ -9,7 +9,7 @@
  */
 import { spawn } from 'node:child_process';
 import { createReadStream, createWriteStream, existsSync, mkdirSync, statSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -36,6 +36,21 @@ async function backup(): Promise<void> {
   child.stdout!.pipe(createWriteStream(out));
   await finished(child);
   console.log(`Backup written: ${out} (${(statSync(out).size / 1024 / 1024).toFixed(1)} MB)`);
+  await recordCheck(out);
+}
+
+/** Notes the backup in the workspace (Infra › Backups). A failure here doesn't undo the backup. */
+async function recordCheck(out: string): Promise<void> {
+  const name = basename(out).replace(/'/g, '');
+  const sql = `INSERT INTO backup_checks (kind, file_name, note) VALUES ('backup', '${name}', 'npm run db:backup')`;
+  const child = compose(['psql', '-U', 'vinit', '-d', 'vinit', '-q', '-c', sql]);
+  child.stdin!.end();
+  child.stdout!.resume();
+  try {
+    await finished(child);
+  } catch {
+    console.warn('(Could not record it in Infra › Backups; record it there by hand.)');
+  }
 }
 
 async function restore(): Promise<void> {
