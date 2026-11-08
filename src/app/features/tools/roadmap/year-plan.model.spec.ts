@@ -3,14 +3,14 @@ import { goalBody, goalRows, goalValue, goalValues, yearLabel } from './year-pla
 
 const goals: Goals = {
   payingSalons: 50,
-  breakEvenSalons: 43,
+  breakEvenSalons: 46,
   mrrBani: 750000,
   incomeBani: null,
-  monthlyCostsBani: 638000,
+  monthlyCostsBani: 686000,
   retentionPct: 70,
   onboardingHours: 48,
   smsMonthlyBudget: 1500,
-  operationalCostsBani: 260000,
+  operationalCostsBani: 308000,
 };
 
 const year = (p: Partial<PlanYear>): PlanYear => ({ year: 1, from: '2026-12', to: '2027-11', status: 'past', goals, effective: goals, notes: '', phases: [], ...p });

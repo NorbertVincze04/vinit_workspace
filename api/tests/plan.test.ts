@@ -29,14 +29,14 @@ describe('year plans', () => {
     expect(y1).toMatchObject({ year: 1, from: '2026-12', to: '2027-11', status: 'current' });
     expect(y1.goals).toEqual({
       payingSalons: 50,
-      breakEvenSalons: 43,
+      breakEvenSalons: 46,
       mrrBani: 750000,
       incomeBani: null,
-      monthlyCostsBani: 638000,
+      monthlyCostsBani: 686000,
       retentionPct: 70,
       onboardingHours: 48,
       smsMonthlyBudget: 1500,
-      operationalCostsBani: 260000,
+      operationalCostsBani: 308000,
     });
     expect(y1.phases.map((p: AnyRow) => [p.key, p.name, p.monthFrom, p.monthTo, p.steps.length])).toEqual([
       ['build', 'Build', 1, 3, 6],

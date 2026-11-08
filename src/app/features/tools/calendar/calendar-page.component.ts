@@ -115,7 +115,9 @@ export class CalendarPageComponent {
 
   private async loadMonth(m: string): Promise<void> {
     const weeks = monthWeeks(m);
-    this.deadlines.set(await this.store.range(weeks[0][0], weeks.at(-1)![6]));
+    const items = await this.store.range(weeks[0][0], weeks.at(-1)![6]);
+    // Paging quickly: a slow answer for an earlier month must not replace the current one.
+    if (this.month() === m) this.deadlines.set(items);
   }
 
   private async refresh(): Promise<void> {
@@ -141,17 +143,14 @@ export class CalendarPageComponent {
     });
   }
 
-  protected async save(v: FormValues): Promise<void> {
+  /** Throws on failure, so the form stays open with the server's message (nothing typed is lost). */
+  protected readonly save = async (v: FormValues): Promise<void> => {
     const f = this.form();
-    try {
-      if (f?.item) await this.store.update(f.item.id, deadlineBody(v));
-      else await this.store.create(deadlineBody(v));
-      this.toast.show('Deadline saved');
-      await this.refresh();
-    } catch {
-      /* toast shown */
-    }
-  }
+    if (f?.item) await this.store.update(f.item.id, deadlineBody(v));
+    else await this.store.create(deadlineBody(v));
+    this.toast.show('Deadline saved');
+    void this.refresh();
+  };
 
   protected async markDone(d: Deadline, dialog?: DialogComponent): Promise<void> {
     try {

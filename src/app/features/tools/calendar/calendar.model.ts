@@ -88,7 +88,17 @@ export function whenInfo(d: Deadline): { text: string; tone: StatusTone } {
 }
 
 const MANUAL = CATEGORIES.filter((c) => !['domain_renewal', 'contract_renewal', 'trial_end'].includes(c.value));
-const isLink = (v: string): string | null => (/^https?:\/\/\S+$/.test(v) ? null : 'Enter a full link, starting with https://');
+/** Same rule as the API: a link the browser can parse, http or https. */
+const isLink = (v: string): string | null => {
+  const message = 'Enter a full link, starting with https://';
+  if (!/^https?:\/\/\S+$/.test(v)) return message;
+  try {
+    new URL(v);
+    return null;
+  } catch {
+    return message;
+  }
+};
 const isAllDay = (v: FormValues): boolean => asString(v['when']) !== 'time';
 
 /** Choices for the current mode, plus any older value that isn't a preset (kept when editing). */

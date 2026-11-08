@@ -90,7 +90,7 @@
     [fields]="f.fields"
     [initial]="f.values"
     saveLabel="Save deadline"
-    (saved)="save($event)"
+    [save]="save"
     (closed)="form.set(null)"
   />
 }

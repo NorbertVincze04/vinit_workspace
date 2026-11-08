@@ -10,6 +10,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { apiError } from '../../../core/api/api.service';
 import { uid } from '../../../core/utils/id';
 import { parseAmount } from '../../../core/utils/text';
 import { ButtonComponent } from '../button/button.component';
@@ -22,6 +23,9 @@ import { FieldDef, FormValue, FormValues, isEmail } from './form.model';
 /**
  * Create / edit dialog generated from field definitions. Show it with @if; it emits (saved) with the
  * validated values and closes itself.
+ *
+ * Pass [save] (an async function) to keep the dialog open until the server accepts the values: if it
+ * throws, the dialog stays open with the error shown, so nothing typed is lost.
  *
  *   @if (form(); as f) {
  *     <app-form-dialog heading="New client" [fields]="clientFields" [initial]="f.values"
@@ -45,6 +49,8 @@ export class FormDialogComponent implements OnInit {
   /** Grid columns for the fields (fields can span several). */
   readonly columns = input<2 | 4>(2);
   readonly size = input<'sm' | 'md' | 'lg'>('md');
+  /** Optional save: the dialog closes only when it resolves, and shows the error when it throws. */
+  readonly save = input<((values: FormValues) => Promise<unknown>) | null>(null);
 
   readonly saved = output<FormValues>();
   readonly closed = output<void>();
@@ -54,6 +60,8 @@ export class FormDialogComponent implements OnInit {
   protected readonly error = signal('');
   /** Something was typed or picked since the form opened. */
   protected readonly dirty = signal(false);
+  /** [save] is running. */
+  protected readonly saving = signal(false);
   protected readonly visibleFields = computed(() =>
     this.fields().filter((f) => !f.show || f.show(this.values())),
   );
@@ -123,8 +131,9 @@ export class FormDialogComponent implements OnInit {
 
   // ---- submit ----
 
-  protected submit(event: Event): void {
+  protected async submit(event: Event): Promise<void> {
     event.preventDefault();
+    if (this.saving()) return;
     const out: FormValues = {};
     const values = this.values();
 
@@ -142,8 +151,29 @@ export class FormDialogComponent implements OnInit {
     }
 
     this.error.set('');
+    const save = this.save();
+    if (save) {
+      this.saving.set(true);
+      try {
+        await save(out);
+      } catch (error) {
+        this.failFromServer(error);
+        return;
+      } finally {
+        this.saving.set(false);
+      }
+    }
     this.saved.emit(out);
     this.dialog().close();
+  }
+
+  /** Shows the server's message; a field error names (and focuses) that field. */
+  private failFromServer(error: unknown): void {
+    const body = apiError(error);
+    const fieldErrors = body.fields ?? {};
+    const field = this.visibleFields().find((f) => fieldErrors[f.key]);
+    if (field) this.fail(`${field.label}: ${fieldErrors[field.key]}`, field);
+    else this.fail(body.message);
   }
 
   private parseField(f: FieldDef, raw: FormValue | undefined): FormValue | { error: string } {
@@ -185,8 +215,8 @@ export class FormDialogComponent implements OnInit {
     }
   }
 
-  private fail(message: string, f: FieldDef): void {
+  private fail(message: string, f?: FieldDef): void {
     this.error.set(message);
-    this.host.nativeElement.querySelector<HTMLElement>(`#${this.fieldId(f)}`)?.focus();
+    if (f) this.host.nativeElement.querySelector<HTMLElement>(`#${this.fieldId(f)}`)?.focus();
   }
 }

@@ -81,6 +81,6 @@
 
   <div dialogFooter>
     <button appButton type="button" (click)="dialog.close()">Cancel</button>
-    <button appButton type="submit" variant="primary" [attr.form]="formId">{{ saveLabel() }}</button>
+    <button appButton type="submit" variant="primary" [attr.form]="formId" [disabled]="saving()">{{ saving() ? 'Saving…' : saveLabel() }}</button>
   </div>
 </app-dialog>

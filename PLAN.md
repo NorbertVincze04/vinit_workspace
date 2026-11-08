@@ -33,8 +33,8 @@ Sources: `Business Plan.docx` / `Vincze Norbert_Plan de afaceri_Sustenabil.pdf`,
 | Market | ~500 independent barbershops in big cities, ~2,500 nationally. Competitors: Mero, Stailer, Booksy, Vagaro, Fresha. Persona: barbershop owner aged 20–35, Instagram-heavy |
 | Year-1 goals | 5 free beta salons by month 3 · 50 paying salons / **7,500 RON MRR** by month 12 · retention **≥ 70%** · onboarding < 48h |
 | Mid term (yr 3–5) | ~500 salons, > 75,000 RON MRR, 10 cities, 4 staff, 3 add-ons (card deposits, stock, advanced reports) aiming at +20% ARPU |
-| Costs | Initial 24,585 RON. Monthly **6,380 RON** (2,600 operational + 3,780 salaries). Includes Vercel 100, Railway 100, Twilio 300 (≈1,500 SMS at 0.20 RON), accounting 500, lawyer 500, ads 500 |
-| Break-even | **43 salons** on Standard (43 × 150 = 6,450 RON) |
+| Costs | Initial 24,585 RON. Monthly **6,860 RON** (3,080 operational + 3,780 salaries; the plan's text says 2,600 and 6,380, but its own line items add up to 3,080). Includes Vercel 100, Railway 100, Twilio 300 (≈1,500 SMS at 0.20 RON), accounting 500, lawyer 500, ads 500 |
+| Break-even | **46 salons** on Standard (46 × 150 = 6,900 RON ≥ 6,860) |
 | Funding | Target 20,000 EUR (~100,000 RON): **Start-Up Nation 2026** first, Innovation Labs in parallel |
 | Promotion | **Early Bird: 3 months free for the first 50 salons.** Mix: 40% direct sales (IG DM, email, visits), 30% social, 20% ads, 10% PR. Month-10 referral offer: *"bring a salon, get 3 months free"* |
 | Team | Founder (dev, ops, support) + Marketing & Sales specialist (base salary + bonus per activated salon) |
@@ -44,8 +44,8 @@ Sources: `Business Plan.docx` / `Vincze Norbert_Plan de afaceri_Sustenabil.pdf`,
 
 ### Inconsistencies in the documents
 
-1. **Break-even:** the pitch script says *"with only 10 salons we reach break-even"*. The plan and the app say **43**. The 10 matches the "lean" ~1,500 RON/month figure in §3.2 of the plan. The KPIs below use 43, as you specified.
-2. **Delivery time:** §1.4 of the plan says *"under 24 hours"*. Everywhere else, including the onboarding sheet, says **48h**. The plan below uses 48h.
+1. **Break-even:** the pitch script says *"with only 10 salons we reach break-even"*. The plan says 43, but its monthly costs were under-counted (see Costs); the app uses the corrected **46**. The 10 matches the "lean" ~1,500 RON/month figure in §3.2 of the plan. The KPIs use 46.
+2. **Delivery time:** §1.4 of the plan says *"under 24 hours"*. Everywhere else, including the onboarding sheet, says **48h**, which is correct (confirmed 2026-11-08). The app uses 48h.
 3. **Offers:** the plan has Early Bird (3 months free, first 50 salons). The cold messages offer **50% off** plus a free test group. The month-10 marketing plan has a referral offer of 3 months free. The data model has to record which offer each salon got (see `promotions`).
 4. The onboarding sheet still contains `[EMAIL]` and `[TELEFON]` placeholders.
 5. The SMS budget of 1,500/month total works out to ~75 SMS per salon with 20 Premium salons. That's tight, so module 11 alerts on it.
@@ -60,7 +60,7 @@ Sources: `Business Plan.docx` / `Vincze Norbert_Plan de afaceri_Sustenabil.pdf`,
 - **Angular 18.2**, standalone components, **signals**, OnPush, new control flow (`@if`/`@for`), lazy `loadComponent` routes, zone.js. No NgRx and no HttpClient yet.
 - **No backend.** All data lives in `localStorage` (`vinit.*` keys) through `StorageService` → `persistedSignal()` / `persistedCollection()`. File bytes are in IndexedDB (`FileStorageService`, 50 MB per file). Each tool has an export/import JSON backup (`Backupable`: `snapshot()` + `importState()`).
 - **Modules:** Overview (dashboard), Tasks (goals plus 788-line seed), Clients, Finances (transactions, recurring, holdings, accounts, budgets, EUR/USD rates), Marketing (12-month calendar), Roadmap (4 phases, steps with stable ids `b1…`, plus a manual "paying salons" counter), Files.
-- **Business numbers** are hard-coded in `core/data/finance.data.ts` (`BREAK_EVEN_SALONS = 43`, `YEAR1_MRR = 7500`). Plan month 1 = `2026-12` (`PlanCalendarService`).
+- **Business numbers** are hard-coded in `core/data/finance.data.ts` (`BREAK_EVEN_SALONS = 46`, `YEAR1_MRR = 7500`). Plan month 1 = `2026-12` (`PlanCalendarService`).
 - **Today's `Client` is really a salon:** `{ salon, owner, city, phone, email, domain, plan, price (RON float), status: lead|demo|beta|active|paused, since, notes }`. MRR = sum of prices of Active clients.
 - **UI kit** (`shared/ui`): page-header, panel, ledger and ledger-row (CSS subgrid, phone layout), form-dialog driven by `FieldDef[]`, confirm-dialog, tabs, chip-group, segmented, status-pill, meter, progress-bar, kpi-card, bar-chart, month-switcher, empty-state, toast, menu, icons. Tokens are in `styles/tokens.css` with dark mode.
 - **Tests:** only `app.component.spec.ts` (Karma/Jasmine).
@@ -131,7 +131,7 @@ Conventions: every table has `id uuid PK default gen_random_uuid()`, `created_at
 users            (email citext UNIQUE, full_name, password_hash, role text CHECK (role IN ('owner','member')),
                   is_active bool, token_version int default 0, last_login_at timestamptz)
 app_settings     (key text PK, value jsonb, updated_by FK users)
-                 -- 'plan.start', 'targets' {breakEvenSalons:43, year1Mrr_bani:750000, year1Salons:50, retentionPct:70,
+                 -- 'plan.start', 'targets' {breakEvenSalons:46, year1Mrr_bani:750000, year1Salons:50, retentionPct:70,
                  --  onboardingHours:48, earlyBirdLimit:50, smsMonthlyBudget:1500}, 'finance.rates', 'finance.assumptions'
 activity_log     (occurred_at, user_id FK, entity_type, entity_id uuid, salon_id FK NULL, action, summary, data jsonb)
                  ↳ (salon_id, occurred_at DESC), (occurred_at DESC), (entity_type, entity_id)
@@ -372,5 +372,5 @@ Answered 2026-11-07, see §0: client/salon, Clients page, trial/Early Bird, sess
 | E ✓ | **Retention ≥ 70%** = 1 − churned in period ÷ paying salons at period start (monthly and year-to-date)? | Phase 3 (KPIs) | Yes |
 | F ✓ | **Roadmap:** move steps into the DB (same ids, same UI) so feature requests can link to them, and replace the manual "paying salons" counter with the live count of active salons? | Phase 2/3 | Yes. Until then the counter stays manual |
 | G ✓ | **Infra costs:** take each service's monthly cost from a Finances recurring payment (one source of truth)? | Phase 3 (Infra) | Yes |
-| H | **Documents:** fix the 10-vs-43 break-even and 24h-vs-48h wording in the pitch and plan, or leave them? | — | Leave them, the app uses 43 / 48h |
+| H | **Documents:** fix the 10-vs-43 break-even and 24h-vs-48h wording in the pitch and plan, or leave them? | — | The app uses the corrected numbers: 46 salons, 6,860 RON/month, 48h (2026-11-08) |
 | I | Should `Business Plan.docx` (untracked, duplicate of the parent folder's copy) go into `.gitignore`? | — | Leave it untracked, never commit it |

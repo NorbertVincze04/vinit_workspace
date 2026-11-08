@@ -25,7 +25,7 @@ describe('infra', () => {
     expect(bad.status).toBe(400);
 
     const health = (await agent.get('/api/v1/infra/health')).body;
-    expect(health.costs).toMatchObject({ monthlyRonBani: 35000, planBani: 260000, services: 2 });
+    expect(health.costs).toMatchObject({ monthlyRonBani: 35000, planBani: 308000, services: 2 });
 
     // Deleting the Finances payment keeps the service, without a cost source.
     await agent.delete('/api/v1/finances/recurring/twilio').set(APP_HEADER);

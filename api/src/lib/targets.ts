@@ -9,9 +9,9 @@ type Row = Record<string, any>; // eslint-disable-line @typescript-eslint/no-exp
  * previous year's, then to these. Money in bani.
  */
 export const TARGETS = {
-  /** 43 salons on Standard cover the 6,380 RON monthly costs. */
-  breakEvenSalons: 43,
-  monthlyCostsBani: 638_000,
+  /** 46 salons on Standard (6,900 RON) cover the 6,860 RON monthly costs (3,080 operational + 3,780 salaries). */
+  breakEvenSalons: 46,
+  monthlyCostsBani: 686_000,
   payingSalons: 50,
   mrrBani: 750_000,
   retentionPct: 70,
@@ -20,8 +20,8 @@ export const TARGETS = {
   earlyBirdLimit: 50,
   /** Twilio budget: ~1,500 SMS a month (300 RON at 0.20 RON). */
   smsMonthlyBudget: 1500,
-  /** Operational costs per month in the plan (hosting, tools, accounting…). */
-  operationalCostsBani: 260_000,
+  /** Operational costs per month: the sum of the plan's line items (hosting, tools, accounting…). */
+  operationalCostsBani: 308_000,
 } as const;
 
 /** The goals you set per plan year (columns of plan_years). */

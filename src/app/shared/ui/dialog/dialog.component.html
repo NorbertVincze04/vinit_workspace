@@ -1,6 +1,6 @@
 <dialog #dialog [attr.aria-labelledby]="titleId" [attr.data-size]="size()" (close)="closed.emit()"
   (cancel)="onCancel($event)"
-  (pointerdown)="pressedOutside = isBackdrop($event)"
+  (pointerdown)="onPointerDown($event)"
   (click)="onClick($event)"
 >
   <div class="head">

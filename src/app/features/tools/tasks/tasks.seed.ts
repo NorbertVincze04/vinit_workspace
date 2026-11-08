@@ -9,7 +9,7 @@ export const TASKS_SEED: TasksState = {
   goals: [
     { id: 'g1', name: 'S1 – Company setup & funding', target: 'SRL registered, legal docs ready, funding applications submitted (target ~100,000 RON)' },
     { id: 'g2', name: 'G1 – MVP & beta salons', target: 'MVP live by month 3; 5 beta salons onboarded and giving feedback' },
-    { id: 'g3', name: 'G2 – 50 paying salons & break-even', target: '50 paying salons, MRR >= 7,500 RON; break-even at 43 Standard salons by month 12' },
+    { id: 'g3', name: 'G2 – 50 paying salons & break-even', target: '50 paying salons, MRR >= 7,500 RON; break-even at 46 Standard salons by month 12' },
     { id: 'g4', name: 'G3 – Retention & fast onboarding', target: 'Retention ≥ 70%; new salon configured in < 48 h' },
     { id: 'g8', name: 'S2 – Sustainability (3D print, paperless)', target: '3D-printed eco promo items; paperless operations for partner salons' },
   ],
@@ -148,7 +148,7 @@ export const TASKS_SEED: TasksState = {
     },
     {
       id: 't013',
-      text: 'Monthly cash-flow review against 6,380 RON monthly costs',
+      text: 'Monthly cash-flow review against 6,860 RON monthly costs',
       goal: 'g1',
       owner: 'Founder',
       prio: 'Medium',
@@ -599,7 +599,7 @@ export const TASKS_SEED: TasksState = {
     },
     {
       id: 't054',
-      text: 'Milestone: 43 salons = break-even (6,450 RON/month on Standard)',
+      text: 'Milestone: 46 salons = break-even (6,900 RON/month on Standard)',
       goal: 'g3',
       owner: 'Marketing & Sales',
       prio: 'High',

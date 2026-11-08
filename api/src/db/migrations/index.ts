@@ -15,6 +15,7 @@ import * as m013 from './013_infra.js';
 import * as m014 from './014_notifications.js';
 import * as m015 from './015_deadline_times.js';
 import * as m016 from './016_plan_years.js';
+import * as m017 from './017_plan_corrections.js';
 
 interface Migration {
   name: string;
@@ -43,6 +44,7 @@ const MIGRATIONS: readonly Migration[] = [
   { name: '014_notifications', module: m014 },
   { name: '015_deadline_times', module: m015 },
   { name: '016_plan_years', module: m016 },
+  { name: '017_plan_corrections', module: m017 },
 ];
 
 export const migrationSource: Knex.MigrationSource<Migration> = {

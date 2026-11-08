@@ -58,6 +58,14 @@ export class DialogComponent {
     return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
   }
 
+  /**
+   * A method, not `pressedOutside = isBackdrop($event)` in the template: Angular calls preventDefault()
+   * when a handler expression evaluates to false, which stopped every input inside from taking focus.
+   */
+  protected onPointerDown(e: PointerEvent): void {
+    this.pressedOutside = this.isBackdrop(e);
+  }
+
   protected onClick(e: MouseEvent): void {
     const outside = this.pressedOutside && this.isBackdrop(e);
     this.pressedOutside = false;
