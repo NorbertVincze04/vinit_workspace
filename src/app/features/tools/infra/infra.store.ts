@@ -2,6 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { ApiService, apiError } from '../../../core/api/api.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { BackupCheck, InfraHealth, InfraService, SmsUsage } from './infra.model';
+import { t } from '../../../core/i18n/i18n';
 
 type Row = Record<string, unknown>;
 
@@ -28,7 +29,7 @@ export class InfraStore {
       this.backups.set(backups.items);
       this.loaded.set(true);
     } catch (error) {
-      this.toast.show(`Could not load Infra: ${apiError(error).message}`, 6000);
+      this.toast.show(t('Could not load Infra: {error}', { error: apiError(error).message }), 6000);
     }
   }
 
@@ -66,7 +67,7 @@ export class InfraStore {
       void this.reload();
       return res;
     } catch (error) {
-      this.toast.show(`Not saved: ${apiError(error).message}`, 6000);
+      this.toast.show(t('Not saved: {error}', { error: apiError(error).message }), 6000);
       throw error;
     }
   }

@@ -13,11 +13,7 @@ export const WEEKLY_RHYTHM: readonly { value: number; label: string }[] = [
 
 export const PLAN_B = {
   title: 'If sales run slow',
-  text:
-    `Check the count at the end of Month 9. Under ${FINANCE.month9Checkpoint} salons means it is time for Plan B: ` +
-    `offer multi-location management to 5 to 10 salon chains at ${formatNumber(FINANCE.customFrom)} RON a month or more, ` +
-    `instead of ${FINANCE.standardPrice} RON plans for many small salons.`,
-  note:
-    `Income is counted at the ${FINANCE.standardPrice} RON Standard price. ` +
-    `Every Premium salon (${FINANCE.premiumPrice} RON) lowers the number you need.`,
+  text: 'Check the count at the end of Month 9. Under {checkpoint} salons means it is time for Plan B: offer multi-location management to 5 to 10 salon chains at {custom} RON a month or more, instead of {standard} RON plans for many small salons.',
+  note: 'Income is counted at the {standard} RON Standard price. Every Premium salon ({premium} RON) lowers the number you need.',
+  params: { checkpoint: FINANCE.month9Checkpoint, custom: formatNumber(FINANCE.customFrom), standard: FINANCE.standardPrice, premium: FINANCE.premiumPrice },
 };

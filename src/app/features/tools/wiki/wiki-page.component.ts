@@ -15,16 +15,18 @@ import {
   asString,
 } from '../../../shared/ui';
 import { WIKI_CATEGORIES, WikiListItem, WikiStore, wikiCategory } from './wiki.store';
+import { TPipe } from '../../../core/i18n/t.pipe';
+import { TcPipe } from '../../../core/i18n/tc.pipe';
 
 /** Wiki tool: how-tos and SOPs, searchable (diacritics ignored). */
 @Component({
   selector: 'app-wiki-page',
   standalone: true,
-  imports: [RouterLink, PageHeaderComponent, ButtonComponent, IconComponent, TextFieldComponent, ChipGroupComponent, EmptyStateComponent, FormDialogComponent],
+  imports: [TcPipe, TPipe, RouterLink, PageHeaderComponent, ButtonComponent, IconComponent, TextFieldComponent, ChipGroupComponent, EmptyStateComponent, FormDialogComponent],
   template: `
     <app-page-header title="Wiki" description="How we do things: onboarding steps, deploys, the JSON config, backups, sales scripts.">
       <div pageActions>
-        <button appButton variant="primary" type="button" (click)="creating.set(true)"><app-icon name="plus" [size]="16" /> New page</button>
+        <button appButton variant="primary" type="button" (click)="creating.set(true)"><app-icon name="plus" [size]="16" /> {{ 'New page' | t }}</button>
       </div>
     </app-page-header>
 
@@ -42,8 +44,8 @@ import { WIKI_CATEGORIES, WikiListItem, WikiStore, wikiCategory } from './wiki.s
         @for (p of items(); track p.id) {
           <li>
             <a [routerLink]="['/tools/wiki', p.slug]">
-              <span class="title">{{ p.title }}</span>
-              <span class="meta">{{ categoryLabel(p.category) }} · updated {{ date(p.updatedAt.slice(0, 10)) }}{{ p.updatedByName ? ' by ' + p.updatedByName : '' }}</span>
+              <span class="title">{{ p.title | tc }}</span>
+              <span class="meta">{{ categoryLabel(p.category) }} · {{ 'updated' | t }} {{ date(p.updatedAt.slice(0, 10)) }}{{ p.updatedByName ? ' by ' + p.updatedByName : '' }}</span>
               <span class="excerpt" [innerHTML]="snippet(p)"></span>
             </a>
           </li>
@@ -51,7 +53,7 @@ import { WIKI_CATEGORIES, WikiListItem, WikiStore, wikiCategory } from './wiki.s
       </ul>
     }
     <p class="foot">
-      <button type="button" class="link" (click)="archived.set(!archived())">{{ archived() ? 'Back to the pages' : 'Show archived pages' }}</button>
+      <button type="button" class="link" (click)="archived.set(!archived())">{{ (archived() ? 'Back to the pages' : 'Show archived pages') | t }}</button>
     </p>
 
     @if (creating()) {

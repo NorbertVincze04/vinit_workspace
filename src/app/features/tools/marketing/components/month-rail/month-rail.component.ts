@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, input, model } from '@angular/core';
 import { percent } from '../../../../../core/utils/format';
 import { MeterComponent } from '../../../../../shared/ui';
-import { MONTH_PLAN, PLANNED_APPEARANCES } from '../../marketing.data';
-import { MonthStats } from '../../marketing.model';
+import { MonthPlan, MonthStats } from '../../marketing.model';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
+import { t } from '../../../../../core/i18n/i18n';
 
 interface RailItem {
   month: number;
@@ -17,15 +18,15 @@ interface RailItem {
 @Component({
   selector: 'app-month-rail',
   standalone: true,
-  imports: [MeterComponent],
+  imports: [TPipe, MeterComponent],
   template: `
-    <div class="rail" role="group" aria-label="Choose a month">
+    <div class="rail" role="group" [attr.aria-label]="'Choose a month' | t">
       @for (item of items(); track item.month) {
         <button type="button" class="m" [attr.aria-pressed]="value() === item.month" (click)="value.set(item.month)">
           <span class="name">{{ item.name }}</span>
           <span class="sub">{{ item.sub }}</span>
           <app-meter [value]="pct(item)" [label]="item.published + ' of ' + item.target + ' published'" />
-          <span class="count" [class.short]="item.short">{{ item.published }} / {{ item.target }} out</span>
+          <span class="count" [class.short]="item.short">{{ '{n} / {total} out' | t: { n: item.published, total: item.target } }}</span>
         </button>
       }
     </div>
@@ -55,7 +56,11 @@ export class MonthRailComponent {
   /** Selected plan month, 0 = all. */
   readonly value = model(0);
   readonly stats = input.required<readonly MonthStats[]>();
+  /** The strategy's 12 months (targets). */
+  readonly months = input.required<readonly MonthPlan[]>();
   readonly monthLabel = input.required<(n: number) => string>();
+  /** Plan year shown. */
+  readonly year = input(1);
 
   protected readonly items = computed<RailItem[]>(() => {
     const stats = this.stats();
@@ -63,9 +68,10 @@ export class MonthRailComponent {
       (acc, s) => ({ published: acc.published + s.published, appearances: acc.appearances + s.appearances }),
       { published: 0, appearances: 0 },
     );
+    const planned = this.months().reduce((sum, m) => sum + m.target, 0);
     return [
-      { month: 0, name: 'All', sub: 'Year 1', published: all.published, target: PLANNED_APPEARANCES, short: all.appearances < PLANNED_APPEARANCES },
-      ...MONTH_PLAN.map((m, i) => ({
+      { month: 0, name: t('All'), sub: t('Year {n}', { n: this.year() }), published: all.published, target: planned, short: all.appearances < planned },
+      ...this.months().map((m, i) => ({
         month: i + 1,
         name: `M${i + 1}`,
         sub: this.monthLabel()(i + 1),

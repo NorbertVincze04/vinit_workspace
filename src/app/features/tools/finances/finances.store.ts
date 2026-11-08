@@ -39,6 +39,7 @@ import {
   TxFilters,
   TxRow,
 } from './finances.model';
+import { countOf, locale, t } from '../../../core/i18n/i18n';
 
 const isRates = (v: unknown): v is Rates => {
   const r = v as Partial<Rates> | null;
@@ -160,9 +161,9 @@ export class FinancesStore {
         tx,
         day: valid ? String(d.getDate()) : '–',
         monthText: valid
-          ? d.toLocaleDateString('en-GB', { month: 'short' }) + (showYear ? ` ${String(d.getFullYear()).slice(2)}` : '')
+          ? d.toLocaleDateString(locale(), { month: 'short' }) + (showYear ? ` ${String(d.getFullYear()).slice(2)}` : '')
           : '',
-        sub: [tx.category, this.accountName(tx.accountId), holding?.name, tx.reference].filter(Boolean).join(' · '),
+        sub: [t(tx.category), this.accountName(tx.accountId), holding?.name, tx.reference].filter(Boolean).join(' · '),
         typeLabel: labelOf(TX_TYPES, tx.type),
         typeTone: TYPE_TONE[tx.type] ?? 'neutral',
         business: tx.scope === 'business',
@@ -193,7 +194,7 @@ export class FinancesStore {
         const due = this.dueState(r);
         return {
           item: r,
-          sub: [labelOf(FREQUENCIES, r.frequency), r.category, r.scope === 'business' ? 'VINIT' : ''].filter(Boolean).join(' · '),
+          sub: [labelOf(FREQUENCIES, r.frequency), t(r.category), r.scope === 'business' ? 'VINIT' : ''].filter(Boolean).join(' · '),
           dueText: formatDate(r.nextDate),
           dueLabel: due.label,
           dueTone: due.tone,
@@ -246,7 +247,7 @@ export class FinancesStore {
           value,
           row: {
             item: h,
-            sub: [h.kind, h.platform, h.valueDate ? `value ${formatDate(h.valueDate, { day: 'numeric', month: 'short' })}` : '']
+            sub: [t(h.kind), h.platform, h.valueDate ? t('value {date}', { date: formatDate(h.valueDate, { day: 'numeric', month: 'short' }) }) : '']
               .filter(Boolean)
               .join(' · '),
             investedText: formatRon(invested),
@@ -297,7 +298,7 @@ export class FinancesStore {
         const abs = Math.abs(Number(a.balance) || 0);
         return {
           item: a,
-          sub: [a.asOf ? `Balance as of ${formatDate(a.asOf)}` : '', used ? `${used} entries this month` : ''].filter(Boolean).join(' · '),
+          sub: [a.asOf ? t('Balance as of {date}', { date: formatDate(a.asOf) }) : '', used ? t('{n} entries this month', { n: used }) : ''].filter(Boolean).join(' · '),
           kindLabel: labelOf(ACCOUNT_KINDS, a.kind),
           kindTone: liability ? 'bad' : a.kind === 'savings' ? 'ok' : 'neutral',
           balanceText: `${liability ? '−' : ''}${formatMoney(abs, a.currency)}`,
@@ -326,9 +327,9 @@ export class FinancesStore {
           item: b,
           spentText: formatRon(s),
           pct: limit ? Math.round((s / limit) * 100) : 0,
-          leftText: left < 0 ? `Over ${formatRon(-left)}` : formatRon(left),
+          leftText: left < 0 ? t('Over by {amount}', { amount: formatRon(-left) }) : formatRon(left),
           over: left < 0,
-          limitText: `${formatRon(limit)} a month`,
+          limitText: t('{amount} a month', { amount: formatRon(limit) }),
         };
       });
   });
@@ -342,7 +343,7 @@ export class FinancesStore {
       used += spent.get(b.category) ?? 0;
     }
     return [
-      { label: `${monthName(this.month())}: spent`, value: formatRon(used) },
+      { label: t('{month}: spent', { month: monthName(this.month()) }), value: formatRon(used) },
       { label: 'of', value: formatRon(limit), suffix: 'budgeted' },
     ];
   });
@@ -481,12 +482,12 @@ export class FinancesStore {
   }
 
   private dueState(r: Recurring): { label: string; tone: StatusTone } {
-    if (!r.active) return { label: 'Paused', tone: 'neutral' };
-    if (!r.nextDate) return { label: 'No date', tone: 'neutral' };
+    if (!r.active) return { label: t('Paused'), tone: 'neutral' };
+    if (!r.nextDate) return { label: t('No date'), tone: 'neutral' };
     const d = daysUntil(r.nextDate);
-    if (d < 0) return { label: `Overdue ${-d}d`, tone: 'bad' };
-    if (d === 0) return { label: 'Due today', tone: 'warn' };
-    if (d <= 7) return { label: `In ${d} ${d === 1 ? 'day' : 'days'}`, tone: 'warn' };
-    return { label: `In ${d} days`, tone: 'neutral' };
+    if (d < 0) return { label: t('Overdue {n}d', { n: -d }), tone: 'bad' };
+    if (d === 0) return { label: t('Due today'), tone: 'warn' };
+    if (d <= 7) return { label: t('In {days}', { days: countOf(d, 'day', 'days') }), tone: 'warn' };
+    return { label: t('In {days}', { days: countOf(d, 'day', 'days') }), tone: 'neutral' };
   }
 }

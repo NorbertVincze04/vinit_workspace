@@ -28,12 +28,14 @@ import {
 } from '../../subscriptions/billing.model';
 import { BillingRequest } from '../../subscriptions/components/billing-dialogs/billing-dialogs.component';
 import { PaymentAction, PaymentRowComponent } from '../../subscriptions/components/payment-row/payment-row.component';
+import { TPipe } from '../../../../core/i18n/t.pipe';
+import { t } from '../../../../core/i18n/i18n';
 
 /** Salon page tab: the running subscription, how it changed, and every payment. */
 @Component({
   selector: 'app-salon-billing',
   standalone: true,
-  imports: [PanelComponent, FactsComponent, ButtonComponent, MenuComponent, MenuItemComponent, LedgerComponent, EmptyStateComponent, PaymentRowComponent],
+  imports: [TPipe, PanelComponent, FactsComponent, ButtonComponent, MenuComponent, MenuItemComponent, LedgerComponent, EmptyStateComponent, PaymentRowComponent],
   template: `
     <div class="grid">
       <app-panel heading="Subscription" [meta]="sub() ? status().label : ''">
@@ -41,10 +43,10 @@ import { PaymentAction, PaymentRowComponent } from '../../subscriptions/componen
           @if (live()) {
             <span panelAction class="actions">
               @if (s.status === 'trialing') {
-                <button appButton size="sm" variant="primary" type="button" (click)="change(s, 'trial_converted')">Convert to paid</button>
+                <button appButton size="sm" variant="primary" type="button" (click)="change(s, 'trial_converted')">{{ 'Convert to paid' | t }}</button>
               }
               @if (s.status === 'paused' || s.status === 'past_due') {
-                <button appButton size="sm" type="button" (click)="change(s, 'resume')">Resume</button>
+                <button appButton size="sm" type="button" (click)="change(s, 'resume')">{{ 'Resume' | t }}</button>
               }
               <app-menu ariaLabel="Change the subscription">
                 @for (a of actions(); track a) {
@@ -53,7 +55,7 @@ import { PaymentAction, PaymentRowComponent } from '../../subscriptions/componen
               </app-menu>
             </span>
           } @else {
-            <button panelAction appButton size="sm" variant="primary" type="button" (click)="startNew()">Start a new one</button>
+            <button panelAction appButton size="sm" variant="primary" type="button" (click)="startNew()">{{ 'Start a new one' | t }}</button>
           }
           <app-facts [items]="facts()" />
           @if (s.notes) {
@@ -64,7 +66,7 @@ import { PaymentAction, PaymentRowComponent } from '../../subscriptions/componen
             heading="No subscription yet"
             text="Start one with the plan and promotion (Early Bird: 3 free months for the first 50 salons)."
           >
-            <button appButton variant="primary" type="button" (click)="startNew()">Start subscription</button>
+            <button appButton variant="primary" type="button" (click)="startNew()">{{ 'Start subscription' | t }}</button>
           </app-empty-state>
         }
       </app-panel>
@@ -100,7 +102,7 @@ import { PaymentAction, PaymentRowComponent } from '../../subscriptions/componen
     </div>
 
     <app-panel class="payments" heading="Payments" [meta]="payments().length + ''" [flush]="payments().length > 0">
-      <button panelAction appButton variant="ghost" size="sm" type="button" (click)="addPayment()">Add payment</button>
+      <button panelAction appButton variant="ghost" size="sm" type="button" (click)="addPayment()">{{ 'Add payment' | t }}</button>
       @if (payments().length) {
         <app-ledger [headers]="['For', 'Amount', 'Due', 'Status', '']" [numeric]="[1]" columns="minmax(0, 1.8fr) 110px 130px 100px auto">
           @for (p of payments(); track p.id) {
@@ -109,7 +111,7 @@ import { PaymentAction, PaymentRowComponent } from '../../subscriptions/componen
         </app-ledger>
       } @else {
         <p class="muted small">
-          No payments yet. Monthly ones are created from Subscriptions › Create payments; add extra work (100 RON/h) or a one-off here.
+          {{ 'No payments yet. Monthly ones are created from Subscriptions › Create payments; add extra work (100 RON/h) or a one-off here.' | t }}
         </p>
       }
     </app-panel>
@@ -147,10 +149,10 @@ export class SalonBillingComponent {
     if (!s) return [];
     const cycle = cycleInfo(s.billingCycle);
     const facts: Fact[] = [
-      { label: 'Status', value: this.status().label, tone: this.status().tone },
+      { label: 'Status', value: t(this.status().label), tone: this.status().tone },
       { label: 'Plan', value: s.planName },
-      { label: 'Price', value: `${formatRon(s.price)} ${cycle.per}` },
-      { label: 'Counts toward MRR', value: `${formatRon(s.mrr)} / month` },
+      { label: 'Price', value: `${formatRon(s.price)} ${t(cycle.per)}` },
+      { label: 'Counts toward MRR', value: t('{amount} / month', { amount: formatRon(s.mrr) }) },
       { label: 'Promotion', value: s.promotionName },
       { label: 'Started', value: formatDate(s.startedOn) },
       { label: 'Free until', value: formatDate(s.trialEndsOn), hint: s.trialEndsOn ? 'last free day' : '' },
@@ -162,8 +164,8 @@ export class SalonBillingComponent {
 
   protected readonly date = (iso: string) => formatDate(iso);
   protected readonly money = formatRon;
-  protected readonly changeLabel = (k: string) => CHANGE_LABELS[k as ChangeKind] ?? k;
-  protected readonly actionLabel = (k: ChangeKind) => CHANGE_ACTIONS[k];
+  protected readonly changeLabel = (k: string) => t(CHANGE_LABELS[k as ChangeKind] ?? k);
+  protected readonly actionLabel = (k: ChangeKind) => t(CHANGE_ACTIONS[k]);
 
   protected change(sub: Subscription, change: ChangeKind): void {
     this.request.emit({ kind: 'change', sub, change });

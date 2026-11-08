@@ -22,6 +22,8 @@ import {
   isTasksState,
 } from './tasks.model';
 import { TASKS_SEED } from './tasks.seed';
+import { t } from '../../../core/i18n/i18n';
+import { tc } from '../../../core/i18n/content';
 
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
 
@@ -76,13 +78,13 @@ export class TasksStore {
   readonly currentMonth = this.plan.currentMonth;
 
   readonly goalOptions = computed<SelectOption[]>(() => [
-    ...this.goals().map((g) => ({ value: g.id, label: g.name })),
+    ...this.goals().map((g) => ({ value: g.id, label: tc(g.name) })),
     { value: '', label: 'No goal' },
   ]);
 
   readonly goalFilterOptions = computed<SelectOption[]>(() => [
     { value: '', label: 'All goals' },
-    ...this.goals().map((g) => ({ value: g.id, label: g.name })),
+    ...this.goals().map((g) => ({ value: g.id, label: tc(g.name) })),
     { value: NO_GOAL, label: 'No goal' },
   ]);
 
@@ -251,7 +253,7 @@ export class TasksStore {
     const goal = this.goals().find((g) => g.id === task.goal);
     return {
       task,
-      goalTag: goal ? goal.name.split(' – ')[0] : 'No goal',
+      goalTag: goal ? tc(goal.name).split(' – ')[0] : t('No goal'),
       dueLabel: this.monthLabel(task.due),
       overdue: !task.done && task.due < this.currentMonth(),
     };

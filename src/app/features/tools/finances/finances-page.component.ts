@@ -28,6 +28,9 @@ import { CASH_FLOW_SERIES, FinanceCollection } from './finances.data';
 import { FORM_META, RATE_FIELDS, financeFields } from './finances.fields';
 import { Recurring } from './finances.model';
 import { FinancesStore } from './finances.store';
+import { TPipe } from '../../../core/i18n/t.pipe';
+import { t } from '../../../core/i18n/i18n';
+import { tc } from '../../../core/i18n/content';
 
 interface OpenForm {
   collection: FinanceCollection;
@@ -45,7 +48,7 @@ interface PendingDelete {
 @Component({
   selector: 'app-finances-page',
   standalone: true,
-  imports: [
+  imports: [TPipe, 
     PageHeaderComponent,
     PanelComponent,
     ButtonComponent,
@@ -88,7 +91,7 @@ export class FinancesPageComponent {
   protected readonly previousLabel = computed(() => monthName(shiftMonth(this.store.month(), -1), true));
   protected readonly formHeading = computed(() => {
     const f = this.form();
-    return f ? `${f.id ? 'Edit' : 'New'} ${FORM_META[f.collection].noun}` : '';
+    return f ? t(`${f.id ? 'Edit' : 'New'} ${FORM_META[f.collection].noun}`) : '';
   });
 
   protected setTab(value: string): void {
@@ -107,30 +110,30 @@ export class FinancesPageComponent {
     const f = this.form();
     if (!f) return;
     this.store.save(f.collection, f.id, values);
-    const name = values['description'] || values['name'] || values['category'] || FORM_META[f.collection].noun;
-    this.toast.show(`${f.id ? 'Saved' : 'Added'} ${name}`);
+    const name = values['description'] || values['name'] || values['category'] || t(FORM_META[f.collection].noun);
+    this.toast.show(t(f.id ? 'Saved {name}' : 'Added {name}', { name: String(name) }));
   }
 
   protected askDelete(collection: FinanceCollection, record: { id: string; description?: string; name?: string; category?: string }): void {
-    const name = record.description || record.name || record.category || `This ${FORM_META[collection].noun}`;
+    const name = record.description || tc(record.name) || t(record.category ?? '') || t('This {noun}', { noun: t(FORM_META[collection].noun) });
     this.deleting.set({ collection, id: record.id, name });
   }
 
   protected deleteMessage(d: PendingDelete): string {
     let extra = '';
-    if (d.collection === 'accounts') extra = ' Transactions that used it stay, without an account.';
-    if (d.collection === 'holdings') extra = ' Linked Invest entries stay in the transactions.';
-    return `“${d.name}” will be removed for good.${extra}`;
+    if (d.collection === 'accounts') extra = ' ' + t('Transactions that used it stay, without an account.');
+    if (d.collection === 'holdings') extra = ' ' + t('Linked Invest entries stay in the transactions.');
+    return t('“{name}” will be removed for good.', { name: d.name }) + extra;
   }
 
   protected confirmDelete(d: PendingDelete): void {
     this.store.remove(d.collection, d.id);
-    this.toast.show(`Deleted ${d.name}`);
+    this.toast.show(t('Deleted {name}', { name: d.name }));
   }
 
   protected logRecurring(r: Recurring): void {
     const next = this.store.logRecurring(r);
-    this.toast.show(`Logged ${r.name || 'payment'}. Next due ${formatDate(next)}`);
+    this.toast.show(t('Logged {name}. Next due {date}', { name: tc(r.name) || t('payment'), date: formatDate(next) }));
   }
 
   protected saveRates(values: FormValues): void {

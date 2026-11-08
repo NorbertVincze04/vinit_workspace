@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, model } from '@angular/core';
 import { monthName, shiftMonth } from '../../../core/utils/date';
+import { TPipe } from '../../../core/i18n/t.pipe';
 
 /**
  * ‹ December 2026 › control for a "YYYY-MM" month.
@@ -8,10 +9,11 @@ import { monthName, shiftMonth } from '../../../core/utils/date';
 @Component({
   selector: 'app-month-switcher',
   standalone: true,
+  imports: [TPipe],
   template: `
-    <button type="button" aria-label="Previous month" (click)="value.set(prev())">‹</button>
+    <button type="button" [attr.aria-label]="'Previous month' | t" (click)="value.set(prev())">‹</button>
     <span aria-live="polite">{{ label() }}</span>
-    <button type="button" aria-label="Next month" (click)="value.set(next())">›</button>
+    <button type="button" [attr.aria-label]="'Next month' | t" (click)="value.set(next())">›</button>
   `,
   styles: `
     :host { display: inline-flex; align-items: center; height: 36px; background: var(--surface);

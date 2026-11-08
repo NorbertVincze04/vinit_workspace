@@ -4,9 +4,9 @@
   (click)="onClick($event)"
 >
   <div class="head">
-    <h2 [id]="titleId">{{ heading() }}</h2>
+    <h2 [id]="titleId">{{ heading() | t }}</h2>
     @if (subheading()) {
-      <p>{{ subheading() }}</p>
+      <p>{{ subheading() | t }}</p>
     }
   </div>
   <div class="body">

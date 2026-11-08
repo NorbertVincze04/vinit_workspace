@@ -9,12 +9,13 @@ import {
 import { Holding } from '../../finances.model';
 import { FinancesStore } from '../../finances.store';
 import { AmountComponent } from '../amount/amount.component';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
 
 /** Investments tab: what was put in, what it is worth and the return. */
 @Component({
   selector: 'app-holdings-panel',
   standalone: true,
-  imports: [ButtonComponent, EmptyStateComponent, InlineStatsComponent, LedgerComponent, LedgerRowComponent, AmountComponent],
+  imports: [TPipe, ButtonComponent, EmptyStateComponent, InlineStatsComponent, LedgerComponent, LedgerRowComponent, AmountComponent],
   template: `
     <div class="toolbar">
       <app-inline-stats class="grow" [items]="store.holdings.items().length ? store.holdingSummary() : []" />
@@ -25,7 +26,7 @@ import { AmountComponent } from '../amount/amount.component';
         heading="No investments yet"
         text="Add each ETF, stock, crypto, bond or deposit with its current value. Log contributions as Invest entries and link them to see the real return."
       >
-        <button appButton variant="primary" type="button" (click)="add.emit()">Add an investment</button>
+        <button appButton variant="primary" type="button" (click)="add.emit()">{{ 'Add an investment' | t }}</button>
       </app-empty-state>
     } @else {
       <app-ledger
@@ -36,7 +37,7 @@ import { AmountComponent } from '../amount/amount.component';
         @for (row of store.holdingRows(); track row.item.id) {
           <app-ledger-row clickable (activate)="edit.emit(row.item)">
             <div>
-              <span class="cell-title">{{ row.item.name || 'Untitled' }}</span>
+              <span class="cell-title">{{ row.item.name || ('Untitled' | t) }}</span>
               <span class="cell-sub">{{ row.sub }}</span>
             </div>
             <app-amount label="Invested" [text]="row.investedText" />
@@ -48,8 +49,8 @@ import { AmountComponent } from '../amount/amount.component';
               [kind]="row.gainNegative ? 'negative' : 'positive'"
             />
             <div class="cell-actions">
-              <button appButton variant="ghost" size="sm" type="button" (click)="edit.emit(row.item)">Edit</button>
-              <button appButton variant="ghost" size="sm" type="button" (click)="remove.emit(row.item)">Delete</button>
+              <button appButton variant="ghost" size="sm" type="button" (click)="edit.emit(row.item)">{{ 'Edit' | t }}</button>
+              <button appButton variant="ghost" size="sm" type="button" (click)="remove.emit(row.item)">{{ 'Delete' | t }}</button>
             </div>
           </app-ledger-row>
         }

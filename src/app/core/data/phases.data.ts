@@ -1,4 +1,5 @@
 import { Phase } from '../models';
+import { t } from '../i18n/i18n';
 
 /** The four Year-1 phases, shared by the Roadmap and Tasks tools. */
 export const PHASES: readonly Phase[] = [
@@ -9,5 +10,5 @@ export const PHASES: readonly Phase[] = [
 ];
 
 export function phaseRange(phase: Pick<Phase, 'months'>): string {
-  return `Months ${phase.months[0]}–${phase.months[1]}`;
+  return t('Months {from}–{to}', { from: phase.months[0], to: phase.months[1] });
 }

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { StatusPillComponent, StatusTone } from '../status-pill/status-pill.component';
+import { TPipe } from '../../../core/i18n/t.pipe';
 
 export interface Fact {
   label: string;
@@ -25,12 +26,12 @@ export interface Fact {
 @Component({
   selector: 'app-facts',
   standalone: true,
-  imports: [RouterLink, StatusPillComponent],
+  imports: [TPipe, RouterLink, StatusPillComponent],
   template: `
     <dl>
       @for (f of items(); track f.label) {
         <div class="fact">
-          <dt>{{ f.label }}</dt>
+          <dt>{{ f.label | t }}</dt>
           <dd [class.warn]="f.warn">
             @if (!f.value) {
               <span class="empty">—</span>
@@ -44,7 +45,7 @@ export interface Fact {
               {{ f.value }}
             }
             @if (f.hint) {
-              <span class="hint">{{ f.hint }}</span>
+              <span class="hint">{{ f.hint | t }}</span>
             }
           </dd>
         </div>

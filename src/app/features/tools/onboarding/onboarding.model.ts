@@ -1,4 +1,5 @@
 import { StatusTone } from '../../../shared/ui';
+import { countOf, t } from '../../../core/i18n/i18n';
 
 export const ONBOARDING_HOURS = 48;
 
@@ -57,23 +58,23 @@ export interface Clock {
   percent: number;
 }
 
-const days = (h: number): string => (h >= 48 ? `${Math.floor(h / 24)} days` : `${Math.round(h)}h`);
+const days = (h: number): string => (h >= 48 ? countOf(Math.floor(h / 24), 'day', 'days') : `${Math.round(h)}h`);
 
 /** "31h left", "6h over 48h", "Live in 40h", "Waiting for materials (3 days)". */
 export function clockOf(o: Pick<Onboarding, 'status' | 'hoursUsed' | 'late' | 'hoursWaitingOnClient' | 'materialsReceivedAt'>): Clock {
   if (!o.materialsReceivedAt || o.hoursUsed === null) {
-    return { text: `Waiting for materials (${days(o.hoursWaitingOnClient)})`, tone: 'neutral', percent: 0 };
+    return { text: t('Waiting for materials ({time})', { time: days(o.hoursWaitingOnClient) }), tone: 'neutral', percent: 0 };
   }
   const used = o.hoursUsed;
   const percent = Math.round((used / ONBOARDING_HOURS) * 100);
   if (o.status === 'done') {
     return o.late
-      ? { text: `Live in ${Math.round(used)}h (over ${ONBOARDING_HOURS}h)`, tone: 'bad', percent }
-      : { text: `Live in ${Math.round(used)}h`, tone: 'ok', percent };
+      ? { text: t('Live in {h}h (over {max}h)', { h: Math.round(used), max: ONBOARDING_HOURS }), tone: 'bad', percent }
+      : { text: t('Live in {h}h', { h: Math.round(used) }), tone: 'ok', percent };
   }
-  if (o.late) return { text: `${Math.round(used - ONBOARDING_HOURS)}h over ${ONBOARDING_HOURS}h`, tone: 'bad', percent };
+  if (o.late) return { text: t('{h}h over {max}h', { h: Math.round(used - ONBOARDING_HOURS), max: ONBOARDING_HOURS }), tone: 'bad', percent };
   const left = ONBOARDING_HOURS - used;
-  return { text: `${Math.max(0, Math.floor(left))}h left`, tone: left <= 12 ? 'warn' : 'info', percent };
+  return { text: t('{h}h left', { h: Math.max(0, Math.floor(left)) }), tone: left <= 12 ? 'warn' : 'info', percent };
 }
 
 export const statusOf = (o: Pick<Onboarding, 'status'>): { label: string; tone: StatusTone } =>

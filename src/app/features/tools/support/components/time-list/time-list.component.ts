@@ -3,12 +3,13 @@ import { RouterLink } from '@angular/router';
 import { formatDate } from '../../../../../core/utils/date';
 import { formatMoney } from '../../../../../core/utils/format';
 import { TimeEntry, duration, entryKindLabel, ticketNo } from '../../support.model';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
 
 /** Logged time, newest first: date, what, who, minutes, and the money for billable time. */
 @Component({
   selector: 'app-time-list',
   standalone: true,
-  imports: [RouterLink],
+  imports: [TPipe, RouterLink],
   template: `
     <ul>
       @for (e of entries(); track e.id) {
@@ -30,23 +31,23 @@ import { TimeEntry, duration, entryKindLabel, ticketNo } from '../../support.mod
           <span class="mins">
             {{ dur(e.minutes) }}
             @if (e.kind === 'billable') {
-              <span class="money" [class.billed]="!!e.billedPaymentId">{{ money(e.amountBani / 100) }}{{ e.billedPaymentId ? ' · billed' : '' }}</span>
+              <span class="money" [class.billed]="!!e.billedPaymentId">{{ money(e.amountBani / 100) }}{{ (e.billedPaymentId ? ' · billed' : '') | t }}</span>
             }
           </span>
           @if (e.billedPaymentId) {
             <span></span>
           } @else if (confirming() === e.id) {
             <span class="confirm">
-              Delete?
-              <button type="button" class="yes" (click)="confirming.set(null); remove.emit(e)">Yes</button>
-              <button type="button" (click)="confirming.set(null)">No</button>
+              {{ 'Delete?' | t }}
+              <button type="button" class="yes" (click)="confirming.set(null); remove.emit(e)">{{ 'Yes' | t }}</button>
+              <button type="button" (click)="confirming.set(null)">{{ 'No' | t }}</button>
             </span>
           } @else {
             <button class="remove" type="button" [attr.aria-label]="'Delete ' + dur(e.minutes) + ' on ' + date(e.workedOn)" (click)="confirming.set(e.id)">×</button>
           }
         </li>
       } @empty {
-        <li class="muted empty">No time logged yet.</li>
+        <li class="muted empty">{{ 'No time logged yet.' | t }}</li>
       }
     </ul>
   `,

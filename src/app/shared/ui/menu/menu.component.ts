@@ -9,6 +9,7 @@ import {
 import { ButtonComponent, ButtonVariant } from '../button/button.component';
 import { IconComponent } from '../icon/icon.component';
 import { IconName } from '../icon/icons';
+import { TPipe } from '../../../core/i18n/t.pipe';
 
 /**
  * Dropdown menu for secondary actions. Project <button appMenuItem> elements as the items.
@@ -22,7 +23,7 @@ import { IconName } from '../icon/icons';
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [ButtonComponent, IconComponent],
+  imports: [TPipe, ButtonComponent, IconComponent],
   template: `
     <button
       appButton
@@ -31,12 +32,12 @@ import { IconName } from '../icon/icons';
       [iconOnly]="!label()"
       aria-haspopup="menu"
       [attr.aria-expanded]="open()"
-      [attr.aria-label]="ariaLabel() || null"
+      [attr.aria-label]="(ariaLabel() | t) || null"
       (click)="toggle()"
     >
       <app-icon [name]="icon()" [size]="18" />
       @if (label()) {
-        {{ label() }}
+        {{ label() | t }}
       }
     </button>
     <div class="panel" role="menu" [attr.data-align]="align()" [hidden]="!open()" (click)="onPanelClick($event)" (keydown)="onKey($event)">

@@ -2,12 +2,13 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 import { daysUntil, formatDate } from '../../../../../core/utils/date';
 import { LedgerRowComponent, StatusPillComponent } from '../../../../../shared/ui';
 import { Lead, sourceLabel, stageInfo } from '../../leads.model';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
 
 /** One lead in the list view. */
 @Component({
   selector: 'app-lead-row',
   standalone: true,
-  imports: [LedgerRowComponent, StatusPillComponent],
+  imports: [TPipe, LedgerRowComponent, StatusPillComponent],
   template: `
     <app-ledger-row clickable (activate)="open.emit()">
       <div>
@@ -25,7 +26,7 @@ import { Lead, sourceLabel, stageInfo } from '../../leads.model';
           <span>{{ lead().email }}</span>
         }
       </div>
-      <div><app-status-pill [tone]="stage().tone">{{ stage().label }}</app-status-pill></div>
+      <div><app-status-pill [tone]="stage().tone">{{ stage().label | t }}</app-status-pill></div>
       <div>
         @if (followUp(); as f) {
           <span [class.late]="f.late">{{ f.text }}</span>

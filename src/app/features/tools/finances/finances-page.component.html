@@ -3,11 +3,11 @@
     <app-month-switcher [value]="store.month()" (valueChange)="store.month.set($event)" />
     <app-backup-menu [store]="store" name="finances">
       <button appMenuItem type="button" (click)="ratesOpen.set(true)">
-        <app-icon name="coins" [size]="16" /> Exchange rates…
+        <app-icon name="coins" [size]="16" /> {{ 'Exchange rates…' | t }}
       </button>
     </app-backup-menu>
     <button appButton variant="primary" type="button" (click)="openForm(store.tab())">
-      <app-icon name="plus" [size]="16" /> Add {{ meta(store.tab()).noun }}
+      <app-icon name="plus" [size]="16" /> {{ 'Add {noun}' | t: { noun: (meta(store.tab()).noun | t) } }}
     </button>
   </div>
 </app-page-header>
@@ -82,7 +82,7 @@
     [subheading]="meta(f.collection).sub"
     [fields]="fields[f.collection]"
     [initial]="f.values"
-    [saveLabel]="f.id ? 'Save changes' : 'Add ' + meta(f.collection).noun"
+    [saveLabel]="f.id ? ('Save changes' | t) : ('Add {noun}' | t: { noun: (meta(f.collection).noun | t) })"
     (saved)="save($event)"
     (closed)="form.set(null)"
   />
@@ -103,7 +103,7 @@
 
 @if (deleting(); as d) {
   <app-confirm-dialog
-    [heading]="'Delete ' + meta(d.collection).noun + '?'"
+    [heading]="'Delete ' + meta(d.collection).noun + '?' | t"
     [message]="deleteMessage(d)"
     (confirmed)="confirmDelete(d)"
     (closed)="deleting.set(null)"

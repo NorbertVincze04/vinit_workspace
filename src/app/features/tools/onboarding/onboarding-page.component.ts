@@ -21,17 +21,20 @@ import {
   ProgressBarComponent,
   StatusPillComponent,
   asString,
+  notBefore,
 } from '../../../shared/ui';
 import { SalonsStore } from '../salons/salons.store';
 import { TemplateEditorComponent } from './components/template-editor/template-editor.component';
 import { ONBOARDING_HOURS, Onboarding, clockOf, statusOf } from './onboarding.model';
 import { OnboardingStore } from './onboarding.store';
+import { TPipe } from '../../../core/i18n/t.pipe';
+import { t } from '../../../core/i18n/i18n';
 
 /** Onboarding tool: every salon being set up, with the 48h clock and checklist progress. */
 @Component({
   selector: 'app-onboarding-page',
   standalone: true,
-  imports: [
+  imports: [TPipe, 
     RouterLink,
     PageHeaderComponent,
     ButtonComponent,
@@ -72,7 +75,7 @@ export class OnboardingPageComponent {
 
   protected readonly chips = computed<ChipOption[]>(() => [
     { value: 'open', label: 'In progress', count: this.store.open().length },
-    { value: 'late', label: `Over ${ONBOARDING_HOURS}h`, count: this.store.late().length },
+    { value: 'late', label: t('Over {h}h', { h: ONBOARDING_HOURS }), count: this.store.late().length },
     { value: 'waiting', label: 'Waiting for materials', count: this.store.waiting().length },
     { value: 'done', label: 'Live', count: this.store.items().length - this.store.open().length },
   ]);
@@ -88,10 +91,10 @@ export class OnboardingPageComponent {
     const onTime = done.filter((o) => !o.late).length;
     const stats: InlineStat[] = [
       { label: 'In progress', value: String(this.store.open().length) },
-      { label: `Over ${ONBOARDING_HOURS}h now`, value: String(this.store.late().length), tone: this.store.late().length ? 'negative' : 'default' },
+      { label: t('Over {h}h now', { h: ONBOARDING_HOURS }), value: String(this.store.late().length), tone: this.store.late().length ? 'negative' : 'default' },
     ];
     if (done.length) {
-      stats.push({ label: `Live within ${ONBOARDING_HOURS}h`, value: `${onTime} of ${done.length}` });
+      stats.push({ label: t('Live within {h}h', { h: ONBOARDING_HOURS }), value: t('{n} of {total}', { n: onTime, total: done.length }) });
       stats.push({ label: 'Average', value: `${this.store.averageHours()}h`, suffix: 'from materials to live' });
     }
     return stats;
@@ -111,7 +114,7 @@ export class OnboardingPageComponent {
     this.startForm.set([
       { key: 'salonId', label: 'Salon', type: 'select', required: true, span: 'full', options: [{ value: '', label: 'Pick a salon' }, ...options] },
       { key: 'signedAt', label: 'Signed at', type: 'datetime', required: true, default: () => toLocalDateTime(new Date().toISOString()) },
-      { key: 'materialsReceivedAt', label: 'Materials received at', type: 'datetime', hint: `Leave empty until they arrive: the ${ONBOARDING_HOURS}h clock starts then.` },
+      { key: 'materialsReceivedAt', label: 'Materials received at', type: 'datetime', validate: notBefore('signedAt', 'The materials can’t arrive before the signing.'), hint: t('Leave empty until they arrive: the {h}h clock starts then.', { h: ONBOARDING_HOURS }) },
     ]);
   }
 

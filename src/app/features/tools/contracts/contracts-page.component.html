@@ -1,6 +1,6 @@
 <app-page-header title="Contracts" description="Subscription contracts, DPAs (GDPR), custom projects and addenda, with their files and renewals.">
   <div pageActions>
-    <button appButton variant="primary" type="button" (click)="openForm(null)"><app-icon name="plus" [size]="16" /> New contract</button>
+    <button appButton variant="primary" type="button" (click)="openForm(null)"><app-icon name="plus" [size]="16" /> {{ 'New contract' | t }}</button>
   </div>
 </app-page-header>
 
@@ -10,10 +10,10 @@
       @for (g of gaps(); track g.salonId) {
         <li>
           <a [routerLink]="['/tools/salons', g.salonId]" [queryParams]="{ tab: 'contracts' }">{{ g.salonName }}</a>
-          @for (p of g.problems; track p) {
-            <app-status-pill [tone]="p.startsWith('Renewal') ? 'warn' : 'bad'">{{ p }}</app-status-pill>
+          @for (p of g.problems; track p.text) {
+            <app-status-pill [tone]="p.tone">{{ p.text }}</app-status-pill>
           }
-          <button appButton variant="ghost" size="sm" type="button" (click)="openForm(null, g.salonId)">Add contract</button>
+          <button appButton variant="ghost" size="sm" type="button" (click)="openForm(null, g.salonId)">{{ 'Add contract' | t }}</button>
         </li>
       }
     </ul>
@@ -33,7 +33,7 @@
     heading="No contracts yet"
     text="Record each salon's subscription contract and DPA. Signing the subscription contract starts the salon's onboarding."
   >
-    <button appButton variant="primary" type="button" (click)="openForm(null)">New contract</button>
+    <button appButton variant="primary" type="button" (click)="openForm(null)">{{ 'New contract' | t }}</button>
   </app-empty-state>
 } @else if (!visible().length) {
   <app-empty-state heading="Nothing here" text="No contract matches this filter." />
@@ -48,7 +48,7 @@
         <span>{{ c.salonName }}</span>
         <span>{{ date(c.signedOn) || '—' }}</span>
         <span>{{ date(c.renewalOn) || '—' }}</span>
-        <div><app-status-pill [tone]="status(c.status).tone">{{ status(c.status).label }}</app-status-pill></div>
+        <div><app-status-pill [tone]="status(c.status).tone">{{ status(c.status).label | t }}</app-status-pill></div>
       </app-ledger-row>
     }
   </app-ledger>

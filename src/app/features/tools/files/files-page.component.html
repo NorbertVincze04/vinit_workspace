@@ -1,7 +1,7 @@
 <app-page-header title="Files" description="Shared documents for the team, stored on the VINIT server.">
   <div pageActions>
     <button appButton variant="primary" type="button" [disabled]="store.uploading() > 0" (click)="zone.open()">
-      Upload files
+      {{ 'Upload files' | t }}
     </button>
   </div>
 </app-page-header>
@@ -9,7 +9,7 @@
 <app-upload-zone
   #zone
   [busy]="store.uploading() > 0"
-  [hint]="'PDF, PowerPoint, Excel, Word, images and more · up to ' + maxSize + ' each'"
+  [hint]="'PDF, PowerPoint, Excel, Word, images and more · up to {size} each' | t: { size: maxSize }"
   (files)="upload($event)"
 />
 
@@ -41,7 +41,7 @@
   />
 } @else if (!store.visible().length) {
   <app-empty-state heading="No files match" text="Try a different search or file type.">
-    <button appButton type="button" (click)="store.clearFilters()">Clear filters</button>
+    <button appButton type="button" (click)="store.clearFilters()">{{ 'Clear filters' | t }}</button>
   </app-empty-state>
 } @else {
   <app-ledger [headers]="['Name', 'Size', 'Added', '']" [numeric]="[1]" columns="minmax(0, 1fr) 90px 120px auto">

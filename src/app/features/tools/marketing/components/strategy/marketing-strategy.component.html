@@ -1,0 +1,154 @@
+<div class="intro">
+  <p>{{ 'Who you talk to, what you say, through which channels and with what budget, month by month. The content calendar plans against this.' | t }}</p>
+  <button appButton variant="ghost" size="sm" type="button" (click)="resetting.set(true)">
+    <app-icon name="refresh" [size]="14" /> {{ 'Reset to {target}' | t: { target: resetTarget() } }}
+  </button>
+</div>
+
+<div class="cols">
+  <app-panel heading="Objectives" [meta]="s().objectives.length + ''">
+    <button panelAction appButton variant="ghost" size="sm" type="button" (click)="edit('objectives')">{{ 'Edit' | t }}</button>
+    @if (s().objectives.length) {
+      <ol class="objectives">
+        @for (o of s().objectives; track $index) {
+          <li>{{ o | tc }}</li>
+        }
+      </ol>
+    } @else {
+      <p class="muted">{{ 'No objectives yet.' | t }}</p>
+    }
+  </app-panel>
+
+  <app-panel heading="Budget" [meta]="format(budget().total) + ' RON'">
+    <button panelAction appButton variant="ghost" size="sm" type="button" (click)="edit('budget')">{{ 'Edit' | t }}</button>
+    <app-facts [items]="budgetFacts()" />
+    <p class="note">{{ 'The business plan sets {amount} RON a month for recurring ads.' | t: { amount: format(budget().planMonthly) } }}</p>
+  </app-panel>
+</div>
+
+<div class="cols">
+  <app-panel heading="Target audience">
+    <button panelAction appButton variant="ghost" size="sm" type="button" (click)="edit('audience')">{{ 'Edit' | t }}</button>
+    <app-facts class="wide" [items]="audienceFacts()" />
+  </app-panel>
+
+  <app-panel heading="Persona">
+    <button panelAction appButton variant="ghost" size="sm" type="button" (click)="edit('persona')">{{ 'Edit' | t }}</button>
+    <app-facts class="wide" [items]="personaFacts()" />
+  </app-panel>
+</div>
+
+<app-panel class="block" heading="Positioning & offer">
+  <button panelAction appButton variant="ghost" size="sm" type="button" (click)="edit('positioning')">{{ 'Edit' | t }}</button>
+  <app-facts class="wide" [items]="positioningFacts()" />
+</app-panel>
+
+<app-panel class="block" heading="Channel mix" [meta]="'{pct}% of 100%' | t: { pct: store.mixTargetTotal() }" [flush]="true">
+  <button panelAction appButton variant="ghost" size="sm" type="button" (click)="editChannel(null)"><app-icon name="plus" [size]="14" /> {{ 'Add channel' | t }}</button>
+  @if (store.mixTargetTotal() !== 100) {
+    <p class="warn" role="status">{{ 'The target shares add up to {pct}%, not 100%.' | t: { pct: store.mixTargetTotal() } }}</p>
+  }
+  @for (row of mixRows(); track row.channel.key) {
+    <div class="channel">
+      <div class="ch-main">
+        <strong>{{ row.channel.label | tc }}</strong>
+        @if (row.channel.tactics) {
+          <p>{{ row.channel.tactics | tc }}</p>
+        }
+      </div>
+      <div class="ch-share">
+        <app-meter
+          [value]="row.share?.share ?? 0"
+          [marker]="row.channel.target"
+          [label]="'{name}: {pct}% of planned appearances, target {target}%' | t: { name: (row.channel.label | tc), pct: row.share?.share ?? 0, target: row.channel.target }"
+        />
+        <span class="pct"><b>{{ row.share?.share ?? 0 }}%</b> {{ 'planned · target {pct}%' | t: { pct: row.channel.target } }}</span>
+      </div>
+      <div class="ch-actions">
+        <button appButton variant="ghost" size="sm" type="button" (click)="editChannel(row.channel)">{{ 'Edit' | t }}</button>
+        @if (s().channels.length > 1) {
+          <button appButton variant="ghost" size="sm" type="button" [attr.aria-label]="('Remove' | t) + ' ' + (row.channel.label | tc)" (click)="removing.set(row.channel)">{{ 'Remove' | t }}</button>
+        }
+      </div>
+    </div>
+  }
+</app-panel>
+
+<app-panel
+  class="block"
+  heading="12-month plan"
+  [meta]="'{n} appearances · {amount} RON ads' | t: { n: format(store.plannedAppearances()), amount: format(store.adBudgetYear()) }"
+  [flush]="true"
+>
+  @for (row of monthRows(); track row.n) {
+    <div class="month">
+      <div class="m-when">
+        <strong>M{{ row.n }}</strong>
+        <span>{{ monthLabel(row.n) }}</span>
+      </div>
+      <div class="m-main">
+        <strong>{{ (row.plan.theme | tc) || ('No theme yet' | t) }}</strong>
+        <span class="sub">{{ subline(row.plan) }}</span>
+        @if (row.plan.goal) {
+          <span class="goal"><b>{{ 'Goal:' | t }}</b> {{ row.plan.goal | tc }}</span>
+        }
+        @if (row.plan.keywords.length) {
+          <span class="tags">
+            @for (k of row.plan.keywords; track k) {
+              <app-badge variant="muted">{{ k | tc }}</app-badge>
+            }
+          </span>
+        }
+      </div>
+      <dl class="m-nums">
+        <div>
+          <dt>{{ 'Content' | t }}</dt>
+          <dd [class.short]="(row.stats.appearances) < row.plan.target">{{ row.stats.appearances }} / {{ row.plan.target }}</dd>
+        </div>
+        <div>
+          <dt>{{ 'Ads' | t }}</dt>
+          <dd [class.over]="(row.stats.adSpend) > row.plan.budget">{{ format(row.plan.budget) }} {{ 'RON' | t }}</dd>
+        </div>
+      </dl>
+      <div class="m-actions">
+        <button appButton variant="ghost" size="sm" type="button" (click)="openMonth.emit(row.n)">{{ 'Content' | t }}</button>
+        <button appButton variant="ghost" size="sm" type="button" (click)="editMonth(row.n)">{{ 'Edit' | t }}</button>
+      </div>
+    </div>
+  }
+</app-panel>
+
+@if (editing(); as e) {
+  <app-form-dialog
+    size="lg"
+    [heading]="e.heading"
+    [subheading]="e.subheading"
+    [fields]="e.fields"
+    [initial]="e.values"
+    saveLabel="Save"
+    (saved)="save($event)"
+    (closed)="editing.set(null)"
+  />
+}
+
+@if (removing(); as c) {
+  <app-confirm-dialog
+    heading="Remove this channel?"
+    [message]="removeMessage(c)"
+    confirmLabel="Remove"
+    cancelLabel="Keep it"
+    (confirmed)="confirmRemove(c)"
+    (closed)="removing.set(null)"
+  />
+}
+
+@if (resetting()) {
+  <app-confirm-dialog
+    [heading]="'Reset the strategy of Year {n}?' | t: { n: store.year().year }"
+    [message]="'Objectives, audience, persona, positioning, channels, budget and the 12-month plan go back to {target}. Your content items stay.' | t: { target: resetTarget() }"
+    confirmLabel="Reset"
+    cancelLabel="Keep my strategy"
+    (confirmed)="confirmReset()"
+    (closed)="resetting.set(false)"
+  />
+}

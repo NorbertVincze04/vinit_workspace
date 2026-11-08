@@ -1,7 +1,7 @@
 <app-page-header title="Salons" description="Every salon on the platform, from first signature to live site. Open one to see its whole story.">
   <div pageActions>
     <button appButton variant="primary" type="button" (click)="openNew()">
-      <app-icon name="plus" [size]="16" /> New salon
+      <app-icon name="plus" [size]="16" /> {{ 'New salon' | t }}
     </button>
   </div>
 </app-page-header>
@@ -36,11 +36,11 @@
     heading="No salons yet"
     text="Add a salon with its billing details (who pays), plan and domain. Leads you win will also land here."
   >
-    <button appButton variant="primary" type="button" (click)="openNew()">Add salon</button>
+    <button appButton variant="primary" type="button" (click)="openNew()">{{ 'Add salon' | t }}</button>
   </app-empty-state>
 } @else if (!store.visible().length) {
   <app-empty-state heading="No salons match" text="Try a different search or status filter.">
-    <button appButton type="button" (click)="store.clearFilters()">Clear filters</button>
+    <button appButton type="button" (click)="store.clearFilters()">{{ 'Clear filters' | t }}</button>
   </app-empty-state>
 } @else {
   <app-ledger

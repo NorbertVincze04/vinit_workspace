@@ -2,12 +2,15 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { RouterLink } from '@angular/router';
 import { ActivityEntry, activityLabel, activityLink } from '../../core/data/activity.data';
 import { formatDate, todayISO } from '../../core/utils/date';
+import { locale, t } from '../../core/i18n/i18n';
+import { TPipe } from '../../core/i18n/t.pipe';
+import { translateServer } from '../../core/i18n/server-messages';
 
 /** Activity entries grouped by day: time, what happened (linked), who. */
 @Component({
   selector: 'app-activity-list',
   standalone: true,
-  imports: [RouterLink],
+  imports: [TPipe, RouterLink],
   template: `
     @for (day of days(); track day.date) {
       @if (showDays()) {
@@ -18,10 +21,10 @@ import { formatDate, todayISO } from '../../core/utils/date';
           <li>
             <span class="time">{{ time(a.occurredAt) }}</span>
             <a class="what" [routerLink]="link(a).route" [queryParams]="link(a).query ?? null">
-              <span class="summary">{{ a.summary || label(a) }}</span>
+              <span class="summary">{{ summary(a) || label(a) }}</span>
               <span class="sub">{{ label(a) }}{{ a.salonName && !a.summary.includes(a.salonName) ? ' · ' + a.salonName : '' }}</span>
             </a>
-            <span class="who">{{ a.userName || 'System' }}</span>
+            <span class="who">{{ a.userName || ('System' | t) }}</span>
           </li>
         }
       </ul>
@@ -48,8 +51,10 @@ export class ActivityListComponent {
   readonly showDays = input(true);
 
   protected readonly label = activityLabel;
+  /** The server writes summaries in English: the common ones are translated. */
+  protected readonly summary = (a: ActivityEntry): string => translateServer(a.summary);
   protected readonly link = activityLink;
-  protected readonly time = (iso: string) => new Date(iso).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  protected readonly time = (iso: string) => new Date(iso).toLocaleTimeString(locale(), { hour: '2-digit', minute: '2-digit' });
 
   protected readonly days = computed(() => {
     const today = todayISO();
@@ -59,7 +64,7 @@ export class ActivityListComponent {
       const date = new Date(a.occurredAt).toLocaleDateString('sv-SE');
       let g = groups.at(-1);
       if (!g || g.date !== date) {
-        g = { date, label: date === today ? 'Today' : date === yesterday ? 'Yesterday' : formatDate(date, { weekday: 'long', day: 'numeric', month: 'long' }), items: [] };
+        g = { date, label: date === today ? t('Today') : date === yesterday ? t('Yesterday') : formatDate(date, { weekday: 'long', day: 'numeric', month: 'long' }), items: [] };
         groups.push(g);
       }
       g.items.push(a);

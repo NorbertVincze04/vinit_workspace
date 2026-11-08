@@ -1,24 +1,40 @@
-<app-page-header title="Marketing" description="Content calendar for the 12 months, with the copy to publish.">
+<app-page-header title="Marketing" description="The marketing strategy for the year and the content calendar that carries it out.">
   <div pageActions>
     <app-plan-start-field />
     <app-backup-menu [store]="store" name="marketing" />
+    <button appButton type="button" (click)="addYear()"><app-icon name="plus" [size]="16" /> {{ 'Add Year {n}' | t: { n: store.nextYear() } }}</button>
     <button appButton variant="primary" type="button" (click)="openNew()">
-      <app-icon name="plus" [size]="16" /> New content
+      <app-icon name="plus" [size]="16" /> {{ 'New content' | t }}
     </button>
   </div>
 </app-page-header>
 
-<app-marketing-overview [totals]="store.totals()" [mix]="store.mix()" />
+<div class="years">
+  <app-chip-group label="Year" [options]="yearOptions()" [value]="yearValue()" (valueChange)="pickYear($event)" />
+  <span class="range">{{ range() }}</span>
+  @if (store.canRemoveYear()) {
+    <button appButton variant="ghost" size="sm" type="button" (click)="removingYear.set(store.year().year)">{{ 'Remove Year {n}' | t: { n: store.year().year } }}</button>
+  }
+</div>
+
+<app-tabs class="tabs" label="Marketing sections" [options]="tabs" [value]="tab()" (valueChange)="setTab($event)" />
+
+@if (tab() === 'strategy') {
+  <app-marketing-strategy (openMonth)="showMonth($event)" />
+} @else {
+<app-marketing-overview [totals]="store.totals()" [mix]="store.mix()" [adBudgetYear]="store.adBudgetYear()" />
 
 <app-month-rail
   [value]="store.filters().month"
   [stats]="store.monthStats()"
+  [months]="store.months()"
+  [year]="store.year().year"
   [monthLabel]="monthLabel"
   (valueChange)="selectMonth($event)"
 />
 
 @if (selectedStats(); as stats) {
-  <app-month-brief [month]="store.filters().month" [label]="monthLabel(store.filters().month)" [stats]="stats" />
+  <app-month-brief [month]="store.filters().month" [label]="monthLabel(store.filters().month)" [stats]="stats" [plan]="store.months()[store.filters().month - 1]" />
 }
 
 <div class="toolbar">
@@ -51,7 +67,7 @@
     heading="No content planned yet"
     text="Add a post, ad, DM batch or email. Each item gets a month, format, platforms and the exact copy to publish."
   >
-    <button appButton variant="primary" type="button" (click)="openNew()">Add the first item</button>
+    <button appButton variant="primary" type="button" (click)="openNew()">{{ 'Add the first item' | t }}</button>
   </app-empty-state>
 } @else if (!store.groups().length) {
   <app-empty-state heading="Nothing matches" text="Try another search, status or format, or pick All months." />
@@ -61,16 +77,17 @@
       @if (!store.filters().month) {
         <div class="ghead">
           <h3>
-            Month {{ group.month }} · {{ monthLabel(group.month) }}
-            <span>· {{ monthPlan[group.month - 1].theme }}</span>
+            {{ 'Month' | t }} {{ group.month }} · {{ monthLabel(group.month) }}
+            <span>· {{ store.months()[group.month - 1].theme | tc }}</span>
           </h3>
-          <p>{{ group.stats.appearances }} / {{ monthPlan[group.month - 1].target }} appearances · {{ group.stats.published }} published</p>
+          <p>{{ '{n} / {total} appearances · {published} published' | t: { n: group.stats.appearances, total: store.months()[group.month - 1].target, published: group.stats.published } }}</p>
         </div>
       }
       <app-ledger columns="112px minmax(0, 1fr) auto">
         @for (post of group.posts; track post.id) {
           <app-post-item
             [post]="post"
+            [channels]="store.channels()"
             [expanded]="expanded().has(post.id)"
             (expandedChange)="toggle(post.id, $event)"
             (statusChange)="setStatus(post, $event)"
@@ -83,6 +100,8 @@
       </app-ledger>
     </section>
   }
+}
+
 }
 
 @if (form(); as f) {
@@ -105,5 +124,16 @@
     [message]="'“' + (post.title || 'This item') + '” and its copy will be removed. This can’t be undone.'"
     (confirmed)="confirmDelete(post)"
     (closed)="deleting.set(null)"
+  />
+}
+
+@if (removingYear(); as y) {
+  <app-confirm-dialog
+    [heading]="'Remove Year {n}?' | t: { n: y }"
+    message="Its marketing strategy will be removed. It has not started and has no content."
+    confirmLabel="Remove"
+    cancelLabel="Keep it"
+    (confirmed)="store.removeYear(y)"
+    (closed)="removingYear.set(null)"
   />
 }

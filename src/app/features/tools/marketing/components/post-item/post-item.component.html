@@ -7,7 +7,7 @@
   </div>
 
   <div class="main">
-    <span class="cell-title">{{ post().title || 'Untitled' }}</span>
+    <span class="cell-title">{{ post().title || ('Untitled' | t) }}</span>
     @if (meta().length) {
       <span class="cell-sub">{{ meta().join(' · ') }}</span>
     }
@@ -26,7 +26,7 @@
       (valueChange)="setStatus($event)"
     />
     <button appButton variant="ghost" size="sm" type="button" [attr.aria-expanded]="expanded()" (click)="expandedChange.emit(!expanded())">
-      {{ expanded() ? 'Hide details' : 'Details' }}
+      {{ (expanded() ? 'Hide details' : 'Details') | t }}
     </button>
   </div>
 
@@ -34,7 +34,7 @@
     <div class="cell-full details">
       @if (post().caption || post().hashtags) {
         <div>
-          <span class="eyebrow">Caption / copy</span>
+          <span class="eyebrow">{{ 'Caption / copy' | t }}</span>
           <div class="caption">
             {{ post().caption }}
             @if (post().hashtags) {
@@ -47,7 +47,7 @@
         <dl class="dgrid">
           @for (d of details(); track d.label) {
             <div>
-              <dt class="eyebrow">{{ d.label }}</dt>
+              <dt class="eyebrow">{{ d.label | t }}</dt>
               <dd>{{ d.value }}</dd>
             </div>
           }
@@ -55,11 +55,11 @@
       }
       <div class="actions">
         @if (post().caption || post().hashtags) {
-          <button appButton variant="ghost" size="sm" type="button" (click)="copyCaption.emit()">Copy caption</button>
+          <button appButton variant="ghost" size="sm" type="button" (click)="copyCaption.emit()">{{ 'Copy caption' | t }}</button>
         }
-        <button appButton variant="ghost" size="sm" type="button" (click)="edit.emit()">Edit</button>
-        <button appButton variant="ghost" size="sm" type="button" (click)="duplicate.emit()">Duplicate</button>
-        <button appButton variant="ghost" size="sm" type="button" (click)="remove.emit()">Delete</button>
+        <button appButton variant="ghost" size="sm" type="button" (click)="edit.emit()">{{ 'Edit' | t }}</button>
+        <button appButton variant="ghost" size="sm" type="button" (click)="duplicate.emit()">{{ 'Duplicate' | t }}</button>
+        <button appButton variant="ghost" size="sm" type="button" (click)="remove.emit()">{{ 'Delete' | t }}</button>
       </div>
     </div>
   }

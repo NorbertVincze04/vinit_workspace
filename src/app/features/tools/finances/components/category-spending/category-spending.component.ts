@@ -2,24 +2,25 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { formatRon } from '../../../../../core/utils/format';
 import { MeterComponent, StatusPillComponent } from '../../../../../shared/ui';
 import { CategorySpend } from '../../finances.model';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
 
 /** Top spending categories of the month, each with its budget marker. */
 @Component({
   selector: 'app-category-spending',
   standalone: true,
-  imports: [MeterComponent, StatusPillComponent],
+  imports: [TPipe, MeterComponent, StatusPillComponent],
   template: `
     @if (!rows().length) {
-      <p class="quiet">No expenses logged for this month yet. Add an expense or set a budget to see where the money goes.</p>
+      <p class="quiet">{{ 'No expenses logged for this month yet. Add an expense or set a budget to see where the money goes.' | t }}</p>
     } @else {
       <ul>
         @for (row of rows(); track row.name) {
           <li>
             <div class="top">
               <span class="name">
-                {{ row.name }}
+                {{ row.name | t }}
                 @if (row.over) {
-                  <app-status-pill tone="bad">Over by {{ ron(row.spent - (row.budget ?? 0)) }}</app-status-pill>
+                  <app-status-pill tone="bad">{{ 'Over by' | t }} {{ ron(row.spent - (row.budget ?? 0)) }}</app-status-pill>
                 }
               </span>
               <span class="amt"><strong>{{ ron(row.spent) }}</strong>{{ row.budget !== null ? ' / ' + ron(row.budget) : '' }}</span>
@@ -28,13 +29,13 @@ import { CategorySpend } from '../../finances.model';
               [value]="(row.spent / scale()) * 100"
               [marker]="row.budget !== null ? (row.budget / scale()) * 100 : null"
               [over]="row.over"
-              [label]="row.name + ': ' + ron(row.spent) + (row.budget !== null ? ' of ' + ron(row.budget) + ' budget' : '')"
+              [label]="(row.name | t) + ': ' + ron(row.spent) + (row.budget !== null ? ' ' + ('of {amount} budget' | t: { amount: ron(row.budget) }) : '')"
             />
           </li>
         }
       </ul>
       @if (hidden()) {
-        <p class="quiet">{{ hidden() }} smaller categories not shown.</p>
+        <p class="quiet">{{ hidden() }} {{ 'smaller categories not shown.' | t }}</p>
       }
     }
   `,

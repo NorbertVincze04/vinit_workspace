@@ -5,6 +5,7 @@ import { OnboardingStore } from '../onboarding/onboarding.store';
 import { SalonsStore } from '../salons/salons.store';
 import { Attachment } from './components/attachments/attachments.component';
 import { ComplianceRow, Contract } from './contracts.model';
+import { t } from '../../../core/i18n/i18n';
 
 type Row = Record<string, unknown>;
 
@@ -33,7 +34,7 @@ export class ContractsStore {
       this.compliance.set(compliance.items);
       this.loaded.set(true);
     } catch (error) {
-      this.toast.show(`Could not load contracts: ${apiError(error).message}`, 6000);
+      this.toast.show(t('Could not load contracts: {error}', { error: apiError(error).message }), 6000);
     }
   }
 
@@ -65,7 +66,7 @@ export class ContractsStore {
 
   private loud<T>(request: Promise<T>): Promise<T> {
     return request.catch((error: unknown) => {
-      this.toast.show(`Not saved: ${apiError(error).message}`, 6000);
+      this.toast.show(t('Not saved: {error}', { error: apiError(error).message }), 6000);
       throw error;
     });
   }

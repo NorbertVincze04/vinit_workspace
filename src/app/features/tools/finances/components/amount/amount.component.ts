@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
 
 /**
  * Right-aligned money cell: main amount plus an optional RON conversion line.
@@ -8,9 +9,10 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 @Component({
   selector: 'app-amount',
   standalone: true,
+  imports: [TPipe],
   template: `
     @if (label()) {
-      <span class="lbl">{{ label() }}</span>
+      <span class="lbl">{{ label() | t }}</span>
     }
     <span class="amt" [attr.data-kind]="kind()">{{ text() }}</span>
     @if (sub()) {

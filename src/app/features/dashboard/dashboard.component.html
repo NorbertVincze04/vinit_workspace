@@ -4,25 +4,25 @@
 <app-legacy-clients-banner />
 
 <section class="page-section" aria-labelledby="status-heading">
-  <h2 id="status-heading" class="section-title">Status</h2>
+  <h2 id="status-heading" class="section-title">{{ 'Status' | t }}</h2>
   <app-status-grid />
 </section>
 
-<section class="page-section attention" aria-label="Needs attention and recent activity">
+<section class="page-section attention" [attr.aria-label]="'Needs attention and recent activity' | t">
   <app-salon-alerts />
   <app-recent-activity />
 </section>
 
-<section class="page-section attention" aria-label="Needs attention">
+<section class="page-section attention" [attr.aria-label]="'Needs attention' | t">
   <app-due-tasks />
   <app-due-payments />
 </section>
 
 <section class="page-section" aria-labelledby="tools-heading">
-  <h2 id="tools-heading" class="section-title">Tools</h2>
+  <h2 id="tools-heading" class="section-title">{{ 'Tools' | t }}</h2>
   @for (group of groups; track group.id) {
     <div class="tool-group">
-      <h3 class="group-title">{{ group.title }} <span class="group-who">{{ group.who }}</span></h3>
+      <h3 class="group-title">{{ group.title | t }} <span class="group-who">{{ group.who | t }}</span></h3>
       <div class="tools">
         @for (tool of group.tools; track tool.id) {
           <app-tool-tile [tool]="tool" />

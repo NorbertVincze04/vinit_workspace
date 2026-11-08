@@ -11,6 +11,9 @@ import { CalendarStore } from '../../../tools/calendar/calendar.store';
 import { InfraStore } from '../../../tools/infra/infra.store';
 import { categoryLabel, whenInfo } from '../../../tools/calendar/calendar.model';
 import { ticketNo } from '../../../tools/support/support.model';
+import { translateServer } from '../../../../core/i18n/server-messages';
+import { TPipe } from '../../../../core/i18n/t.pipe';
+import { countOf, t } from '../../../../core/i18n/i18n';
 
 interface Alert {
   key: string;
@@ -42,7 +45,7 @@ const SHOWN = 8;
 @Component({
   selector: 'app-salon-alerts',
   standalone: true,
-  imports: [RouterLink, PanelComponent, StatusPillComponent],
+  imports: [TPipe, RouterLink, PanelComponent, StatusPillComponent],
   template: `
     <app-panel heading="Needs attention" [meta]="alerts().length ? alerts().length + '' : ''" [flush]="true">
       @if (alerts().length) {
@@ -58,10 +61,10 @@ const SHOWN = 8;
           }
         </ul>
         @if (alerts().length > shownCount()) {
-          <button class="more" type="button" (click)="all.set(true)">Show {{ alerts().length - shownCount() }} more</button>
+          <button class="more" type="button" (click)="all.set(true)">{{ 'Show {n} more' | t: { n: alerts().length - shownCount() } }}</button>
         }
       } @else {
-        <p class="empty">Nothing urgent: no late payments, trials ending, late onboardings, urgent tickets, follow-ups or deadlines due.</p>
+        <p class="empty">{{ 'Nothing urgent: no late payments, trials ending, late onboardings, urgent tickets, follow-ups or deadlines due.' | t }}</p>
       }
     </app-panel>
   `,
@@ -105,10 +108,10 @@ export class SalonAlertsComponent {
       if (w.kind === 'min_term_ending') continue;
       out.push({
         key: `w${i}`,
-        tag: WARNING_TAGS[w.kind] ?? w.kind,
+        tag: t(WARNING_TAGS[w.kind] ?? w.kind),
         tone: w.severity === 'bad' ? 'bad' : w.severity === 'warn' ? 'warn' : 'info',
-        title: w.salonName ?? 'Subscriptions',
-        text: w.message,
+        title: w.salonName ?? t('Subscriptions'),
+        text: translateServer(w.message),
         route: w.salonId ? `/tools/salons/${w.salonId}` : '/tools/subscriptions',
         query: w.salonId ? { tab: 'billing' } : undefined,
         rank: w.severity === 'bad' ? 0 : 2,
@@ -119,26 +122,26 @@ export class SalonAlertsComponent {
       if (!o.late && o.status !== 'blocked') continue;
       out.push({
         key: `o${o.id}`,
-        tag: o.late ? `Over ${ONBOARDING_HOURS}h` : 'Blocked',
+        tag: o.late ? t('Over {h}h', { h: ONBOARDING_HOURS }) : t('Blocked'),
         tone: 'bad',
         title: o.salonName,
-        text: o.status === 'blocked' ? `Onboarding blocked: ${o.blockedReason}` : `Onboarding: ${clockOf(o).text}`,
+        text: o.status === 'blocked' ? t('Onboarding blocked: {reason}', { reason: o.blockedReason }) : t('Onboarding: {clock}', { clock: clockOf(o).text }),
         route: `/tools/salons/${o.salonId}`,
         query: { tab: 'onboarding' },
         rank: 1,
       });
     }
 
-    for (const t of this.support.urgent()) {
+    for (const tk of this.support.urgent()) {
       out.push({
-        key: `t${t.id}`,
-        tag: t.priority === 'urgent' ? 'Urgent' : 'High',
-        tone: t.priority === 'urgent' ? 'bad' : 'warn',
-        title: t.salonName,
-        text: `${ticketNo(t.number)} ${t.title}`,
-        route: `/tools/salons/${t.salonId}`,
+        key: `t${tk.id}`,
+        tag: t(tk.priority === 'urgent' ? 'Urgent' : 'High'),
+        tone: tk.priority === 'urgent' ? 'bad' : 'warn',
+        title: tk.salonName,
+        text: `${ticketNo(tk.number)} ${tk.title}`,
+        route: `/tools/salons/${tk.salonId}`,
         query: { tab: 'support' },
-        rank: t.priority === 'urgent' ? 1 : 3,
+        rank: tk.priority === 'urgent' ? 1 : 3,
       });
     }
 
@@ -146,10 +149,10 @@ export class SalonAlertsComponent {
       const days = daysUntil(l.nextFollowUpOn);
       out.push({
         key: `l${l.id}`,
-        tag: days < 0 ? 'Follow-up late' : 'Follow up',
+        tag: t(days < 0 ? 'Follow-up late' : 'Follow up'),
         tone: days < 0 ? 'warn' : 'info',
         title: l.businessName,
-        text: days < 0 ? `Follow-up was due ${formatDate(l.nextFollowUpOn)}` : 'Follow-up due today',
+        text: days < 0 ? t('Follow-up was due {date}', { date: formatDate(l.nextFollowUpOn) }) : t('Follow-up due today'),
         route: '/tools/leads',
         rank: days < 0 ? 3 : 4,
       });
@@ -175,14 +178,14 @@ export class SalonAlertsComponent {
     const h = this.infra.health();
     if (h) {
       if (h.sms.pct >= 80) {
-        out.push({ key: 'sms', tag: `SMS ${h.sms.pct}%`, tone: h.sms.pct >= 100 ? 'bad' : 'warn', title: 'SMS budget', text: `${h.sms.sent} of ${h.sms.budget} SMS used this month`, route: '/tools/infra', rank: 2 });
+        out.push({ key: 'sms', tag: `SMS ${h.sms.pct}%`, tone: h.sms.pct >= 100 ? 'bad' : 'warn', title: t('SMS budget'), text: t('{sent} of {budget} SMS used this month', { sent: h.sms.sent, budget: h.sms.budget }), route: '/tools/infra', rank: 2 });
       }
       const b = h.backups;
       if (b.lastBackupDays === null || b.lastBackupDays > 7) {
-        out.push({ key: 'backup', tag: 'Backup', tone: b.lastBackupDays === null || b.lastBackupDays > 30 ? 'bad' : 'warn', title: 'Back up the database', text: b.lastBackupDays === null ? 'No backup recorded yet: npm run db:backup' : `Last backup ${b.lastBackupDays} days ago`, route: '/tools/infra', rank: 3 });
+        out.push({ key: 'backup', tag: t('Backup'), tone: b.lastBackupDays === null || b.lastBackupDays > 30 ? 'bad' : 'warn', title: t('Back up the database'), text: b.lastBackupDays === null ? t('No backup recorded yet: npm run db:backup') : t('Last backup {days} ago', { days: countOf(b.lastBackupDays, 'day', 'days') }), route: '/tools/infra', rank: 3 });
       }
       if (b.lastRestoreTestDays === null || b.lastRestoreTestDays > 90) {
-        out.push({ key: 'restore', tag: 'Restore test', tone: 'warn', title: 'Test a restore', text: b.lastRestoreTestDays === null ? 'A backup only counts once a restore worked' : `Last restore test ${b.lastRestoreTestDays} days ago`, route: '/tools/infra', rank: 5 });
+        out.push({ key: 'restore', tag: t('Restore test'), tone: 'warn', title: t('Test a restore'), text: b.lastRestoreTestDays === null ? t('A backup only counts once a restore worked') : t('Last restore test {days} ago', { days: countOf(b.lastRestoreTestDays, 'day', 'days') }), route: '/tools/infra', rank: 5 });
       }
     }
 

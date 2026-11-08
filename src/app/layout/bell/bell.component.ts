@@ -3,12 +3,14 @@ import { Router } from '@angular/router';
 import { AppNotification, NotificationsService } from '../../core/services/notifications.service';
 import { formatDateTime } from '../../core/utils/date';
 import { ButtonComponent, DialogComponent, IconComponent } from '../../shared/ui';
+import { TPipe } from '../../core/i18n/t.pipe';
+import { translateServer } from '../../core/i18n/server-messages';
 
 /** Bell with the unread count; opens the person's notifications. */
 @Component({
   selector: 'app-bell',
   standalone: true,
-  imports: [ButtonComponent, IconComponent, DialogComponent],
+  imports: [TPipe, ButtonComponent, IconComponent, DialogComponent],
   template: `
     <button
       type="button"
@@ -29,9 +31,9 @@ import { ButtonComponent, DialogComponent, IconComponent } from '../../shared/ui
             @for (n of service.items(); track n.id) {
               <li [class.unread]="!n.readAt" [attr.data-severity]="n.severity">
                 <button type="button" class="item" (click)="go(n, dlg)">
-                  <span class="title">{{ n.title }}</span>
+                  <span class="title">{{ tr(n.title) }}</span>
                   @if (n.body) {
-                    <span class="body">{{ n.body }}</span>
+                    <span class="body">{{ tr(n.body) }}</span>
                   }
                   <span class="when">{{ when(n.createdAt) }}</span>
                 </button>
@@ -40,15 +42,15 @@ import { ButtonComponent, DialogComponent, IconComponent } from '../../shared/ui
             }
           </ul>
         } @else if (service.loading()) {
-          <p class="muted">Loading…</p>
+          <p class="muted">{{ 'Loading…' | t }}</p>
         } @else {
-          <p class="muted">Nothing to report. You'll see late payments, trials ending, follow-ups, deadlines and more here.</p>
+          <p class="muted">{{ 'Nothing to report. You\'ll see late payments, trials ending, follow-ups, deadlines and more here.' | t }}</p>
         }
         <div dialogFooter>
           @if (service.unread()) {
-            <button appButton type="button" (click)="service.readAll()">Mark all read</button>
+            <button appButton type="button" (click)="service.readAll()">{{ 'Mark all read' | t }}</button>
           }
-          <button appButton variant="primary" type="button" (click)="dlg.close()">Close</button>
+          <button appButton variant="primary" type="button" (click)="dlg.close()">{{ 'Close' | t }}</button>
         </div>
       </app-dialog>
     }
@@ -81,6 +83,8 @@ export class BellComponent {
   private readonly router = inject(Router);
   protected readonly open = signal(false);
   protected readonly when = formatDateTime;
+  /** Notifications are written by the server in English. */
+  protected readonly tr = translateServer;
 
   protected openPanel(): void {
     this.open.set(true);

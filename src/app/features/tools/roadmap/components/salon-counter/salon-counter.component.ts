@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FINANCE } from '../../../../../core/data/finance.data';
-import { percent, plural } from '../../../../../core/utils/format';
+import { percent } from '../../../../../core/utils/format';
 import { RonPipe } from '../../../../../shared/pipes/ron.pipe';
 import {
   CardComponent,
@@ -11,12 +11,14 @@ import {
   StatTone,
 } from '../../../../../shared/ui';
 import { MAX_SALONS, RoadmapStore } from '../../roadmap.store';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
+import { countOf, t } from '../../../../../core/i18n/i18n';
 
 /** Paying-salon counter with income vs. costs and the break-even line (this year's goals). */
 @Component({
   selector: 'app-salon-counter',
   standalone: true,
-  imports: [CardComponent, NumberStepperComponent, ProgressBarComponent, StatComponent, RonPipe, RouterLink],
+  imports: [TPipe, CardComponent, NumberStepperComponent, ProgressBarComponent, StatComponent, RonPipe, RouterLink],
   templateUrl: './salon-counter.component.html',
   styleUrl: './salon-counter.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,7 +42,7 @@ export class SalonCounterComponent {
   protected readonly marks = computed(() =>
     this.year() === 1
       ? [
-          { label: `${FINANCE.betaSalons} beta`, pct: percent(FINANCE.betaSalons, this.goal()) },
+          { label: t('{n} beta', { n: FINANCE.betaSalons }), pct: percent(FINANCE.betaSalons, this.goal()) },
           { label: `${FINANCE.month9Checkpoint}`, pct: percent(FINANCE.month9Checkpoint, this.goal()) },
         ]
       : [],
@@ -60,9 +62,9 @@ export class SalonCounterComponent {
     const year = this.year();
     if (n < breakEven) {
       const left = breakEven - n;
-      return `${left} more ${plural(left, 'salon', 'salons')} to cover your monthly costs.`;
+      return t('{salons} more to cover your monthly costs.', { salons: countOf(left, 'salon', 'salons') });
     }
-    if (n < goal) return `Costs are covered. ${goal - n} more to reach the Year ${year} goal of ${goal}.`;
-    return `Year ${year} goal reached. Every extra salon is profit.`;
+    if (n < goal) return t('Costs are covered. {n} more to reach the Year {year} goal of {goal}.', { n: goal - n, year, goal });
+    return t('Year {year} goal reached. Every extra salon is profit.', { year });
   });
 }

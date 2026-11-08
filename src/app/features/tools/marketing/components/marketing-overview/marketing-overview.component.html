@@ -5,22 +5,22 @@
       <app-stat
         label="Appearances"
         [value]="format(totals().appearances) + ' / ' + format(totals().planned)"
-        hint="planned in Annex 3"
+        hint="planned in the strategy"
       />
       <app-stat label="Published" [value]="format(totals().published)" />
-      <app-stat label="Ad budget used" [value]="format(totals().adSpend) + ' RON'" [hint]="'of ' + adBudgetYear + ' RON'" />
+      <app-stat label="Ad budget used" [value]="format(totals().adSpend) + ' RON'" [hint]="'of {amount} RON' | t: { amount: format(adBudgetYear()) }" />
     </div>
 
     <div class="mix">
-      <span class="eyebrow">Communication mix</span>
+      <span class="eyebrow">{{ 'Communication mix' | t }}</span>
       @for (m of mix(); track m.value) {
         <div class="mix-row">
-          <span class="lbl">{{ m.label }}</span>
-          <app-meter [value]="m.share" [marker]="m.target" [label]="m.label + ': ' + m.share + '% of appearances, target ' + m.target + '%'" />
+          <span class="lbl">{{ m.label | tc }}</span>
+          <app-meter [value]="m.share" [marker]="m.target" [label]="'{name}: {pct}% of appearances, target {target}%' | t: { name: (m.label | tc), pct: m.share, target: m.target }" />
           <span class="pct"><b>{{ m.share }}%</b> / {{ m.target }}%</span>
         </div>
       }
-      <p class="note"><i class="mark"></i>Target share from the business plan. Bars count appearances.</p>
+      <p class="note"><i class="mark"></i>{{ 'Target share from the strategy. Bars count appearances.' | t }}</p>
     </div>
   </div>
 </app-card>

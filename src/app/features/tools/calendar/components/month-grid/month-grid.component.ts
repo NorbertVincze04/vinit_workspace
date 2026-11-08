@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { formatDate, todayISO } from '../../../../../core/utils/date';
 import { Deadline, monthWeeks, whenInfo } from '../../calendar.model';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -12,10 +13,11 @@ const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 @Component({
   selector: 'app-month-grid',
   standalone: true,
+  imports: [TPipe],
   template: `
-    <div class="grid" role="grid" [attr.aria-label]="'Deadlines in ' + month()">
+    <div class="grid" role="grid" [attr.aria-label]="'Deadlines in {month}' | t: { month: month() }">
       @for (d of days; track d) {
-        <div class="head" role="columnheader">{{ d }}</div>
+        <div class="head" role="columnheader">{{ d | t }}</div>
       }
       @for (week of weeks(); track week[0]) {
         @for (day of week; track day) {

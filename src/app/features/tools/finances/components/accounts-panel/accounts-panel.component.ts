@@ -10,12 +10,13 @@ import {
 import { Account } from '../../finances.model';
 import { FinancesStore } from '../../finances.store';
 import { AmountComponent } from '../amount/amount.component';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
 
 /** Accounts tab: bank accounts, cash and debts that make up the net worth. */
 @Component({
   selector: 'app-accounts-panel',
   standalone: true,
-  imports: [ButtonComponent, EmptyStateComponent, InlineStatsComponent, LedgerComponent, LedgerRowComponent, StatusPillComponent, AmountComponent],
+  imports: [TPipe, ButtonComponent, EmptyStateComponent, InlineStatsComponent, LedgerComponent, LedgerRowComponent, StatusPillComponent, AmountComponent],
   template: `
     <div class="toolbar">
       <app-inline-stats class="grow" [items]="store.accounts.items().length ? store.accountSummary() : []" />
@@ -26,14 +27,14 @@ import { AmountComponent } from '../amount/amount.component';
         heading="No accounts yet"
         text="Add bank accounts, cash, e-wallets and any credit card or loan. Their balances make up the net worth."
       >
-        <button appButton variant="primary" type="button" (click)="add.emit()">Add an account</button>
+        <button appButton variant="primary" type="button" (click)="add.emit()">{{ 'Add an account' | t }}</button>
       </app-empty-state>
     } @else {
       <app-ledger [headers]="['Account', 'Kind', 'Balance', '']" [numeric]="[2]" columns="minmax(0, 1.6fr) 150px 170px auto">
         @for (row of store.accountRows(); track row.item.id) {
           <app-ledger-row clickable (activate)="edit.emit(row.item)">
             <div>
-              <span class="cell-title">{{ row.item.name || 'Untitled' }}</span>
+              <span class="cell-title">{{ row.item.name || ('Untitled' | t) }}</span>
               @if (row.sub) {
                 <span class="cell-sub">{{ row.sub }}</span>
               }
@@ -46,8 +47,8 @@ import { AmountComponent } from '../amount/amount.component';
               [kind]="row.liability ? 'negative' : 'plain'"
             />
             <div class="cell-actions">
-              <button appButton variant="ghost" size="sm" type="button" (click)="edit.emit(row.item)">Edit</button>
-              <button appButton variant="ghost" size="sm" type="button" (click)="remove.emit(row.item)">Delete</button>
+              <button appButton variant="ghost" size="sm" type="button" (click)="edit.emit(row.item)">{{ 'Edit' | t }}</button>
+              <button appButton variant="ghost" size="sm" type="button" (click)="remove.emit(row.item)">{{ 'Delete' | t }}</button>
             </div>
           </app-ledger-row>
         }

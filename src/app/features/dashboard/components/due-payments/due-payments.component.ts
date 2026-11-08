@@ -5,30 +5,33 @@ import { formatDate } from '../../../../core/utils/date';
 import { ButtonComponent, PanelComponent, StatusPillComponent } from '../../../../shared/ui';
 import { Recurring } from '../../../tools/finances/finances.model';
 import { FinancesStore } from '../../../tools/finances/finances.store';
+import { TPipe } from '../../../../core/i18n/t.pipe';
+import { t } from '../../../../core/i18n/i18n';
+import { TcPipe } from '../../../../core/i18n/tc.pipe';
 
 /** Recurring payments due within two weeks, with one-click "Log paid". */
 @Component({
   selector: 'app-due-payments',
   standalone: true,
-  imports: [RouterLink, PanelComponent, ButtonComponent, StatusPillComponent],
+  imports: [TcPipe, TPipe, RouterLink, PanelComponent, ButtonComponent, StatusPillComponent],
   template: `
     <app-panel heading="Payments due" meta="Next 14 days" [flush]="true">
-      <a panelAction routerLink="/tools/finances">Finances</a>
+      <a panelAction routerLink="/tools/finances">{{ 'Finances' | t }}</a>
       @if (store.dueSoon().length) {
         <ul>
           @for (row of store.dueSoon(); track row.item.id) {
             <li>
               <div class="main">
-                <span class="name">{{ row.item.name || 'Recurring payment' }}</span>
+                <span class="name">{{ (row.item.name | tc) || ('Recurring payment' | t) }}</span>
                 <span class="sub">{{ row.amountText }} · {{ row.dueText }}</span>
               </div>
               <app-status-pill [tone]="row.dueTone">{{ row.dueLabel }}</app-status-pill>
-              <button appButton size="sm" type="button" (click)="log(row.item)">Log paid</button>
+              <button appButton size="sm" type="button" (click)="log(row.item)">{{ 'Log paid' | t }}</button>
             </li>
           }
         </ul>
       } @else {
-        <p class="empty">No recurring payments due in the next two weeks.</p>
+        <p class="empty">{{ 'No recurring payments due in the next two weeks.' | t }}</p>
       }
     </app-panel>
   `,
@@ -56,6 +59,6 @@ export class DuePaymentsComponent {
 
   protected log(item: Recurring): void {
     const next = this.store.logRecurring(item);
-    this.toast.show(`Logged ${item.name || 'payment'}. Next due ${formatDate(next)}`);
+    this.toast.show(t('Logged {name}. Next due {date}', { name: item.name || t('payment'), date: formatDate(next) }));
   }
 }

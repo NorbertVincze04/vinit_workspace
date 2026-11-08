@@ -1,3 +1,20 @@
+.years {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-bottom: 14px;
+}
+.range {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.tabs {
+  display: block;
+  margin-bottom: 16px;
+}
+
 .group {
   margin-bottom: 20px;
 }

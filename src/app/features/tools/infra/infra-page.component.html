@@ -1,6 +1,6 @@
 <app-page-header title="Infra" description="What the setup costs each month, SMS against the 1.500 budget, and whether backups really work.">
   <div pageActions>
-    <button appButton variant="primary" type="button" (click)="openService(null)"><app-icon name="plus" [size]="16" /> New service</button>
+    <button appButton variant="primary" type="button" (click)="openService(null)"><app-icon name="plus" [size]="16" /> {{ 'New service' | t }}</button>
   </div>
 </app-page-header>
 
@@ -18,15 +18,15 @@
       @for (s of store.services(); track s.id) {
         <app-ledger-row clickable (activate)="openService(s)">
           <div>
-            <span class="cell-title">{{ s.name }}{{ s.active ? '' : ' (not in use)' }}</span>
-            <span class="cell-sub">{{ category(s.category) }}{{ s.vendor ? ' · ' + s.vendor : '' }}{{ s.planName ? ' · ' + s.planName : '' }}</span>
+            <span class="cell-title">{{ s.name | tc }}{{ s.active ? '' : ' (' + ('not in use' | t) + ')' }}</span>
+            <span class="cell-sub">{{ category(s.category) }}{{ s.vendor ? ' · ' + s.vendor : '' }}{{ s.planName ? ' · ' + (s.planName | tc) : '' }}</span>
             @if (s.dashboardUrl || s.statusUrl) {
               <span class="links">
                 @if (s.dashboardUrl) {
-                  <a [href]="s.dashboardUrl" target="_blank" rel="noopener noreferrer">Dashboard</a>
+                  <a [href]="s.dashboardUrl" target="_blank" rel="noopener noreferrer">{{ 'Dashboard' | t }}</a>
                 }
                 @if (s.statusUrl) {
-                  <a [href]="s.statusUrl" target="_blank" rel="noopener noreferrer">Status</a>
+                  <a [href]="s.statusUrl" target="_blank" rel="noopener noreferrer">{{ 'Status' | t }}</a>
                 }
               </span>
             }
@@ -37,7 +37,7 @@
           </div>
           <span>{{ date(s.renewsOn) || '—' }}</span>
           <div class="cell-actions">
-            <button appButton variant="ghost" size="sm" type="button" (click)="deleting.set(s)">Delete</button>
+            <button appButton variant="ghost" size="sm" type="button" (click)="deleting.set(s)">{{ 'Delete' | t }}</button>
           </div>
         </app-ledger-row>
       }
@@ -47,48 +47,48 @@
       heading="No services yet"
       text="Add what you pay for (domains, Twilio, tools…). Link each one to its recurring payment in Finances so the cost is entered once."
     >
-      <button appButton variant="primary" type="button" (click)="openService(null)">New service</button>
+      <button appButton variant="primary" type="button" (click)="openService(null)">{{ 'New service' | t }}</button>
     </app-empty-state>
   }
 </app-panel>
 
 <div class="grid">
-  <app-panel heading="SMS usage" [meta]="smsTotal() + ' sent'">
+  <app-panel heading="SMS usage" [meta]="'{n} sent' | t: { n: smsTotal() }">
     <div class="bar">
       <app-month-switcher [(value)]="smsMonth" />
-      <button appButton size="sm" type="button" (click)="openSms()">Enter SMS sent</button>
+      <button appButton size="sm" type="button" (click)="openSms()">{{ 'Enter SMS sent' | t }}</button>
     </div>
     <ul class="rows">
       @for (r of smsRows(); track r.id) {
         <li>
-          <span>{{ r.salonName ?? 'Whole account' }}</span>
-          <strong>{{ r.sent }} SMS</strong>
+          <span>{{ r.salonName ?? ('Whole account' | t) }}</span>
+          <strong>{{ r.sent }} {{ 'SMS' | t }}</strong>
           <span class="muted">{{ money(r.costBani, 'RON') }}</span>
           <button class="x push" type="button" [attr.aria-label]="'Remove ' + (r.salonName ?? 'whole account')" (click)="removeSms(r)">×</button>
         </li>
       } @empty {
-        <li class="muted">Nothing entered for this month. Take the numbers from the Twilio console.</li>
+        <li class="muted">{{ 'Nothing entered for this month. Take the numbers from the Twilio console.' | t }}</li>
       }
     </ul>
   </app-panel>
 
   <app-panel heading="Backups">
     <div class="bar">
-      <span class="muted small">npm run db:backup records itself here.</span>
+      <span class="muted small">{{ 'npm run db:backup records itself here.' | t }}</span>
       <span>
-        <button appButton size="sm" variant="ghost" type="button" (click)="openBackup('backup')">Record backup</button>
-        <button appButton size="sm" type="button" (click)="openBackup('restore_test')">Record restore test</button>
+        <button appButton size="sm" variant="ghost" type="button" (click)="openBackup('backup')">{{ 'Record backup' | t }}</button>
+        <button appButton size="sm" type="button" (click)="openBackup('restore_test')">{{ 'Record restore test' | t }}</button>
       </span>
     </div>
     <ul class="rows">
       @for (b of store.backups().slice(0, 10); track b.id) {
         <li>
-          <app-status-pill [tone]="b.kind === 'backup' ? 'info' : 'ok'">{{ b.kind === 'backup' ? 'Backup' : 'Restore test' }}</app-status-pill>
+          <app-status-pill [tone]="b.kind === 'backup' ? 'info' : 'ok'">{{ (b.kind === 'backup' ? 'Backup' : 'Restore test') | t }}</app-status-pill>
           <span>{{ when(b.checkedAt) }}</span>
           <span class="muted">{{ backupMeta(b) }}</span>
         </li>
       } @empty {
-        <li class="muted">No backup recorded yet.</li>
+        <li class="muted">{{ 'No backup recorded yet.' | t }}</li>
       }
     </ul>
   </app-panel>

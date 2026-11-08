@@ -1,5 +1,7 @@
 import { todayISO } from '../../../core/utils/date';
 import { FieldDef, FormValues, SelectOption, StatusTone, asList, asString } from '../../../shared/ui';
+import { countOf, t } from '../../../core/i18n/i18n';
+import { translateServer } from '../../../core/i18n/server-messages';
 
 export type DeadlineCategory = 'domain_renewal' | 'contract_renewal' | 'trial_end' | 'tax' | 'accounting' | 'funding' | 'service_subscription' | 'other';
 
@@ -13,7 +15,7 @@ export const CATEGORIES: readonly { value: DeadlineCategory; label: string }[] =
   { value: 'trial_end', label: 'Trial end' },
   { value: 'other', label: 'Other' },
 ];
-export const categoryLabel = (c: string): string => CATEGORIES.find((x) => x.value === c)?.label ?? c;
+export const categoryLabel = (c: string): string => t(CATEGORIES.find((x) => x.value === c)?.label ?? c);
 
 /** API row of GET /deadlines. */
 export interface Deadline {
@@ -64,41 +66,37 @@ const DEFAULT_TIMED = [30];
 /** 20160 → "2 weeks before", 4320 → "3 days before", 90 → "1 h 30 min before". */
 export function reminderLabel(minutes: number, allDay: boolean): string {
   const preset = (allDay ? ALL_DAY_REMINDERS : TIMED_REMINDERS).find((r) => r.minutes === minutes);
-  if (preset) return preset.label;
-  const plural = (n: number, w: string) => `${n} ${w}${n === 1 ? '' : 's'}`;
-  if (minutes % (7 * DAY) === 0) return `${plural(minutes / (7 * DAY), 'week')} before`;
-  if (minutes % DAY === 0) return `${plural(minutes / DAY, 'day')} before`;
-  if (minutes % 60 === 0) return `${plural(minutes / 60, 'hour')} before`;
-  return minutes > 60 ? `${Math.floor(minutes / 60)} h ${minutes % 60} min before` : `${plural(minutes, 'minute')} before`;
+  if (preset) return t(preset.label);
+  const before = (n: number, one: string, other: string): string => t('{time} before', { time: countOf(n, one, other) });
+  if (minutes % (7 * DAY) === 0) return before(minutes / (7 * DAY), 'week', 'weeks');
+  if (minutes % DAY === 0) return before(minutes / DAY, 'day', 'days');
+  if (minutes % 60 === 0) return before(minutes / 60, 'hour', 'hours');
+  return minutes > 60 ? t('{h} h {m} min before', { h: Math.floor(minutes / 60), m: minutes % 60 }) : before(minutes, 'minute', 'minutes');
 }
 
 /** "All day" or "14:30". */
-export const timeLabel = (d: Pick<Deadline, 'allDay' | 'dueTime'>): string => (d.allDay || !d.dueTime ? 'All day' : d.dueTime);
+export const timeLabel = (d: Pick<Deadline, 'allDay' | 'dueTime'>): string => (d.allDay || !d.dueTime ? t('All day') : d.dueTime);
 
 /** "In 3 days", "Today", "2 days late", "Done". Warning once the earliest reminder has passed. */
 export function whenInfo(d: Deadline): { text: string; tone: StatusTone } {
-  if (d.status === 'done') return { text: 'Done', tone: 'ok' };
-  if (d.status === 'dismissed') return { text: 'Dismissed', tone: 'neutral' };
+  if (d.status === 'done') return { text: t('Done'), tone: 'ok' };
+  if (d.status === 'dismissed') return { text: t('Dismissed'), tone: 'neutral' };
   const n = d.daysLeft;
-  const at = d.allDay || !d.dueTime ? '' : ` at ${d.dueTime}`;
-  if (n < 0) return { text: `${-n} ${n === -1 ? 'day' : 'days'} late`, tone: 'bad' };
-  if (n === 0) return { text: `Today${at}`, tone: 'warn' };
+  const timed = !d.allDay && !!d.dueTime;
+  if (n < 0) return { text: t('{days} late', { days: countOf(-n, 'day', 'days') }), tone: 'bad' };
+  if (n === 0) return { text: timed ? t('Today at {time}', { time: d.dueTime! }) : t('Today'), tone: 'warn' };
   const remindDays = Math.ceil(Math.max(0, ...d.reminders) / DAY);
-  return { text: n === 1 ? `Tomorrow${at}` : `In ${n} days`, tone: n <= remindDays ? 'warn' : 'info' };
+  const text = n === 1 ? (timed ? t('Tomorrow at {time}', { time: d.dueTime! }) : t('Tomorrow')) : t('In {days}', { days: countOf(n, 'day', 'days') });
+  return { text, tone: n <= remindDays ? 'warn' : 'info' };
+}
+
+/** Titles the server generates in English (domains, SSL, contracts, trials, services), in the app's language. */
+export function localizeDeadline<D extends Pick<Deadline, 'title' | 'sourceType'>>(d: D): D {
+  return d.sourceType ? { ...d, title: translateServer(d.title) } : d;
 }
 
 const MANUAL = CATEGORIES.filter((c) => !['domain_renewal', 'contract_renewal', 'trial_end'].includes(c.value));
 /** Same rule as the API: a link the browser can parse, http or https. */
-const isLink = (v: string): string | null => {
-  const message = 'Enter a full link, starting with https://';
-  if (!/^https?:\/\/\S+$/.test(v)) return message;
-  try {
-    new URL(v);
-    return null;
-  } catch {
-    return message;
-  }
-};
 const isAllDay = (v: FormValues): boolean => asString(v['when']) !== 'time';
 
 /** Choices for the current mode, plus any older value that isn't a preset (kept when editing). */
@@ -150,8 +148,8 @@ export function deadlineFields(salons: readonly SelectOption[], keepReminders: r
     },
     { key: 'category', label: 'Type', type: 'select', default: 'tax', options: MANUAL },
     { key: 'salonId', label: 'Salon', type: 'select', options: [{ value: '', label: 'None' }, ...salons] },
-    { key: 'url', label: 'Link', type: 'text', maxLength: 500, placeholder: 'https://…', validate: isLink, span: 'full' },
-    { key: 'notes', label: 'Notes', type: 'textarea', span: 'full' },
+    { key: 'url', label: 'Link', type: 'url', maxLength: 500, placeholder: 'https://anaf.ro/…', hint: 'Where to do it or read about it (optional).', span: 'full' },
+    { key: 'notes', label: 'Notes', type: 'textarea', span: 'full', placeholder: 'Anything to remember: documents to bring, who to call…' },
   ];
 }
 

@@ -52,7 +52,7 @@ export function financeFields(
         hint: 'Adds this amount to the investment’s contributions.',
       },
       { key: 'reference', label: 'Reference', type: 'text', placeholder: 'Invoice or receipt no.' },
-      { key: 'notes', label: 'Notes', type: 'textarea', span: 'full' },
+      { key: 'notes', label: 'Notes', type: 'textarea', span: 'full', placeholder: 'Optional details, e.g. who paid and why' },
     ],
     recurring: [
       { key: 'type', label: 'Type', type: 'switch', options: TX_TYPES, default: 'expense', span: 'full' },
@@ -65,17 +65,17 @@ export function financeFields(
       { key: 'scope', label: 'Business or personal', type: 'select', options: SCOPES, default: 'business' },
       { key: 'accountId', label: 'Paid from / into', type: 'select', options: () => accounts() },
       { key: 'active', label: 'Active', type: 'check', default: true, checkLabel: 'Count it in fixed costs and due dates' },
-      { key: 'notes', label: 'Notes', type: 'textarea', span: 'full' },
+      { key: 'notes', label: 'Notes', type: 'textarea', span: 'full', placeholder: 'e.g. Billed on the card ending in 1234' },
     ],
     holdings: [
       { key: 'name', label: 'Name', type: 'text', required: true, span: 'full', placeholder: 'VWCE, Bitcoin, Tezaur 2027' },
       { key: 'kind', label: 'Kind', type: 'select', options: toOptions(CATEGORIES.invest) },
       { key: 'platform', label: 'Platform', type: 'text', placeholder: 'XTB, Revolut, BT' },
       { key: 'opening', label: 'Invested before tracking', type: 'number', default: 0, hint: 'Invest entries logged later are added on top.' },
-      { key: 'currentValue', label: 'Current value', type: 'number', required: true },
+      { key: 'currentValue', label: 'Current value', type: 'number', required: true, min: 0 },
       { key: 'currency', label: 'Currency', type: 'select', options: CURRENCIES, default: 'RON' },
       { key: 'valueDate', label: 'Value as of', type: 'date', default: todayISO },
-      { key: 'notes', label: 'Notes', type: 'textarea', span: 'full' },
+      { key: 'notes', label: 'Notes', type: 'textarea', span: 'full', placeholder: 'e.g. Monthly 200 RON plan, rebalanced in January' },
     ],
     accounts: [
       { key: 'name', label: 'Name', type: 'text', required: true, span: 'full', placeholder: 'BT business, Revolut, cash' },
@@ -90,11 +90,11 @@ export function financeFields(
         hint: 'For a credit card or loan, enter the amount owed.',
       },
       { key: 'asOf', label: 'Balance as of', type: 'date', default: todayISO },
-      { key: 'notes', label: 'Notes', type: 'textarea', span: 'full' },
+      { key: 'notes', label: 'Notes', type: 'textarea', span: 'full', placeholder: 'e.g. IBAN or what the account is used for' },
     ],
     budgets: [
       { key: 'category', label: 'Category', type: 'select', required: true, options: toOptions(CATEGORIES.expense), span: 'full' },
-      { key: 'limit', label: 'Monthly limit (RON)', type: 'number', required: true, span: 'full' },
+      { key: 'limit', label: 'Monthly limit (RON)', type: 'number', required: true, min: 1, span: 'full', placeholder: '500' },
     ],
   };
 }

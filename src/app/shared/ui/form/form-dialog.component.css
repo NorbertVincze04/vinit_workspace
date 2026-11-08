@@ -32,6 +32,21 @@ textarea.input {
   color: var(--muted);
 }
 
+.has-error .label {
+  color: var(--tone-bad-fg);
+}
+
+/* "* required" on the left of the footer. */
+.req-note {
+  margin-right: auto;
+  align-self: center;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.req-note span {
+  color: var(--red);
+}
+
 .error {
   margin-top: 14px;
   padding: 10px 12px;

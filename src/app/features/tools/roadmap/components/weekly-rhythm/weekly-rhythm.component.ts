@@ -1,23 +1,24 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { PanelComponent } from '../../../../../shared/ui';
 import { WEEKLY_RHYTHM } from '../../roadmap.data';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
 
 /** Suggested weekly sales & marketing pace. */
 @Component({
   selector: 'app-weekly-rhythm',
   standalone: true,
-  imports: [PanelComponent],
+  imports: [TPipe, PanelComponent],
   template: `
     <app-panel heading="Weekly rhythm" meta="Suggested pace">
       <dl class="rhythm">
         @for (item of rhythm; track item.label) {
           <div>
-            <dt>{{ item.label }}</dt>
+            <dt>{{ item.label | t }}</dt>
             <dd>{{ item.value }}</dd>
           </div>
         }
       </dl>
-      <p class="muted small">Direct outreach costs time, not money, so it comes first.</p>
+      <p class="muted small">{{ 'Direct outreach costs time, not money, so it comes first.' | t }}</p>
     </app-panel>
   `,
   styles: `

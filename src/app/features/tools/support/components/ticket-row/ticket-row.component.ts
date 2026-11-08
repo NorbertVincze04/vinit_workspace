@@ -2,12 +2,14 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 import { formatDate } from '../../../../../core/utils/date';
 import { LedgerRowComponent, StatusPillComponent } from '../../../../../shared/ui';
 import { Ticket, duration, priorityInfo, ticketNo, ticketStatus, typeLabel } from '../../support.model';
+import { t } from '../../../../../core/i18n/i18n';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
 
 /** One ticket: number and title, salon, priority, status, time spent. */
 @Component({
   selector: 'app-ticket-row',
   standalone: true,
-  imports: [LedgerRowComponent, StatusPillComponent],
+  imports: [TPipe, LedgerRowComponent, StatusPillComponent],
   template: `
     <app-ledger-row clickable (activate)="open.emit()">
       <div>
@@ -16,12 +18,12 @@ import { Ticket, duration, priorityInfo, ticketNo, ticketStatus, typeLabel } fro
       </div>
       <div>
         @if (ticket().priority === 'urgent' || ticket().priority === 'high') {
-          <app-status-pill [tone]="priority().tone">{{ priority().label }}</app-status-pill>
+          <app-status-pill [tone]="priority().tone">{{ priority().label | t }}</app-status-pill>
         } @else {
-          <span class="cell-sub">{{ priority().label }}</span>
+          <span class="cell-sub">{{ priority().label | t }}</span>
         }
       </div>
-      <div><app-status-pill [tone]="status().tone">{{ status().label }}</app-status-pill></div>
+      <div><app-status-pill [tone]="status().tone">{{ status().label | t }}</app-status-pill></div>
       <span class="cell-num">{{ time() }}</span>
     </app-ledger-row>
   `,
@@ -41,8 +43,8 @@ export class TicketRowComponent {
   protected readonly priority = computed(() => priorityInfo(this.ticket().priority));
   protected readonly time = computed(() => (this.ticket().minutesLogged ? duration(this.ticket().minutesLogged) : '—'));
   protected readonly sub = computed(() => {
-    const t = this.ticket();
-    return [this.showSalon() ? t.salonName : '', typeLabel(t.type), `opened ${formatDate(t.openedAt.slice(0, 10), { day: 'numeric', month: 'short' })}`, t.assigneeName]
+    const tk = this.ticket();
+    return [this.showSalon() ? tk.salonName : '', typeLabel(tk.type), t('opened {date}', { date: formatDate(tk.openedAt.slice(0, 10), { day: 'numeric', month: 'short' }) }), tk.assigneeName]
       .filter(Boolean)
       .join(' · ');
   });

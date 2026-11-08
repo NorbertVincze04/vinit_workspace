@@ -1,75 +1,99 @@
-<app-dialog #dialog [heading]="heading()" [subheading]="subheading()" [size]="size()" [dirty]="dirty()" (closed)="closed.emit()">
+<app-dialog #dialog [heading]="heading() | t" [subheading]="subheading() | t" [size]="size()" [dirty]="dirty()" (closed)="closed.emit()">
   <form [id]="formId" class="grid" [style.--form-cols]="columns()" [attr.data-cols]="columns()" novalidate (submit)="submit($event)">
     @for (f of visibleFields(); track f.key) {
-      <div class="field" [style.grid-column]="spanOf(f)" [attr.data-span]="f.span ?? 1">
+      <div class="field" [style.grid-column]="spanOf(f)" [attr.data-span]="f.span ?? 1" [class.has-error]="!!shownError(f)">
         @switch (f.type) {
           @case ('switch') {
-            <span class="label">{{ f.label }}</span>
-            <app-segmented [label]="f.label" [options]="optionsOf(f)" [value]="text(f)" (valueChange)="set(f, $event)" />
+            <span class="label">{{ f.label | t }}@if (req(f)) {<span class="req" aria-hidden="true"> *</span>}</span>
+            <app-segmented [label]="f.label | t" [options]="optionsOf(f)" [value]="text(f)" (valueChange)="set(f, $event); touch(f)" />
           }
           @case ('check') {
-            <span class="label">{{ f.label }}</span>
-            <app-checkbox [checked]="bool(f)" (checkedChange)="set(f, $event)">{{ f.checkLabel || f.label }}</app-checkbox>
+            <span class="label">{{ f.label | t }}@if (req(f)) {<span class="req" aria-hidden="true"> *</span>}</span>
+            <app-checkbox [checked]="bool(f)" (checkedChange)="set(f, $event); touch(f)">{{ f.checkLabel || f.label | t }}</app-checkbox>
           }
           @case ('multi') {
-            <span class="label">{{ f.label }}</span>
-            <div class="multi" role="group" [attr.aria-label]="f.label">
+            <span class="label" [id]="fieldId(f) + '-label'">{{ f.label | t }}@if (req(f)) {<span class="req" aria-hidden="true"> *</span>}</span>
+            <div class="multi" role="group" [attr.aria-labelledby]="fieldId(f) + '-label'" [attr.aria-describedby]="describedBy(f)">
               @for (option of optionsOf(f); track option.value) {
                 <app-checkbox [checked]="hasOption(f, option.value)" (checkedChange)="toggleOption(f, option.value, $event)">
-                  {{ option.label }}
+                  {{ option.label | t }}
                 </app-checkbox>
               }
             </div>
           }
           @case ('select') {
-            <label class="label" [for]="fieldId(f)">{{ f.label }}{{ req(f) ? ' *' : '' }}</label>
-            <select class="input" [id]="fieldId(f)" (change)="onInput(f, $event)">
+            <label class="label" [for]="fieldId(f)">{{ f.label | t }}@if (req(f)) {<span class="req" aria-hidden="true"> *</span>}</label>
+            <select
+              class="input"
+              [id]="fieldId(f)"
+              [attr.aria-required]="req(f) || null"
+              [attr.aria-invalid]="!!shownError(f) || null"
+              [attr.aria-describedby]="describedBy(f)"
+              (change)="onInput(f, $event); touch(f)"
+              (blur)="touch(f)"
+            >
               @for (option of optionsOf(f); track option.value) {
-                <option [value]="option.value" [selected]="option.value === text(f)">{{ option.label }}</option>
+                <option [value]="option.value" [selected]="option.value === text(f)">{{ option.label | t }}</option>
               }
             </select>
           }
           @case ('textarea') {
-            <label class="label" [for]="fieldId(f)">{{ f.label }}{{ req(f) ? ' *' : '' }}</label>
+            <label class="label" [for]="fieldId(f)">{{ f.label | t }}@if (req(f)) {<span class="req" aria-hidden="true"> *</span>}</label>
             <textarea
               class="input"
               rows="3"
               [attr.maxlength]="f.maxLength ?? 4000"
               [id]="fieldId(f)"
-              [placeholder]="f.placeholder || ''"
+              [placeholder]="f.placeholder || '' | t"
+              [attr.aria-required]="req(f) || null"
+              [attr.aria-invalid]="!!shownError(f) || null"
+              [attr.aria-describedby]="describedBy(f)"
               [value]="text(f)"
               (input)="onInput(f, $event)"
+              (blur)="touch(f)"
             ></textarea>
           }
           @case ('number') {
-            <label class="label" [for]="fieldId(f)">{{ f.label }}{{ req(f) ? ' *' : '' }}</label>
+            <label class="label" [for]="fieldId(f)">{{ f.label | t }}@if (req(f)) {<span class="req" aria-hidden="true"> *</span>}</label>
             <input
               class="input"
               type="text"
               inputmode="decimal"
               autocomplete="off"
               [id]="fieldId(f)"
-              [placeholder]="f.placeholder || '0'"
+              [placeholder]="f.placeholder || '0' | t"
+              [attr.aria-required]="req(f) || null"
+              [attr.aria-invalid]="!!shownError(f) || null"
+              [attr.aria-describedby]="describedBy(f)"
               [value]="text(f)"
               (input)="onInput(f, $event)"
+              (blur)="touch(f)"
             />
           }
           @default {
-            <label class="label" [for]="fieldId(f)">{{ f.label }}{{ req(f) ? ' *' : '' }}</label>
+            <label class="label" [for]="fieldId(f)">{{ f.label | t }}@if (req(f)) {<span class="req" aria-hidden="true"> *</span>}</label>
             <input
               class="input"
               autocomplete="off"
               [attr.maxlength]="f.maxLength ?? 300"
               [id]="fieldId(f)"
               [type]="f.type === 'datetime' ? 'datetime-local' : f.type"
-              [placeholder]="f.placeholder || ''"
+              [attr.inputmode]="f.type === 'tel' ? 'tel' : f.type === 'email' ? 'email' : f.type === 'url' ? 'url' : null"
+              [placeholder]="f.placeholder || '' | t"
+              [attr.aria-required]="req(f) || null"
+              [attr.aria-invalid]="!!shownError(f) || null"
+              [attr.aria-describedby]="describedBy(f)"
               [value]="text(f)"
               (input)="onInput(f, $event)"
+              (blur)="touch(f)"
             />
           }
         }
+        @if (shownError(f); as message) {
+          <p class="field-error" [id]="errorId(f)">{{ message }}</p>
+        }
         @if (f.hint) {
-          <p class="hint">{{ f.hint }}</p>
+          <p class="hint" [id]="fieldId(f) + '-hint'">{{ f.hint | t }}</p>
         }
       </div>
     }
@@ -80,7 +104,8 @@
   }
 
   <div dialogFooter>
-    <button appButton type="button" (click)="dialog.close()">Cancel</button>
-    <button appButton type="submit" variant="primary" [attr.form]="formId" [disabled]="saving()">{{ saving() ? 'Saving…' : saveLabel() }}</button>
+    <span class="req-note"><span aria-hidden="true">*</span> {{ 'required' | t }}</span>
+    <button appButton type="button" (click)="dialog.close()">{{ 'Cancel' | t }}</button>
+    <button appButton type="submit" variant="primary" [attr.form]="formId" [disabled]="saving()">{{ saving() ? ('Saving…' | t) : (saveLabel() | t) }}</button>
   </div>
 </app-dialog>

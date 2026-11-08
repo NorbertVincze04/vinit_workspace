@@ -1,7 +1,12 @@
 import { todayISO } from '../../../core/utils/date';
-import { FieldDef, FormValues, SelectOption, asBoolean, asNumber, asString } from '../../../shared/ui';
+import { FieldDef, FormValues, SelectOption, asBoolean, asNumber, asString, notBefore } from '../../../shared/ui';
+
+/** A payment date can't be in the future (it is when the money arrived). */
+const notFuture = (v: string): string | null => (v > todayISO() ? 'The payment date can’t be in the future.' : null);
 import { Plan, Promotion } from '../salons/salons.model';
 import { CHANGE_ACTIONS, CYCLES, ChangeKind, PAYMENT_KINDS, Subscription } from './billing.model';
+import { t } from '../../../core/i18n/i18n';
+import { tc } from '../../../core/i18n/content';
 
 const bani = (ron: number): number => Math.round(ron * 100);
 
@@ -14,11 +19,12 @@ export function suggestedPrice(plan: Plan | undefined, cycle: string, promo: Pro
 }
 
 const promoLabel = (p: Promotion): string => {
-  let what = p.freeMonths ? `${p.freeMonths} months free` : p.discountPct ? `${p.discountPct}% off` : '';
+  let what = p.freeMonths ? t('{n} months free', { n: p.freeMonths }) : p.discountPct ? t('{pct}% off', { pct: p.discountPct }) : '';
   // "50% off (50% off)" says it twice.
   if (what && p.name.toLowerCase().includes(what.split(' ')[0].toLowerCase())) what = '';
-  const places = p.maxSalons ? ` · ${Math.max(0, p.maxSalons - p.used)} of ${p.maxSalons} left` : '';
-  return `${p.name}${what ? ` (${what}${places})` : places ? ` (${places.slice(3)})` : ''}`;
+  const places = p.maxSalons ? ` · ${t('{n} of {total} left', { n: Math.max(0, p.maxSalons - p.used), total: p.maxSalons })}` : '';
+  const name = tc(p.name);
+  return `${name}${what ? ` (${what}${places})` : places ? ` (${places.slice(3)})` : ''}`;
 };
 
 /**
@@ -64,6 +70,7 @@ export function newSubscriptionFields(
       label: 'Price per period (RON)',
       type: 'number',
       required: true,
+      min: 0,
       default: suggestedPrice(start, 'monthly', undefined),
       hint: 'What the salon pays after any free months.',
     },
@@ -72,6 +79,7 @@ export function newSubscriptionFields(
       key: 'trialEndsOn',
       label: 'Free until (last free day)',
       type: 'date',
+      validate: notBefore('startedOn', 'The free months end on or after the start.'),
       hint: 'Leave empty: worked out from the promotion’s free months.',
     },
     {
@@ -86,7 +94,7 @@ export function newSubscriptionFields(
         { value: 'active', label: 'Paying now' },
       ],
     },
-    { key: 'notes', label: 'Notes', type: 'textarea', span: 'full' },
+    { key: 'notes', label: 'Notes', type: 'textarea', span: 'full', placeholder: 'e.g. Agreed in person, pays by bank transfer at the start of the month' },
   );
   return fields;
 }
@@ -108,7 +116,7 @@ export function newSubscriptionBody(v: FormValues): Record<string, unknown> {
 /** Fields for one kind of change. */
 export function changeFields(kind: ChangeKind, sub: Subscription, plans: readonly Plan[]): FieldDef[] {
   const on: FieldDef = { key: 'on', label: 'From', type: 'date', default: todayISO };
-  const note: FieldDef = { key: 'note', label: 'Note', type: 'textarea', span: 'full', maxLength: 1000 };
+  const note: FieldDef = { key: 'note', label: 'Note', type: 'textarea', span: 'full', maxLength: 1000, placeholder: 'Why it changed (kept in the salon’s history)' };
   switch (kind) {
     case 'upgrade':
     case 'downgrade': {
@@ -124,15 +132,15 @@ export function changeFields(kind: ChangeKind, sub: Subscription, plans: readonl
           options: others.map((p) => ({ value: p.id, label: p.name })),
           onChange: (v) => ({ price: suggestedPrice(plans.find((p) => p.id === v['planId']), sub.billingCycle, undefined) }),
         },
-        { key: 'price', label: 'New price per period (RON)', type: 'number', required: true, default: suggestedPrice(first, sub.billingCycle, undefined) },
+        { key: 'price', label: 'New price per period (RON)', type: 'number', required: true, min: 0, default: suggestedPrice(first, sub.billingCycle, undefined) },
         on,
         note,
       ];
     }
     case 'price_change':
-      return [{ key: 'price', label: 'New price per period (RON)', type: 'number', required: true, default: sub.price }, on, note];
+      return [{ key: 'price', label: 'New price per period (RON)', type: 'number', required: true, min: 0, default: sub.price }, on, note];
     case 'trial_converted':
-      return [{ key: 'price', label: 'Price per period (RON)', type: 'number', required: true, default: sub.price }, on, note];
+      return [{ key: 'price', label: 'Price per period (RON)', type: 'number', required: true, min: 0, default: sub.price }, on, note];
     case 'cancel':
       return [on, { ...note, label: 'Why does the salon leave?', required: true, hint: 'Used for churn and retention.' }];
     default:
@@ -154,25 +162,25 @@ export function paymentFields(salons: readonly SelectOption[] | null): FieldDef[
   if (salons) fields.push({ key: 'salonId', label: 'Salon', type: 'select', required: true, span: 'full', options: [{ value: '', label: 'Pick a salon' }, ...salons] });
   fields.push(
     { key: 'kind', label: 'For', type: 'select', default: 'extra_work', options: PAYMENT_KINDS },
-    { key: 'amount', label: 'Amount (RON)', type: 'number', required: true },
+    { key: 'amount', label: 'Amount (RON)', type: 'number', required: true, min: 0.01, placeholder: '150' },
     { key: 'dueOn', label: 'Due on', type: 'date', required: true, default: todayISO },
-    { key: 'invoiceNumber', label: 'Invoice number', type: 'text', maxLength: 100 },
+    { key: 'invoiceNumber', label: 'Invoice number', type: 'text', maxLength: 100, placeholder: 'VIN-0042' },
     { key: 'periodStart', label: 'Period from', type: 'date' },
-    { key: 'periodEnd', label: 'Period to', type: 'date' },
-    { key: 'notes', label: 'Notes', type: 'textarea', span: 'full' },
+    { key: 'periodEnd', label: 'Period to', type: 'date', validate: notBefore('periodStart', 'The period ends on or after its start.') },
+    { key: 'notes', label: 'Notes', type: 'textarea', span: 'full', placeholder: 'e.g. Extra work: new gallery page, 90 min' },
   );
   return fields;
 }
 
 export const MARK_PAID_FIELDS: readonly FieldDef[] = [
-  { key: 'paidOn', label: 'Paid on', type: 'date', required: true, default: todayISO },
+  { key: 'paidOn', label: 'Paid on', type: 'date', required: true, default: todayISO, validate: notFuture },
   { key: 'method', label: 'Method', type: 'select', default: 'bank_transfer', options: [
     { value: 'bank_transfer', label: 'Bank transfer' },
     { value: 'card', label: 'Card' },
     { value: 'cash', label: 'Cash' },
     { value: 'other', label: 'Other' },
   ] },
-  { key: 'invoiceNumber', label: 'Invoice number', type: 'text', maxLength: 100 },
+  { key: 'invoiceNumber', label: 'Invoice number', type: 'text', maxLength: 100, placeholder: 'VIN-0042' },
   {
     key: 'createTransaction',
     label: 'Finances',

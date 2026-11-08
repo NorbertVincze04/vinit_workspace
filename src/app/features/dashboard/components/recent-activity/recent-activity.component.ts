@@ -4,19 +4,20 @@ import { ApiService } from '../../../../core/api/api.service';
 import { ActivityEntry } from '../../../../core/data/activity.data';
 import { PanelComponent } from '../../../../shared/ui';
 import { ActivityListComponent } from '../../../activity/activity-list.component';
+import { TPipe } from '../../../../core/i18n/t.pipe';
 
 /** Overview: the last changes in the workspace. */
 @Component({
   selector: 'app-recent-activity',
   standalone: true,
-  imports: [RouterLink, PanelComponent, ActivityListComponent],
+  imports: [TPipe, RouterLink, PanelComponent, ActivityListComponent],
   template: `
     <app-panel heading="Recent activity">
-      <a panelAction routerLink="/activity">See all</a>
+      <a panelAction routerLink="/activity">{{ 'See all' | t }}</a>
       @if (items().length) {
         <app-activity-list [items]="items()" />
       } @else {
-        <p class="muted small">Nothing yet. Changes made by the team show up here.</p>
+        <p class="muted small">{{ 'Nothing yet. Changes made by the team show up here.' | t }}</p>
       }
     </app-panel>
   `,

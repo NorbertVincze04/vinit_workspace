@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
 import { clamp } from '../../../core/utils/format';
 import { ButtonComponent } from '../button/button.component';
+import { TPipe } from '../../../core/i18n/t.pipe';
 
 /**
  * − [ 12 ] + control for whole numbers.
@@ -9,7 +10,7 @@ import { ButtonComponent } from '../button/button.component';
 @Component({
   selector: 'app-number-stepper',
   standalone: true,
-  imports: [ButtonComponent],
+  imports: [TPipe, ButtonComponent],
   templateUrl: './number-stepper.component.html',
   styleUrl: './number-stepper.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

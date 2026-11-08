@@ -2,12 +2,13 @@ import { ChangeDetectionStrategy, Component, booleanAttribute, computed, input, 
 import { formatDate } from '../../../../../core/utils/date';
 import { ButtonComponent, IconComponent, LedgerRowComponent } from '../../../../../shared/ui';
 import { StoredFile, extensionOf, formatBytes, kindInfo } from '../../files.model';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
 
 /** One file in the files ledger: type tile, name, size, date added, download / delete. */
 @Component({
   selector: 'app-file-row',
   standalone: true,
-  imports: [LedgerRowComponent, ButtonComponent, IconComponent],
+  imports: [TPipe, LedgerRowComponent, ButtonComponent, IconComponent],
   template: `
     <app-ledger-row>
       <div class="file">
@@ -21,10 +22,10 @@ import { StoredFile, extensionOf, formatBytes, kindInfo } from '../../files.mode
       <div class="desk muted small">{{ added() }}</div>
       <div class="cell-actions">
         <button appButton size="sm" type="button" [disabled]="busy()" [attr.aria-label]="'Download ' + file().name" (click)="download.emit()">
-          <app-icon name="download" [size]="16" /> Download
+          <app-icon name="download" [size]="16" /> {{ 'Download' | t }}
         </button>
         <button appButton variant="ghost" size="sm" type="button" [attr.aria-label]="'Delete ' + file().name" (click)="remove.emit()">
-          Delete
+          {{ 'Delete' | t }}
         </button>
       </div>
     </app-ledger-row>

@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, booleanAttribute, computed, input } from '@angular/core';
 import { phaseRange } from '../../../core/data/phases.data';
 import { BadgeComponent, ProgressBarComponent } from '../../ui';
+import { TPipe } from '../../../core/i18n/t.pipe';
+import { TcPipe } from '../../../core/i18n/tc.pipe';
 
 /**
  * Column for one phase (any plan year): name, months, goal and progress. The list inside is projected,
@@ -10,20 +12,20 @@ import { BadgeComponent, ProgressBarComponent } from '../../ui';
 @Component({
   selector: 'app-phase-card',
   standalone: true,
-  imports: [BadgeComponent, ProgressBarComponent],
+  imports: [TcPipe, TPipe, BadgeComponent, ProgressBarComponent],
   template: `
     <header>
       <div class="title">
-        <h2>{{ phase().name }}</h2>
+        <h2>{{ phase().name | tc }}</h2>
         <span class="range">{{ range() }}</span>
         @if (current()) {
-          <app-badge class="now">Current</app-badge>
+          <app-badge class="now">{{ 'Current' | t }}</app-badge>
         }
       </div>
-      <p class="goal">{{ phase().goal }}</p>
+      <p class="goal">{{ phase().goal | tc }}</p>
       <div class="progress">
-        <app-progress-bar size="xs" [value]="percent()" [label]="phase().name + ' progress'" />
-        <span>{{ done() }} / {{ total() }} {{ unit() }}</span>
+        <app-progress-bar size="xs" [value]="percent()" [label]="'{name} progress' | t: { name: (phase().name | tc) }" />
+        <span>{{ done() }} / {{ total() }} {{ unit() | t }}</span>
       </div>
     </header>
     <ng-content />

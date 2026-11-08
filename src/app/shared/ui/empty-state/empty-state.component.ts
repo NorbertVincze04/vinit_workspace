@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { TPipe } from '../../../core/i18n/t.pipe';
 
 /**
  * Placeholder for an empty list, with an optional projected action.
@@ -9,10 +10,11 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 @Component({
   selector: 'app-empty-state',
   standalone: true,
+  imports: [TPipe],
   template: `
-    <h3>{{ heading() }}</h3>
+    <h3>{{ heading() | t }}</h3>
     @if (text()) {
-      <p>{{ text() }}</p>
+      <p>{{ text() | t }}</p>
     }
     <div class="actions"><ng-content /></div>
   `,

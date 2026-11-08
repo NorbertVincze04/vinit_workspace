@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, booleanAttribute, input, model } from '@angular/core';
+import { TPipe } from '../../../core/i18n/t.pipe';
 
 /**
  * Branded checkbox. Projected content is the label.
@@ -9,6 +10,7 @@ import { ChangeDetectionStrategy, Component, booleanAttribute, input, model } fr
 @Component({
   selector: 'app-checkbox',
   standalone: true,
+  imports: [TPipe],
   templateUrl: './checkbox.component.html',
   styleUrl: './checkbox.component.css',
   host: { '[attr.data-variant]': 'variant()' },

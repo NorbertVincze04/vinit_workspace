@@ -1,18 +1,20 @@
 import { EntityData } from '../../../core/models';
 import { FieldDef, FormValues, asList, asNumber, asString } from '../../../shared/ui';
-import { FORMATS, MIX, MONTH_PLAN, PLATFORMS, POST_STATUSES } from './marketing.data';
-import { Post, PostStatus } from './marketing.model';
-
-const monthKeywords = (month: number): string => MONTH_PLAN[month - 1]?.keywords.join(', ') ?? '';
-const isDefaultKeywords = (value: string): boolean =>
-  !value || MONTH_PLAN.some((m) => m.keywords.join(', ') === value);
+import { FORMATS, PLATFORMS, POST_STATUSES } from './marketing.data';
+import { MarketingStrategy, Post, PostStatus } from './marketing.model';
+import { t } from '../../../core/i18n/i18n';
+import { tc } from '../../../core/i18n/content';
 
 /**
  * Fields of the content dialog (4-column grid).
  * @param monthLabel plan month → calendar label, e.g. 1 → "Dec 2026"
  * @param defaultMonth month pre-selected for a new item
+ * @param strategy months (keywords) and channels of the marketing strategy
  */
-export function postFields(monthLabel: (n: number) => string, defaultMonth: number): readonly FieldDef[] {
+export function postFields(monthLabel: (n: number) => string, defaultMonth: number, strategy: MarketingStrategy): readonly FieldDef[] {
+  const months = strategy.months;
+  const monthKeywords = (month: number): string => months[month - 1]?.keywords.map(tc).join(', ') ?? '';
+  const isDefaultKeywords = (value: string): boolean => !value || months.some((m) => m.keywords.map(tc).join(', ') === value);
   return [
     { key: 'title', label: 'Title', type: 'text', required: true, span: 'full', placeholder: 'Reel: waitlist demo' },
     {
@@ -21,7 +23,7 @@ export function postFields(monthLabel: (n: number) => string, defaultMonth: numb
       type: 'select',
       required: true,
       default: String(defaultMonth),
-      options: MONTH_PLAN.map((_, i) => ({ value: String(i + 1), label: `M${i + 1} · ${monthLabel(i + 1)}` })),
+      options: months.map((_, i) => ({ value: String(i + 1), label: `M${i + 1} · ${monthLabel(i + 1)}` })),
       // Keep the suggested keywords in step with the month, unless they were edited by hand.
       onChange: (v) =>
         isDefaultKeywords(asString(v['keywords'])) ? { keywords: monthKeywords(asNumber(v['month'])) } : {},
@@ -33,18 +35,18 @@ export function postFields(monthLabel: (n: number) => string, defaultMonth: numb
       default: '0',
       options: [
         { value: '0', label: 'Any' },
-        ...[1, 2, 3, 4].map((w) => ({ value: String(w), label: `Week ${w}` })),
+        ...[1, 2, 3, 4].map((w) => ({ value: String(w), label: t('Week {n}', { n: w }) })),
       ],
     },
     { key: 'date', label: 'Exact date', type: 'date', span: 2 },
     { key: 'format', label: 'Format', type: 'select', default: 'post', options: FORMATS, span: 2 },
     {
       key: 'mix',
-      label: 'Communication mix',
+      label: 'Channel',
       type: 'select',
-      default: 'social',
+      default: (strategy.channels.find((c) => c.key === 'social') ?? strategy.channels[0])?.key ?? '',
       span: 2,
-      options: MIX.map((m) => ({ value: m.value, label: `${m.label} (${m.target}%)` })),
+      options: strategy.channels.map((c) => ({ value: c.key, label: `${tc(c.label)} (${c.target}%)` })),
     },
     { key: 'platforms', label: 'Platforms', type: 'multi', span: 'full', options: PLATFORMS.map((p) => ({ value: p, label: p })) },
     { key: 'count', label: 'Appearances', type: 'number', default: 1, min: 1, integer: true },
@@ -65,7 +67,8 @@ export function postFields(monthLabel: (n: number) => string, defaultMonth: numb
   ];
 }
 
-export function postFromForm(v: FormValues): EntityData<Post> {
+/** Form values → item data. The year isn't in the form: new items go to the selected year. */
+export function postFromForm(v: FormValues): Omit<EntityData<Post>, 'year'> {
   return {
     title: asString(v['title']),
     month: asNumber(v['month']) || 1,

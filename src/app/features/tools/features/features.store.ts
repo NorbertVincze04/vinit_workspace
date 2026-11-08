@@ -2,6 +2,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { ApiService, apiError } from '../../../core/api/api.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { FeatureRequest, RoadmapStepRow } from './features.model';
+import { t } from '../../../core/i18n/i18n';
 
 type Row = Record<string, unknown>;
 
@@ -30,7 +31,7 @@ export class FeaturesStore {
       this.steps.set(steps.items);
       this.loaded.set(true);
     } catch (error) {
-      this.toast.show(`Could not load feature requests: ${apiError(error).message}`, 6000);
+      this.toast.show(t('Could not load feature requests: {error}', { error: apiError(error).message }), 6000);
     }
   }
 
@@ -72,7 +73,7 @@ export class FeaturesStore {
 
   private loud<T>(request: Promise<T>): Promise<T> {
     return request.catch((error: unknown) => {
-      this.toast.show(`Not saved: ${apiError(error).message}`, 6000);
+      this.toast.show(t('Not saved: {error}', { error: apiError(error).message }), 6000);
       throw error;
     });
   }

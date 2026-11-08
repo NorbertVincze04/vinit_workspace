@@ -4,6 +4,7 @@ import { BREAK_EVEN_SALONS, FINANCE, YEAR1_MRR } from '../../../core/data/financ
 import { PhaseProgress } from '../../../core/models';
 import { ToastService } from '../../../core/services/toast.service';
 import { clamp, percent } from '../../../core/utils/format';
+import { t } from '../../../core/i18n/i18n';
 
 export const MAX_SALONS = 500;
 
@@ -191,7 +192,7 @@ export class RoadmapStore {
   setStep(id: string, isDone: boolean): void {
     this.years.update((ys) => ys.map((y) => ({ ...y, phases: y.phases.map((p) => ({ ...p, steps: p.steps.map((s) => (s.id === id ? { ...s, done: isDone } : s)) })) })));
     this.api.write('PUT', `/roadmap/steps/${encodeURIComponent(id)}`, { done: isDone }).catch((error: unknown) => {
-      this.toast.show(`Not saved: ${apiError(error).message}`, 6000);
+      this.toast.show(t('Not saved: {error}', { error: apiError(error).message }), 6000);
       void this.load();
     });
   }
@@ -207,7 +208,7 @@ export class RoadmapStore {
   }
 
   deleteYear(year: number): Promise<unknown> {
-    return this.run(() => this.api.write('DELETE', `/plan/years/${year}`), `Year ${year} removed`);
+    return this.run(() => this.api.write('DELETE', `/plan/years/${year}`), t('Year {n} removed', { n: year }));
   }
 
   addPhase(year: number, body: Partial<PlanPhase>): Promise<unknown> {
@@ -241,7 +242,7 @@ export class RoadmapStore {
       await this.load();
       return result;
     } catch (error) {
-      this.toast.show(`Not saved: ${apiError(error).message}`, 6000);
+      this.toast.show(t('Not saved: {error}', { error: apiError(error).message }), 6000);
       return null;
     }
   }
@@ -260,7 +261,7 @@ export class RoadmapStore {
     const next = { done: { ...data.done }, salons: clamp(Math.round(data.salons), 0, MAX_SALONS) };
     this.api.write('PUT', '/roadmap', next).then(
       () => void this.load(),
-      (error: unknown) => this.toast.show(`Not saved: ${apiError(error).message}`, 6000),
+      (error: unknown) => this.toast.show(t('Not saved: {error}', { error: apiError(error).message }), 6000),
     );
     return true;
   }

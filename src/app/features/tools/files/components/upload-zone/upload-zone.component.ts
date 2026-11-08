@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, ElementRef, booleanAttribute, input, output, signal, viewChild } from '@angular/core';
 import { IconComponent } from '../../../../../shared/ui';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
 
 /**
  * Drop area + file picker for one or more files. Touch screens get a plain "Choose files" button.
@@ -8,7 +9,7 @@ import { IconComponent } from '../../../../../shared/ui';
 @Component({
   selector: 'app-upload-zone',
   standalone: true,
-  imports: [IconComponent],
+  imports: [TPipe, IconComponent],
   template: `
     <div
       class="zone"
@@ -22,10 +23,10 @@ import { IconComponent } from '../../../../../shared/ui';
       <app-icon class="icon" name="upload" [size]="20" />
       <p class="title">
         @if (busy()) {
-          Saving files…
+          {{ 'Saving files…' | t }}
         } @else {
-          <span class="drop">Drag files here, or </span>
-          <button type="button" class="pick" (click)="open()">choose from your device</button>
+          <span class="drop">{{ 'Drag files here, or' | t }} </span>
+          <button type="button" class="pick" (click)="open()">{{ 'choose from your device' | t }}</button>
         }
       </p>
       @if (hint()) {

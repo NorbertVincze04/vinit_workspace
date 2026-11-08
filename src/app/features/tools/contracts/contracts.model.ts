@@ -1,6 +1,7 @@
 import { todayISO } from '../../../core/utils/date';
-import { FieldDef, FormValues, SelectOption, StatusTone, asBoolean, asString } from '../../../shared/ui';
+import { FieldDef, FormValues, SelectOption, StatusTone, asBoolean, asString, notBefore } from '../../../shared/ui';
 import { Attachment } from './components/attachments/attachments.component';
+import { t } from '../../../core/i18n/i18n';
 
 export type ContractKind = 'subscription' | 'custom_project' | 'dpa' | 'addendum';
 export type ContractStatus = 'draft' | 'sent' | 'signed' | 'expired' | 'terminated';
@@ -20,7 +21,7 @@ export const CONTRACT_STATUSES: readonly { value: ContractStatus; label: string;
   { value: 'terminated', label: 'Terminated', tone: 'bad' },
 ];
 
-export const kindLabel = (k: string): string => CONTRACT_KINDS.find((x) => x.value === k)?.label ?? k;
+export const kindLabel = (k: string): string => t(CONTRACT_KINDS.find((x) => x.value === k)?.label ?? k);
 export const contractStatus = (s: string) => CONTRACT_STATUSES.find((x) => x.value === s) ?? CONTRACT_STATUSES[0];
 
 /** API row of GET /contracts. */
@@ -69,10 +70,10 @@ export function contractFields(salons: readonly SelectOption[] | null): FieldDef
     { key: 'number', label: 'Number', type: 'text', maxLength: 60, placeholder: 'Leave empty: VIN-2026-001…' },
     { key: 'signedOn', label: 'Signed on', type: 'date', default: todayISO, show: signedLike, required: signedLike },
     { key: 'startsOn', label: 'Starts on', type: 'date' },
-    { key: 'endsOn', label: 'Ends on', type: 'date' },
+    { key: 'endsOn', label: 'Ends on', type: 'date', validate: notBefore('startsOn', 'The contract ends on or after it starts.') },
     { key: 'renewalOn', label: 'Renewal on', type: 'date', hint: 'Shows up in Deadlines.' },
     { key: 'autoRenew', label: 'Renewal', type: 'check', checkLabel: 'Renews automatically' },
-    { key: 'notes', label: 'Notes', type: 'textarea', span: 'full' },
+    { key: 'notes', label: 'Notes', type: 'textarea', span: 'full', placeholder: 'e.g. Signed in person, the original is in the office folder' },
   );
   return fields;
 }

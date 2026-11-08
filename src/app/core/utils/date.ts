@@ -1,6 +1,7 @@
 /** Date helpers working with ISO strings ("2026-12-05") and month keys ("2026-12"). Pure functions. */
 
 export type Frequency = 'weekly' | 'monthly' | 'quarterly' | 'yearly';
+import { locale } from '../i18n/i18n';
 
 const MONTH_KEY = /^\d{4}-\d{2}$/;
 
@@ -18,14 +19,14 @@ export function formatDate(iso: string | null | undefined, options?: Intl.DateTi
   if (!iso) return '';
   const d = new Date(`${iso}T00:00:00`);
   if (Number.isNaN(d.getTime())) return '';
-  return d.toLocaleDateString('en-GB', options ?? { day: 'numeric', month: 'short', year: 'numeric' });
+  return d.toLocaleDateString(locale(), options ?? { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 /** "2026-12" → "December 2026", or "Dec" when short. */
 export function monthName(monthKey: string, short = false): string {
   const d = new Date(`${monthKey}-01T00:00:00`);
   if (Number.isNaN(d.getTime())) return '';
-  return d.toLocaleDateString('en-GB', short ? { month: 'short' } : { month: 'long', year: 'numeric' });
+  return d.toLocaleDateString(locale(), short ? { month: 'short' } : { month: 'long', year: 'numeric' });
 }
 
 /** Moves a month key by n months: shiftMonth("2026-12", 1) → "2027-01". */
@@ -77,7 +78,7 @@ export function formatDateTime(iso: string | null | undefined): string {
   if (!iso) return '';
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '';
-  return d.toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleString(locale(), { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
 /** Whole hours between two instants (b defaults to now). */

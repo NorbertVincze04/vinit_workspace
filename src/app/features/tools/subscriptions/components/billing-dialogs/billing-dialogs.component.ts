@@ -16,6 +16,7 @@ import {
 } from '../../billing.fields';
 import { ChangeKind, LIVE, Payment, Subscription } from '../../billing.model';
 import { BillingStore } from '../../billing.store';
+import { t } from '../../../../../core/i18n/i18n';
 
 /** What the user asked to do; the dialogs below handle it. */
 export type BillingRequest =
@@ -158,7 +159,7 @@ export class BillingDialogsComponent {
   }
 
   protected async change(sub: Subscription, kind: ChangeKind, v: FormValues): Promise<void> {
-    await this.run(() => this.store.change(sub, changeBody(kind, v)), `${changeTitle(kind)}: done`);
+    await this.run(() => this.store.change(sub, changeBody(kind, v)), t('{action}: done', { action: t(changeTitle(kind)) }));
   }
 
   protected async addPayment(salonId: string | undefined, subscriptionId: string | undefined, v: FormValues): Promise<void> {

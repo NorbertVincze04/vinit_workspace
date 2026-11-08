@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { ProgressBarComponent } from '../../ui';
+import { TPipe } from '../../../core/i18n/t.pipe';
 
 /**
  * Compact "12 of 40 tasks · 30%" line with a progress bar, for page headers.
@@ -8,9 +9,9 @@ import { ProgressBarComponent } from '../../ui';
 @Component({
   selector: 'app-progress-summary',
   standalone: true,
-  imports: [ProgressBarComponent],
+  imports: [TPipe, ProgressBarComponent],
   template: `
-    <span class="label">{{ label() }}</span>
+    <span class="label">{{ label() | t }}</span>
     <app-progress-bar size="sm" [value]="percent()" [label]="ariaLabel()" />
     <span class="pct">{{ percent() }}%</span>
   `,

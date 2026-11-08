@@ -7,6 +7,7 @@ import { matchesSearch } from '../../../core/utils/text';
 import { ChipOption } from '../../../shared/ui';
 import { SalonsStore } from '../salons/salons.store';
 import { CLIENT_FIELD_MAP, Client, ClientFilters } from './clients.model';
+import { t } from '../../../core/i18n/i18n';
 
 /** Clients: the people and companies that pay. Saved on the server; one client has at most one salon. */
 @Injectable({ providedIn: 'root' })
@@ -76,7 +77,7 @@ export class ClientsStore {
     try {
       await this.api.write('DELETE', `/clients/${id}`);
     } catch (error) {
-      this.toast.show(`Not deleted: ${apiError(error).message}`, 6000);
+      this.toast.show(t('Not deleted: {error}', { error: apiError(error).message }), 6000);
       throw error;
     }
     this.collection.setLocal((list) => list.filter((c) => c.id !== id));

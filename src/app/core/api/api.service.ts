@@ -1,6 +1,8 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+import { t } from '../i18n/i18n';
+import { translateServer } from '../i18n/server-messages';
 
 export const API_BASE = '/api/v1';
 
@@ -13,14 +15,18 @@ export interface ApiErrorBody {
   fields?: Record<string, string>;
 }
 
+/** The API's error, with its messages in the app's language (the server answers in English). */
 export function apiError(error: unknown): ApiErrorBody {
   if (error instanceof HttpErrorResponse) {
     const body = (error.error as { error?: ApiErrorBody } | null)?.error;
-    if (body?.message) return body;
-    if (error.status === 0) return { code: 'offline', message: 'The VINIT server cannot be reached. Is it running?' };
-    return { code: 'http_' + error.status, message: `The server answered ${error.status}.` };
+    if (body?.message) {
+      const fields = body.fields ? Object.fromEntries(Object.entries(body.fields).map(([k, v]) => [k, translateServer(v)])) : undefined;
+      return { ...body, message: translateServer(body.message), ...(fields ? { fields } : {}) };
+    }
+    if (error.status === 0) return { code: 'offline', message: t('The VINIT server cannot be reached. Is it running?') };
+    return { code: 'http_' + error.status, message: t('The server answered {status}.', { status: error.status }) };
   }
-  return { code: 'unknown', message: 'Something went wrong.' };
+  return { code: 'unknown', message: t('Something went wrong.') };
 }
 
 /**

@@ -4,6 +4,7 @@ import { ToastService } from '../services/toast.service';
 import { uid } from '../utils/id';
 import { ApiService, apiError } from './api.service';
 import { FieldMap, fromApi, toApi } from './api-fields';
+import { t } from '../i18n/i18n';
 
 /** A server-backed list of records. Same shape as persistedCollection(), plus loading state. */
 export interface ApiCollection<T extends { id: string }> {
@@ -53,7 +54,7 @@ export function apiCollection<T extends { id: string }>(
   const loaded = signal(false);
 
   const failed = (error: unknown): void => {
-    toast.show(`Not saved: ${apiError(error).message}`, 6000);
+    toast.show(t('Not saved: {error}', { error: apiError(error).message }), 6000);
     void reload();
   };
 
@@ -65,7 +66,7 @@ export function apiCollection<T extends { id: string }>(
 
   const loudly = <R>(request: Promise<R>): Promise<R> =>
     request.catch((error: unknown) => {
-      toast.show(`Not saved: ${apiError(error).message}`, 6000);
+      toast.show(t('Not saved: {error}', { error: apiError(error).message }), 6000);
       throw error;
     });
 
@@ -78,7 +79,7 @@ export function apiCollection<T extends { id: string }>(
     } catch (error) {
       // 401 is handled by the interceptor (back to sign-in).
       if (!(error instanceof HttpErrorResponse && error.status === 401)) {
-        toast.show(`Could not load data: ${apiError(error).message}`, 6000);
+        toast.show(t('Could not load data: {error}', { error: apiError(error).message }), 6000);
       }
     }
   }
@@ -121,7 +122,13 @@ export function apiCollection<T extends { id: string }>(
     },
 
     async create(body) {
-      const res = await loudly(api.write<{ item: Record<string, unknown> }>('POST', path, body));
+      // An empty optional date, link or reference is sent as null, as save() does (the API rejects "").
+      const clean: Record<string, unknown> = { ...body };
+      for (const [key, codec] of Object.entries(fields as Record<string, { api?: string; toApi: (v: unknown) => unknown }>)) {
+        const name = codec.api ?? key;
+        if (clean[name] === '' && codec.toApi('') === null) clean[name] = null;
+      }
+      const res = await loudly(api.write<{ item: Record<string, unknown> }>('POST', path, clean));
       return upsertRow(res.item);
     },
 

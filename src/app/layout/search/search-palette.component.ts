@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { ApiService } from '../../core/api/api.service';
 import { ACTIVITY_LINK, OVERVIEW_LINK, TOOLS } from '../../core/data/tools.data';
 import { DialogComponent, IconComponent } from '../../shared/ui';
+import { TPipe } from '../../core/i18n/t.pipe';
+import { t } from '../../core/i18n/i18n';
 
 export interface SearchHit {
   type: 'tool' | 'salon' | 'lead' | 'ticket' | 'contract' | 'feature' | 'wiki';
@@ -34,7 +36,7 @@ export class SearchService {
 @Component({
   selector: 'app-search-palette',
   standalone: true,
-  imports: [DialogComponent, IconComponent],
+  imports: [TPipe, DialogComponent, IconComponent],
   host: { '(document:keydown)': 'onGlobalKey($event)' },
   template: `
     @if (search.open()) {
@@ -47,8 +49,8 @@ export class SearchService {
             type="search"
             autofocus
             autocomplete="off"
-            placeholder="Salon, owner, lead, T-12, contract, wiki…"
-            aria-label="Search the workspace"
+            [placeholder]="'Salon, owner, lead, T-12, contract, wiki…' | t"
+            [attr.aria-label]="'Search the workspace' | t"
             role="combobox"
             aria-controls="search-results"
             [attr.aria-expanded]="hits().length > 0"
@@ -58,9 +60,9 @@ export class SearchService {
             (keydown)="onKey($event, dlg)"
           />
         </div>
-        <div id="search-results" role="listbox" aria-label="Results" class="results">
+        <div id="search-results" role="listbox" [attr.aria-label]="'Results' | t" class="results">
           @for (g of groups(); track g.type) {
-            <h3>{{ g.label }}</h3>
+            <h3>{{ g.label | t }}</h3>
             @for (h of g.hits; track h.type + h.id) {
               <button
                 type="button"
@@ -80,13 +82,13 @@ export class SearchService {
             }
           } @empty {
             @if (query().trim().length && !loading()) {
-              <p class="muted">Nothing found for “{{ query().trim() }}”.</p>
+              <p class="muted">{{ 'Nothing found for “{q}”.' | t: { q: query().trim() } }}</p>
             } @else if (!query().trim().length) {
-              <p class="muted">Type to search. Every word has to match; accents don't matter. Ctrl+K opens this from anywhere.</p>
+              <p class="muted">{{ 'Type to search. Every word has to match; accents don\'t matter. Ctrl+K opens this from anywhere.' | t }}</p>
             }
           }
         </div>
-        <p class="keys muted small" aria-hidden="true">↑ ↓ to move · Enter to open · Esc to close</p>
+        <p class="keys muted small" aria-hidden="true">{{ '↑ ↓ to move · Enter to open · Esc to close' | t }}</p>
       </app-dialog>
     }
   `,
@@ -124,7 +126,7 @@ export class SearchPaletteComponent {
   /** Tools whose name matches, then the server's results. */
   protected readonly hits = computed<SearchHit[]>(() => {
     const words = fold(this.query()).split(/\s+/).filter(Boolean);
-    const links = [OVERVIEW_LINK, ACTIVITY_LINK, ...TOOLS.map((t) => ({ label: t.title, route: t.route, description: t.description }))];
+    const links = [OVERVIEW_LINK, ACTIVITY_LINK, ...TOOLS.map((tool) => ({ label: tool.title, route: tool.route, description: tool.description }))].map((l) => ({ ...l, label: t(l.label) }));
     const tools: SearchHit[] = words.length
       ? links
           .filter((l) => words.every((w) => fold(l.label).includes(w)))

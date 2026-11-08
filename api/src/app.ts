@@ -15,6 +15,7 @@ import { onboardingRouter, salonOnboardingRouter } from './modules/onboarding/on
 import { supportRouter } from './modules/support/support.routes.js';
 import { contractsRouter } from './modules/contracts/contracts.routes.js';
 import { deadlinesRouter } from './modules/deadlines/deadlines.routes.js';
+import { marketingRouter } from './modules/marketing/marketing.routes.js';
 import { wikiRouter } from './modules/wiki/wiki.routes.js';
 import { infraRouter } from './modules/infra/infra.routes.js';
 import { activityRouter } from './modules/activity/activity.routes.js';
@@ -62,6 +63,7 @@ export function createApp(): express.Express {
   secured.use('/roadmap', roadmapRouter());
   secured.use('/files', filesRouter());
   for (const resource of TOOL_RESOURCES) secured.use(`/${resource.name}`, resourceRouter(resource));
+  secured.use('/marketing', marketingRouter());
   // Salon platform (Phase 2+): everything links to a salon.
   secured.use('/clients', clientsRouter());
   secured.use('/salons', salonsRouter());

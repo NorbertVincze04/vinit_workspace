@@ -1,6 +1,7 @@
 import { FieldMap, field } from '../../../core/api/api-fields';
 import { Entity } from '../../../core/models';
 import { StatusTone } from '../../../shared/ui';
+import { t } from '../../../core/i18n/i18n';
 
 export type LeadStage = 'contacted' | 'replied' | 'demo_booked' | 'trial' | 'paying' | 'lost';
 export type LeadSource = 'instagram_dm' | 'visit' | 'email' | 'referral' | 'phone' | 'facebook' | 'event' | 'other';
@@ -48,10 +49,10 @@ export const ACTIVITY_KINDS: readonly { value: ActivityKind; label: string }[] =
 ];
 
 export const stageInfo = (s: string) => LEAD_STAGES.find((x) => x.value === s) ?? LEAD_STAGES[0];
-export const sourceLabel = (s: string): string => LEAD_SOURCES.find((x) => x.value === s)?.label ?? s;
-export const lostLabel = (s: string): string => LOST_REASONS.find((x) => x.value === s)?.label ?? s;
+export const sourceLabel = (s: string): string => t(LEAD_SOURCES.find((x) => x.value === s)?.label ?? s);
+export const lostLabel = (s: string): string => t(LOST_REASONS.find((x) => x.value === s)?.label ?? s);
 export const kindLabel = (s: string): string =>
-  s === 'stage_change' ? 'Stage' : (ACTIVITY_KINDS.find((x) => x.value === s)?.label ?? s);
+  t(s === 'stage_change' ? 'Stage' : (ACTIVITY_KINDS.find((x) => x.value === s)?.label ?? s));
 
 /** A prospect before it becomes a client + salon. */
 export interface Lead extends Entity {

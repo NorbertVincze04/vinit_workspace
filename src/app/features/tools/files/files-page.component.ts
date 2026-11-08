@@ -17,12 +17,14 @@ import { FileRowComponent } from './components/file-row/file-row.component';
 import { UploadZoneComponent } from './components/upload-zone/upload-zone.component';
 import { FileFilters, MAX_FILE_BYTES, StoredFile, formatBytes } from './files.model';
 import { FilesStore } from './files.store';
+import { TPipe } from '../../../core/i18n/t.pipe';
+import { t } from '../../../core/i18n/i18n';
 
 /** Files tool: upload shared documents (PDF, PowerPoint, Excel…), download and delete them. */
 @Component({
   selector: 'app-files-page',
   standalone: true,
-  imports: [
+  imports: [TPipe, 
     PageHeaderComponent,
     ButtonComponent,
     TextFieldComponent,
@@ -56,12 +58,12 @@ export class FilesPageComponent {
   protected async upload(files: File[]): Promise<void> {
     const { added, failed } = await this.store.upload(files);
     if (failed.length) {
-      const saved = added.length ? `Uploaded ${added.length}. ` : '';
-      this.toast.show(`${saved}Not uploaded: ${failed.join('; ')}`, 6000);
+      const saved = added.length ? t('Uploaded {n}.', { n: added.length }) + ' ' : '';
+      this.toast.show(saved + t('Not uploaded: {list}', { list: failed.join('; ') }), 6000);
     } else if (added.length === 1) {
-      this.toast.show(`Uploaded ${added[0].name}`);
+      this.toast.show(t('Uploaded {name}', { name: added[0].name }));
     } else {
-      this.toast.show(`Uploaded ${added.length} files`);
+      this.toast.show(t('Uploaded {n} files', { n: added.length }));
     }
   }
 
@@ -72,13 +74,13 @@ export class FilesPageComponent {
     if (blob) {
       downloadBlob(blob, item.name);
     } else {
-      this.toast.show(`${item.name} could not be downloaded. Check that the server is running, or upload it again.`, 6000);
+      this.toast.show(t('{name} could not be downloaded. Check that the server is running, or upload it again.', { name: item.name }), 6000);
     }
   }
 
   protected async confirmDelete(item: StoredFile): Promise<void> {
     await this.store.remove(item);
-    this.toast.show(`Deleted ${item.name}`);
+    this.toast.show(t('Deleted {name}', { name: item.name }));
   }
 
   protected setKind(value: string): void {

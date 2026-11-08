@@ -10,12 +10,13 @@ import {
 } from '../../../../../shared/ui';
 import { Budget } from '../../finances.model';
 import { FinancesStore } from '../../finances.store';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
 
 /** Budgets tab: monthly limits per category and how much of each is used. */
 @Component({
   selector: 'app-budgets-panel',
   standalone: true,
-  imports: [ButtonComponent, EmptyStateComponent, InlineStatsComponent, LedgerComponent, LedgerRowComponent, MeterComponent, StatusPillComponent],
+  imports: [TPipe, ButtonComponent, EmptyStateComponent, InlineStatsComponent, LedgerComponent, LedgerRowComponent, MeterComponent, StatusPillComponent],
   template: `
     <div class="toolbar">
       <app-inline-stats class="grow" [items]="store.budgets.items().length ? store.budgetSummary() : []" />
@@ -26,14 +27,14 @@ import { FinancesStore } from '../../finances.store';
         heading="No budgets yet"
         text="Set a monthly limit for categories to keep in check, like advertising or software. Overspending shows up in red."
       >
-        <button appButton variant="primary" type="button" (click)="add.emit()">Set a budget</button>
+        <button appButton variant="primary" type="button" (click)="add.emit()">{{ 'Set a budget' | t }}</button>
       </app-empty-state>
     } @else {
       <app-ledger [headers]="['Category', 'Used', 'Left', '']" [numeric]="[2]" columns="minmax(0, 1.2fr) minmax(0, 1.4fr) 150px auto">
         @for (row of store.budgetRows(); track row.item.id) {
           <app-ledger-row clickable (activate)="edit.emit(row.item)">
             <div>
-              <span class="cell-title">{{ row.item.category }}</span>
+              <span class="cell-title">{{ row.item.category | t }}</span>
               <span class="cell-sub">{{ row.limitText }}</span>
             </div>
             <div class="used">
@@ -48,8 +49,8 @@ import { FinancesStore } from '../../finances.store';
               }
             </div>
             <div class="cell-actions">
-              <button appButton variant="ghost" size="sm" type="button" (click)="edit.emit(row.item)">Edit</button>
-              <button appButton variant="ghost" size="sm" type="button" (click)="remove.emit(row.item)">Delete</button>
+              <button appButton variant="ghost" size="sm" type="button" (click)="edit.emit(row.item)">{{ 'Edit' | t }}</button>
+              <button appButton variant="ghost" size="sm" type="button" (click)="remove.emit(row.item)">{{ 'Delete' | t }}</button>
             </div>
           </app-ledger-row>
         }

@@ -3,23 +3,23 @@
     <span panelAction class="actions">
       @if (onboarding().status !== 'done') {
         @if (!onboarding().materialsReceivedAt) {
-          <button appButton size="sm" variant="primary" type="button" (click)="open('materials')">Materials received</button>
+          <button appButton size="sm" variant="primary" type="button" (click)="open('materials')">{{ 'Materials received' | t }}</button>
         } @else {
-          <button appButton size="sm" variant="primary" type="button" (click)="open('live')">Go live</button>
+          <button appButton size="sm" variant="primary" type="button" (click)="open('live')">{{ 'Go live' | t }}</button>
         }
       }
       <app-menu ariaLabel="More onboarding actions">
         @if (onboarding().materialsReceivedAt) {
-          <button appMenuItem type="button" (click)="open('materials')">Change when the materials arrived…</button>
+          <button appMenuItem type="button" (click)="open('materials')">{{ 'Change when the materials arrived…' | t }}</button>
           @if (onboarding().status !== 'done') {
-            <button appMenuItem type="button" (click)="clearMaterials()">Materials not received yet</button>
+            <button appMenuItem type="button" (click)="clearMaterials()">{{ 'Materials not received yet' | t }}</button>
           }
         }
-        <button appMenuItem type="button" (click)="open('signed')">Change the signing time…</button>
+        <button appMenuItem type="button" (click)="open('signed')">{{ 'Change the signing time…' | t }}</button>
         @if (onboarding().status === 'blocked' || onboarding().status === 'done') {
-          <button appMenuItem type="button" (click)="unblock()">{{ onboarding().status === 'done' ? 'Reopen (not live yet)' : 'Unblock' }}</button>
+          <button appMenuItem type="button" (click)="unblock()">{{ (onboarding().status === 'done' ? 'Reopen (not live yet)' : 'Unblock') | t }}</button>
         } @else {
-          <button appMenuItem type="button" (click)="open('block')">Mark blocked…</button>
+          <button appMenuItem type="button" (click)="open('block')">{{ 'Mark blocked…' | t }}</button>
         }
       </app-menu>
     </span>
@@ -35,7 +35,7 @@
       }
     </div>
     @if (onboarding().status === 'blocked') {
-      <p class="blocked">Blocked: {{ onboarding().blockedReason }}</p>
+      <p class="blocked">{{ 'Blocked' | t }}: {{ onboarding().blockedReason }}</p>
     }
     <app-facts [items]="facts()" />
   </app-panel>
@@ -43,17 +43,17 @@
   <app-panel heading="Checklist" [meta]="onboarding().stepsDone + ' / ' + onboarding().stepsTotal">
     @for (g of groups(); track g.value) {
       <section class="group">
-        <h3>{{ g.label }}</h3>
+        <h3>{{ g.label | t }}</h3>
         <ul>
           @for (step of g.steps; track step.id) {
             <li>
               <app-checkbox [checked]="!!step.doneAt" [disabled]="busy()" (checkedChange)="toggle(step, $event)" strike>
-                {{ step.title }}
+                {{ step.title | tc }}
               </app-checkbox>
               @if (step.doneAt) {
                 <span class="done">{{ step.doneByName || '' }}</span>
               } @else if (step.description) {
-                <span class="desc">{{ step.description }}</span>
+                <span class="desc">{{ step.description | tc }}</span>
               }
               <button class="remove" type="button" [attr.aria-label]="'Remove ' + step.title" (click)="removeStep(step)">×</button>
             </li>
@@ -62,13 +62,13 @@
       </section>
     }
     <form class="add" (submit)="$event.preventDefault(); addStep()">
-      <input class="input" maxlength="300" placeholder="Add a step" aria-label="New step" [value]="newStep()" (input)="onInput($event)" />
-      <select class="input" aria-label="Category of the new step" (change)="onCategory($event)">
+      <input class="input" maxlength="300" [placeholder]="'Add a step' | t" [attr.aria-label]="'New step' | t" [value]="newStep()" (input)="onInput($event)" />
+      <select class="input" [attr.aria-label]="'Category of the new step' | t" (change)="onCategory($event)">
         @for (c of categories; track c.value) {
-          <option [value]="c.value" [selected]="c.value === newCategory()">{{ c.label }}</option>
+          <option [value]="c.value" [selected]="c.value === newCategory()">{{ c.label | t }}</option>
         }
       </select>
-      <button appButton size="sm" type="submit" [disabled]="!newStep().trim() || busy()">Add</button>
+      <button appButton size="sm" type="submit" [disabled]="!newStep().trim() || busy()">{{ 'Add' | t }}</button>
     </form>
   </app-panel>
 </div>

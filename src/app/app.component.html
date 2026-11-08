@@ -1,5 +1,5 @@
 @if (auth.user()) {
-  <a class="skip-link" href="#main" (click)="skipToContent($event, main)">Skip to content</a>
+  <a class="skip-link" href="#main" (click)="skipToContent($event, main)">{{ 'Skip to content' | t }}</a>
 
   <header class="topbar">
     <button
@@ -9,16 +9,16 @@
       type="button"
       aria-controls="sidebar"
       [attr.aria-expanded]="navOpen()"
-      [attr.aria-label]="navOpen() ? 'Close navigation' : 'Open navigation'"
+      [attr.aria-label]="(navOpen() ? 'Close navigation' : 'Open navigation') | t"
       (click)="toggleNav()"
     >
       <app-icon [name]="navOpen() ? 'close' : 'menu'" />
     </button>
-    <a class="topbar-brand" routerLink="/" aria-label="VINIT Workspace, overview">
+    <a class="topbar-brand" routerLink="/" [attr.aria-label]="'VINIT Workspace, overview' | t">
       <app-logo [size]="22" />
-      <span>VINIT</span>
+      <span>{{ 'VINIT' | t }}</span>
     </a>
-    <button appButton variant="ghost" iconOnly type="button" class="topbar-search" aria-label="Search" (click)="search.open.set(true)">
+    <button appButton variant="ghost" iconOnly type="button" class="topbar-search" [attr.aria-label]="'Search' | t" (click)="search.open.set(true)">
       <app-icon name="search" />
     </button>
     <app-bell />

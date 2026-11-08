@@ -4,6 +4,7 @@ import { ToastService } from '../../../core/services/toast.service';
 import { SalonsStore } from '../salons/salons.store';
 import { BillingStore } from '../subscriptions/billing.store';
 import { OPEN_STATUSES, Sessions, Ticket, TimeEntry } from './support.model';
+import { t } from '../../../core/i18n/i18n';
 
 type Row = Record<string, unknown>;
 
@@ -39,7 +40,7 @@ export class SupportStore {
       this.recentEntries.set(entries.items);
       this.loaded.set(true);
     } catch (error) {
-      this.toast.show(`Could not load support: ${apiError(error).message}`, 6000);
+      this.toast.show(t('Could not load support: {error}', { error: apiError(error).message }), 6000);
     }
   }
 
@@ -93,7 +94,7 @@ export class SupportStore {
 
   private loud<T>(request: Promise<T>): Promise<T> {
     return request.catch((error: unknown) => {
-      this.toast.show(`Not saved: ${apiError(error).message}`, 6000);
+      this.toast.show(t('Not saved: {error}', { error: apiError(error).message }), 6000);
       throw error;
     });
   }

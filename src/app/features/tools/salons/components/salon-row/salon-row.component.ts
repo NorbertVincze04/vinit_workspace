@@ -2,12 +2,13 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 import { RouterLink } from '@angular/router';
 import { LedgerRowComponent, StatusPillComponent } from '../../../../../shared/ui';
 import { Salon, salonStatus } from '../../salons.model';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
 
 /** One salon in the list. The whole row opens the salon's page. */
 @Component({
   selector: 'app-salon-row',
   standalone: true,
-  imports: [LedgerRowComponent, StatusPillComponent, RouterLink],
+  imports: [TPipe, LedgerRowComponent, StatusPillComponent, RouterLink],
   template: `
     <app-ledger-row clickable (activate)="open.emit()">
       <div>
@@ -17,7 +18,7 @@ import { Salon, salonStatus } from '../../salons.model';
       <div>
         <span>{{ salon().clientName }}</span>
         @if (salon().clientAddressMissing) {
-          <span class="cell-sub warn">Business address missing</span>
+          <span class="cell-sub warn">{{ 'Business address missing' | t }}</span>
         } @else if (salon().clientPhone) {
           <span class="cell-sub">{{ salon().clientPhone }}</span>
         }

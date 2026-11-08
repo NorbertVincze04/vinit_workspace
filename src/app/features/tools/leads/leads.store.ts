@@ -12,6 +12,7 @@ import { ClientsStore } from '../clients/clients.store';
 import { SalonsStore } from '../salons/salons.store';
 import { ImportRow } from './leads.import';
 import { LEAD_FIELD_MAP, LEAD_STAGES, Lead, LeadActivity, LeadFilters, LeadStage } from './leads.model';
+import { t } from '../../../core/i18n/i18n';
 
 type Row = Record<string, unknown>;
 
@@ -161,7 +162,7 @@ export class LeadsStore {
 
   private loud<T>(request: Promise<T>): Promise<T> {
     return request.catch((error: unknown) => {
-      this.toast.show(`Not saved: ${apiError(error).message}`, 6000);
+      this.toast.show(t('Not saved: {error}', { error: apiError(error).message }), 6000);
       throw error;
     });
   }

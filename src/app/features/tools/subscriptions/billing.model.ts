@@ -1,6 +1,7 @@
 import { FieldMap, field } from '../../../core/api/api-fields';
 import { Entity } from '../../../core/models';
 import { StatusTone } from '../../../shared/ui';
+import { t } from '../../../core/i18n/i18n';
 
 export type SubStatus = 'trialing' | 'active' | 'past_due' | 'paused' | 'canceled' | 'ended';
 export type BillingCycle = 'monthly' | 'quarterly' | 'yearly' | 'one_off';
@@ -62,7 +63,7 @@ export const subStatus = (s: string) => SUB_STATUSES.find((x) => x.value === s) 
 export const paymentStatus = (p: Pick<Payment, 'status' | 'overdue'>) =>
   PAYMENT_STATUSES.find((x) => x.value === (p.overdue ? 'overdue' : p.status)) ?? PAYMENT_STATUSES[0];
 export const cycleInfo = (c: string) => CYCLES.find((x) => x.value === c) ?? CYCLES[0];
-export const kindLabel = (k: string): string => PAYMENT_KINDS.find((x) => x.value === k)?.label.replace(/ \(.*\)$/, '') ?? k;
+export const kindLabel = (k: string): string => t(PAYMENT_KINDS.find((x) => x.value === k)?.label.replace(/ \(.*\)$/, '') ?? k);
 
 /** A salon's subscription. Money in RON. */
 export interface Subscription extends Entity {

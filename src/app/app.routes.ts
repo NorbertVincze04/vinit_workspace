@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard, guestGuard } from './core/auth/auth.guard';
+import { t } from './core/i18n/i18n';
 
 /**
  * Every page is lazy-loaded. To add a tool page:
@@ -9,7 +10,7 @@ import { authGuard, guestGuard } from './core/auth/auth.guard';
 export const routes: Routes = [
   {
     path: 'login',
-    title: 'Sign in · VINIT Workspace',
+    title: t('Sign in') + ' · VINIT Workspace',
     canActivate: [guestGuard],
     loadComponent: () => import('./features/login/login.component').then((m) => m.LoginComponent),
   },
@@ -20,117 +21,117 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        title: 'Overview · VINIT Workspace',
+        title: t('Overview') + ' · VINIT Workspace',
         loadComponent: () => import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
       },
       {
         path: 'activity',
-        title: 'Activity · VINIT Workspace',
+        title: t('Activity') + ' · VINIT Workspace',
         loadComponent: () => import('./features/activity/activity-page.component').then((m) => m.ActivityPageComponent),
       },
       {
         path: 'tools/kpis',
-        title: 'KPIs · VINIT Workspace',
+        title: t('KPIs') + ' · VINIT Workspace',
         loadComponent: () => import('./features/tools/kpis/kpis-page.component').then((m) => m.KpisPageComponent),
       },
       {
         path: 'tools/tasks',
-        title: 'Tasks · VINIT Workspace',
+        title: t('Tasks') + ' · VINIT Workspace',
         loadComponent: () => import('./features/tools/tasks/tasks-page.component').then((m) => m.TasksPageComponent),
       },
       {
         path: 'tools/leads',
-        title: 'Leads · VINIT Workspace',
+        title: t('Leads') + ' · VINIT Workspace',
         loadComponent: () => import('./features/tools/leads/leads-page.component').then((m) => m.LeadsPageComponent),
       },
       {
         path: 'tools/salons',
-        title: 'Salons · VINIT Workspace',
+        title: t('Salons') + ' · VINIT Workspace',
         loadComponent: () => import('./features/tools/salons/salons-page.component').then((m) => m.SalonsPageComponent),
       },
       {
         path: 'tools/salons/:id',
-        title: 'Salon · VINIT Workspace',
+        title: t('Salon') + ' · VINIT Workspace',
         loadComponent: () =>
           import('./features/tools/salons/detail/salon-detail-page.component').then((m) => m.SalonDetailPageComponent),
       },
       {
         path: 'tools/onboarding',
-        title: 'Onboarding · VINIT Workspace',
+        title: t('Onboarding') + ' · VINIT Workspace',
         loadComponent: () =>
           import('./features/tools/onboarding/onboarding-page.component').then((m) => m.OnboardingPageComponent),
       },
       {
         path: 'tools/subscriptions',
-        title: 'Subscriptions · VINIT Workspace',
+        title: t('Subscriptions') + ' · VINIT Workspace',
         loadComponent: () =>
           import('./features/tools/subscriptions/subscriptions-page.component').then((m) => m.SubscriptionsPageComponent),
       },
       {
         path: 'tools/support',
-        title: 'Support · VINIT Workspace',
+        title: t('Support') + ' · VINIT Workspace',
         loadComponent: () => import('./features/tools/support/support-page.component').then((m) => m.SupportPageComponent),
       },
       {
         path: 'tools/features',
-        title: 'Feature requests · VINIT Workspace',
+        title: t('Feature requests') + ' · VINIT Workspace',
         loadComponent: () => import('./features/tools/features/features-page.component').then((m) => m.FeaturesPageComponent),
       },
       {
         path: 'tools/contracts',
-        title: 'Contracts · VINIT Workspace',
+        title: t('Contracts') + ' · VINIT Workspace',
         loadComponent: () => import('./features/tools/contracts/contracts-page.component').then((m) => m.ContractsPageComponent),
       },
       {
         path: 'tools/calendar',
-        title: 'Calendar · VINIT Workspace',
+        title: t('Calendar') + ' · VINIT Workspace',
         loadComponent: () => import('./features/tools/calendar/calendar-page.component').then((m) => m.CalendarPageComponent),
       },
       {
         path: 'tools/wiki',
-        title: 'Wiki · VINIT Workspace',
+        title: t('Wiki') + ' · VINIT Workspace',
         loadComponent: () => import('./features/tools/wiki/wiki-page.component').then((m) => m.WikiPageComponent),
       },
       {
         path: 'tools/wiki/:slug',
-        title: 'Wiki · VINIT Workspace',
+        title: t('Wiki') + ' · VINIT Workspace',
         loadComponent: () => import('./features/tools/wiki/wiki-article.component').then((m) => m.WikiArticleComponent),
       },
       {
         path: 'tools/infra',
-        title: 'Infra · VINIT Workspace',
+        title: t('Infra') + ' · VINIT Workspace',
         loadComponent: () => import('./features/tools/infra/infra-page.component').then((m) => m.InfraPageComponent),
       },
       // Clients are managed on each salon now (billing details); old links land on Salons.
       { path: 'tools/clients', redirectTo: 'tools/salons' },
       {
         path: 'tools/finances',
-        title: 'Finances · VINIT Workspace',
+        title: t('Finances') + ' · VINIT Workspace',
         loadComponent: () =>
           import('./features/tools/finances/finances-page.component').then((m) => m.FinancesPageComponent),
       },
       {
         path: 'tools/marketing',
-        title: 'Marketing · VINIT Workspace',
+        title: t('Marketing') + ' · VINIT Workspace',
         loadComponent: () =>
           import('./features/tools/marketing/marketing-page.component').then((m) => m.MarketingPageComponent),
       },
       {
         path: 'tools/roadmap',
-        title: 'Roadmap · VINIT Workspace',
+        title: t('Roadmap') + ' · VINIT Workspace',
         loadComponent: () =>
           import('./features/tools/roadmap/roadmap-page.component').then((m) => m.RoadmapPageComponent),
       },
       {
         path: 'tools/files',
-        title: 'Files · VINIT Workspace',
+        title: t('Files') + ' · VINIT Workspace',
         loadComponent: () => import('./features/tools/files/files-page.component').then((m) => m.FilesPageComponent),
       },
       // Old address of the Files tool.
       { path: 'tools/appendices', redirectTo: 'tools/files' },
       {
         path: '**',
-        title: 'Page not found · VINIT Workspace',
+        title: t('Page not found') + ' · VINIT Workspace',
         loadComponent: () => import('./features/not-found/not-found.component').then((m) => m.NotFoundComponent),
       },
     ],

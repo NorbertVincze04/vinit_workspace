@@ -1,6 +1,7 @@
 import { Injectable, WritableSignal, effect, inject, signal, untracked } from '@angular/core';
 import { ToastService } from '../services/toast.service';
 import { ApiService, apiError } from './api.service';
+import { t } from '../i18n/i18n';
 
 /** Loads the team settings once and shares them between every remoteSetting(). */
 @Injectable({ providedIn: 'root' })
@@ -57,7 +58,7 @@ export function remoteSetting<T>(
       synced = json;
       // Saving updates the app's save-status signals, hence allowSignalWrites (and untracked).
       untracked(() =>
-        settings.save(key, value).catch((error: unknown) => toast.show(`Not saved: ${apiError(error).message}`, 6000)),
+        settings.save(key, value).catch((error: unknown) => toast.show(t('Not saved: {error}', { error: apiError(error).message }), 6000)),
       );
     },
     { allowSignalWrites: true },

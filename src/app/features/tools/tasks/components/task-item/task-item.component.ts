@@ -19,12 +19,14 @@ import {
 } from '../../../../../shared/ui';
 import { TaskPatch, TaskView } from '../../tasks.model';
 import { TaskDetailsComponent } from '../task-details/task-details.component';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
+import { TcPipe } from '../../../../../core/i18n/tc.pipe';
 
 /** One task row: done checkbox, editable text, meta badges and the expandable details editor. */
 @Component({
   selector: 'app-task-item',
   standalone: true,
-  imports: [AutosizeDirective, BadgeComponent, ButtonComponent, CheckboxComponent, IconComponent, TaskDetailsComponent],
+  imports: [TcPipe, TPipe, AutosizeDirective, BadgeComponent, ButtonComponent, CheckboxComponent, IconComponent, TaskDetailsComponent],
   templateUrl: './task-item.component.html',
   styleUrl: './task-item.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

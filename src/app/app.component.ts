@@ -7,6 +7,7 @@ import { SidebarComponent } from './layout/sidebar/sidebar.component';
 import { BellComponent } from './layout/bell/bell.component';
 import { SearchPaletteComponent, SearchService } from './layout/search/search-palette.component';
 import { ButtonComponent, IconComponent, LogoComponent, ToastComponent } from './shared/ui';
+import { TPipe } from './core/i18n/t.pipe';
 
 /**
  * App shell: sidebar navigation (a drawer on small screens), the routed page and the toast area.
@@ -14,7 +15,7 @@ import { ButtonComponent, IconComponent, LogoComponent, ToastComponent } from '.
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, SidebarComponent, BellComponent, SearchPaletteComponent, ButtonComponent, IconComponent, LogoComponent, ToastComponent],
+  imports: [TPipe, RouterOutlet, RouterLink, SidebarComponent, BellComponent, SearchPaletteComponent, ButtonComponent, IconComponent, LogoComponent, ToastComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
   host: { '(document:keydown.escape)': 'closeNav()', '[class.bare]': '!auth.user()' },

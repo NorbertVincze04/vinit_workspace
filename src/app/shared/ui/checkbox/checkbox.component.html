@@ -4,7 +4,7 @@
     class="sr-only"
     [checked]="checked()"
     [disabled]="disabled()"
-    [attr.aria-label]="ariaLabel() || null"
+    [attr.aria-label]="(ariaLabel() | t) || null"
     (change)="onChange($event)"
   />
   <span class="box" aria-hidden="true"></span>

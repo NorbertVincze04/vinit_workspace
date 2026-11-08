@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { LocalDataService } from '../../../../core/services/local-data.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { ButtonComponent, ConfirmDialogComponent, PanelComponent } from '../../../../shared/ui';
+import { TPipe } from '../../../../core/i18n/t.pipe';
+import { t } from '../../../../core/i18n/i18n';
 
 /** "1 post", "3 posts"; '' for zero. */
 const count = (n: number, one: string, many = one + 's'): string => (n ? `${n} ${n === 1 ? one : many}` : '');
@@ -13,19 +15,18 @@ const count = (n: number, one: string, many = one + 's'): string => (n ? `${n} $
 @Component({
   selector: 'app-local-data-banner',
   standalone: true,
-  imports: [PanelComponent, ButtonComponent, ConfirmDialogComponent],
+  imports: [TPipe, PanelComponent, ButtonComponent, ConfirmDialogComponent],
   template: `
     @if (visible()) {
       <app-panel heading="Data saved in this browser" [meta]="parts()">
         <p>
-          Before the server existed, this browser kept your workspace data. Move it to the server once, so it is
-          available on every device. The old Clients list is moved separately (below).
+          {{ 'Before the server existed, this browser kept your workspace data. Move it to the server once, so it is available on every device. The old Clients list is moved separately (below).' | t }}
         </p>
         <div class="actions">
           <button appButton variant="primary" type="button" [disabled]="busy()" (click)="confirming.set(true)">
-            {{ busy() ? 'Moving…' : 'Move to the server' }}
+            {{ (busy() ? 'Moving…' : 'Move to the server') | t }}
           </button>
-          <button appButton variant="ghost" type="button" [disabled]="busy()" (click)="hidden.set(true)">Not now</button>
+          <button appButton variant="ghost" type="button" [disabled]="busy()" (click)="hidden.set(true)">{{ 'Not now' | t }}</button>
         </div>
       </app-panel>
     }
@@ -79,10 +80,10 @@ export class LocalDataBannerComponent {
     this.busy.set(true);
     try {
       const { files } = await this.local.moveToServer();
-      const skipped = files.skipped.length ? ` ${files.skipped.length} file(s) skipped: ${files.skipped.join('; ')}` : '';
-      this.toast.show(`Your data is on the server now.${skipped}`, skipped ? 9000 : 4000);
+      const skipped = files.skipped.length ? ' ' + t('{n} file(s) skipped: {list}', { n: files.skipped.length, list: files.skipped.join('; ') }) : '';
+      this.toast.show(t('Your data is on the server now.') + skipped, skipped ? 9000 : 4000);
     } catch (error) {
-      this.toast.show(`The move did not finish: ${(error as Error).message} Nothing in this browser was deleted.`, 9000);
+      this.toast.show(t('The move did not finish: {error} Nothing in this browser was deleted.', { error: (error as Error).message }), 9000);
     } finally {
       this.busy.set(false);
     }

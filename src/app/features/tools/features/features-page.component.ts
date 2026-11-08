@@ -21,12 +21,16 @@ import {
 import { RequestDialogComponent } from './components/request-dialog/request-dialog.component';
 import { FeatureRequest, REQUEST_STATUSES, requestStatus } from './features.model';
 import { FeaturesStore } from './features.store';
+import { TPipe } from '../../../core/i18n/t.pipe';
+import { t } from '../../../core/i18n/i18n';
+import { tc } from '../../../core/i18n/content';
+import { TcPipe } from '../../../core/i18n/tc.pipe';
 
 /** Feature requests tool: what salons and leads ask for, weighed by the revenue behind it. */
 @Component({
   selector: 'app-features-page',
   standalone: true,
-  imports: [
+  imports: [TcPipe, TPipe, 
     PageHeaderComponent,
     ButtonComponent,
     IconComponent,
@@ -42,7 +46,7 @@ import { FeaturesStore } from './features.store';
   template: `
     <app-page-header title="Feature requests" description="What salons and leads ask for, ranked by the MRR of the paying salons behind it, then votes.">
       <div pageActions>
-        <button appButton variant="primary" type="button" (click)="openForm(null)"><app-icon name="plus" [size]="16" /> New request</button>
+        <button appButton variant="primary" type="button" (click)="openForm(null)"><app-icon name="plus" [size]="16" /> {{ 'New request' | t }}</button>
       </div>
     </app-page-header>
 
@@ -56,7 +60,7 @@ import { FeaturesStore } from './features.store';
       <app-empty-state heading="Loading…" text="Reading feature requests from the VINIT server." />
     } @else if (!store.items().length) {
       <app-empty-state heading="No feature requests yet" text="Add what salons ask for, then record each salon or lead that wants it. Change-request tickets can be turned into requests too.">
-        <button appButton variant="primary" type="button" (click)="openForm(null)">New request</button>
+        <button appButton variant="primary" type="button" (click)="openForm(null)">{{ 'New request' | t }}</button>
       </app-empty-state>
     } @else if (!visible().length) {
       <app-empty-state heading="Nothing here" text="No request matches this filter." />
@@ -66,11 +70,11 @@ import { FeaturesStore } from './features.store';
           <app-ledger-row clickable (activate)="openId.set(r.id)">
             <div>
               <span class="cell-title">{{ r.title }}</span>
-              <span class="cell-sub">{{ r.roadmapStepId ? 'Roadmap · Year ' + r.roadmapYear + ' · ' + r.roadmapPhase + ' · ' + r.roadmapStepText : 'Not on the roadmap' }}</span>
+              <span class="cell-sub">{{ r.roadmapStepId ? ('Roadmap · Year {n}' | t: { n: r.roadmapYear ?? '' }) + ' · ' + (r.roadmapPhase | tc) + ' · ' + (r.roadmapStepText | tc) : ('Not on the roadmap' | t) }}</span>
             </div>
             <span class="cell-num">{{ r.votes }}</span>
             <span class="cell-num">{{ money(r.mrrBani) }}</span>
-            <div><app-status-pill [tone]="status(r.status).tone">{{ status(r.status).label }}</app-status-pill></div>
+            <div><app-status-pill [tone]="status(r.status).tone">{{ status(r.status).label | t }}</app-status-pill></div>
           </app-ledger-row>
         }
       </app-ledger>
@@ -117,13 +121,13 @@ export class FeaturesPageComponent {
   protected get fields(): FieldDef[] {
     return [
       { key: 'title', label: 'What is asked', type: 'text', required: true, maxLength: 300, span: 'full', placeholder: 'e.g. Card deposits for no-shows' },
-      { key: 'description', label: 'Details', type: 'textarea', span: 'full' },
+      { key: 'description', label: 'Details', type: 'textarea', span: 'full', placeholder: 'What they want to do and why: e.g. take a 50 RON deposit so clients show up' },
       {
         key: 'roadmapStepId',
         label: 'Roadmap step',
         type: 'select',
         span: 'full',
-        options: [{ value: '', label: 'None' }, ...this.store.steps().map((s) => ({ value: s.id, label: `Year ${s.year} · ${s.phase} · ${s.text}` }))],
+        options: [{ value: '', label: 'None' }, ...this.store.steps().map((s) => ({ value: s.id, label: `${t('Year {n}', { n: s.year })} · ${tc(s.phase)} · ${tc(s.text)}` }))],
       },
     ];
   }

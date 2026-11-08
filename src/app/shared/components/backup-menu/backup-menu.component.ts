@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angu
 import { ToastService } from '../../../core/services/toast.service';
 import { downloadJson, readJsonFile } from '../../../core/utils/file';
 import { ConfirmDialogComponent, IconComponent, MenuComponent, MenuItemComponent } from '../../ui';
+import { TPipe } from '../../../core/i18n/t.pipe';
+import { t } from '../../../core/i18n/i18n';
 
 /** A store whose data can be exported to and restored from a JSON backup. */
 export interface Backupable {
@@ -21,14 +23,14 @@ export interface Backupable {
 @Component({
   selector: 'app-backup-menu',
   standalone: true,
-  imports: [MenuComponent, MenuItemComponent, IconComponent, ConfirmDialogComponent],
+  imports: [TPipe, MenuComponent, MenuItemComponent, IconComponent, ConfirmDialogComponent],
   template: `
-    <app-menu [ariaLabel]="'More ' + name() + ' actions'">
+    <app-menu [ariaLabel]="'More {name} actions' | t: { name: (name() | t) }">
       <button appMenuItem type="button" (click)="export()">
-        <app-icon name="download" [size]="16" /> Export backup
+        <app-icon name="download" [size]="16" /> {{ 'Export backup' | t }}
       </button>
       <button appMenuItem type="button" (click)="picker.click()">
-        <app-icon name="upload" [size]="16" /> Import backup…
+        <app-icon name="upload" [size]="16" /> {{ 'Import backup…' | t }}
       </button>
       <ng-content />
     </app-menu>
@@ -68,12 +70,12 @@ export class BackupMenuComponent {
     try {
       this.pending.set({ file: file.name, data: await readJsonFile(file) });
     } catch {
-      this.toast.show(`That file is not a valid ${this.name()} backup.`);
+      this.toast.show(t('That file is not a valid {name} backup.', { name: t(this.name()) }));
     }
   }
 
   protected restore(data: unknown): void {
     const ok = this.store().importState(data);
-    this.toast.show(ok ? 'Backup imported' : `That file is not a valid ${this.name()} backup.`);
+    this.toast.show(ok ? t('Backup imported') : t('That file is not a valid {name} backup.', { name: t(this.name()) }));
   }
 }

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { ButtonComponent } from '../button/button.component';
 import { DialogComponent } from '../dialog/dialog.component';
+import { TPipe } from '../../../core/i18n/t.pipe';
 
 /**
  * "Are you sure?" modal for deletes. Show it with @if.
@@ -11,13 +12,13 @@ import { DialogComponent } from '../dialog/dialog.component';
 @Component({
   selector: 'app-confirm-dialog',
   standalone: true,
-  imports: [DialogComponent, ButtonComponent],
+  imports: [TPipe, DialogComponent, ButtonComponent],
   template: `
     <app-dialog #dialog size="sm" [heading]="heading()" (closed)="closed.emit()">
-      <p>{{ message() }}</p>
+      <p>{{ message() | t }}</p>
       <div dialogFooter>
-        <button appButton type="button" (click)="dialog.close()">{{ cancelLabel() }}</button>
-        <button appButton type="button" variant="danger" (click)="confirm(dialog)">{{ confirmLabel() }}</button>
+        <button appButton type="button" (click)="dialog.close()">{{ cancelLabel() | t }}</button>
+        <button appButton type="button" variant="danger" (click)="confirm(dialog)">{{ confirmLabel() | t }}</button>
       </div>
     </app-dialog>
   `,

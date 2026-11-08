@@ -18,6 +18,8 @@ import {
 import { LEAD_STAGES } from '../leads/leads.model';
 import { pctText } from './kpis.model';
 import { KpisStore } from './kpis.store';
+import { TPipe } from '../../../core/i18n/t.pipe';
+import { t } from '../../../core/i18n/i18n';
 
 interface Card {
   label: string;
@@ -32,7 +34,7 @@ interface Card {
 @Component({
   selector: 'app-kpis-page',
   standalone: true,
-  imports: [
+  imports: [TPipe, 
     RouterLink,
     PageHeaderComponent,
     MonthSwitcherComponent,
@@ -66,48 +68,48 @@ export class KpisPageComponent {
 
   protected readonly cards = computed<Card[]>(() => {
     const k = this.store.current();
-    const t = this.store.targets();
-    if (!k || !t) return [];
+    const goal = this.store.targets();
+    if (!k || !goal) return [];
     const mrr = k.mrrBani;
     const ret = k.retentionPct;
     const onboarding = k.avgOnboardingHours;
     return [
       {
         label: 'Paying salons',
-        value: `${k.paying} / ${t.payingSalons}`,
-        hint: k.paying < t.breakEvenSalons ? `${t.breakEvenSalons - k.paying} more to break-even (${t.breakEvenSalons})` : 'Break-even reached',
+        value: `${k.paying} / ${goal.payingSalons}`,
+        hint: k.paying < goal.breakEvenSalons ? t('{n} more to break-even ({total})', { n: goal.breakEvenSalons - k.paying, total: goal.breakEvenSalons }) : t('Break-even reached'),
         tone: 'default',
-        percent: percent(k.paying, t.payingSalons),
+        percent: percent(k.paying, goal.payingSalons),
         route: '/tools/subscriptions',
       },
       {
         label: 'MRR',
         value: this.ron(mrr),
-        hint: `goal ${this.ron(t.mrrBani)} · costs ${this.ron(t.monthlyCostsBani)}`,
-        tone: mrr >= t.monthlyCostsBani ? 'positive' : 'default',
-        percent: percent(mrr, t.mrrBani),
+        hint: t('goal {goal} · costs {costs}', { goal: this.ron(goal.mrrBani), costs: this.ron(goal.monthlyCostsBani) }),
+        tone: mrr >= goal.monthlyCostsBani ? 'positive' : 'default',
+        percent: percent(mrr, goal.mrrBani),
         route: '/tools/subscriptions',
       },
       {
         label: 'Retention this month',
         value: pctText(ret),
-        hint: ret === null ? 'No paying salons at the start of the month' : `of ${k.payingAtStart} paying at the start · target ≥ ${t.retentionPct}%`,
-        tone: ret === null ? 'default' : ret >= t.retentionPct ? 'positive' : 'negative',
+        hint: ret === null ? t('No paying salons at the start of the month') : t('of {n} paying at the start · target ≥ {pct}%', { n: k.payingAtStart, pct: goal.retentionPct }),
+        tone: ret === null ? 'default' : ret >= goal.retentionPct ? 'positive' : 'negative',
         percent: ret,
         route: '/tools/salons',
       },
       {
         label: 'Retention this year',
         value: pctText(k.retentionYtdPct),
-        hint: k.retentionYtdPct === null ? 'Nobody paid on 1 January yet' : `since 1 January · target ≥ ${t.retentionPct}%`,
-        tone: k.retentionYtdPct === null ? 'default' : k.retentionYtdPct >= t.retentionPct ? 'positive' : 'negative',
+        hint: k.retentionYtdPct === null ? t('Nobody paid on 1 January yet') : t('since 1 January · target ≥ {pct}%', { pct: goal.retentionPct }),
+        tone: k.retentionYtdPct === null ? 'default' : k.retentionYtdPct >= goal.retentionPct ? 'positive' : 'negative',
         percent: k.retentionYtdPct,
         route: '/tools/salons',
       },
       {
         label: 'Trial → paid',
         value: pctText(k.trialToPaidPct),
-        hint: k.trialsEnded ? `${k.trialsConverted} of ${k.trialsEnded} trials that ended this month` : 'No trial ended this month',
+        hint: k.trialsEnded ? t('{n} of {total} trials that ended this month', { n: k.trialsConverted, total: k.trialsEnded }) : t('No trial ended this month'),
         tone: 'default',
         percent: k.trialToPaidPct,
         route: '/tools/subscriptions',
@@ -116,9 +118,9 @@ export class KpisPageComponent {
         label: 'Onboarding time',
         value: onboarding === null ? '—' : `${onboarding}h`,
         hint: k.onboardingsLive
-          ? `${k.onboardingsWithin48h} of ${k.onboardingsLive} live within ${t.onboardingHours}h`
-          : 'No salon went live this month',
-        tone: onboarding === null ? 'default' : onboarding <= t.onboardingHours ? 'positive' : 'negative',
+          ? t('{n} of {total} live within {h}h', { n: k.onboardingsWithin48h, total: k.onboardingsLive, h: goal.onboardingHours })
+          : t('No salon went live this month'),
+        tone: onboarding === null ? 'default' : onboarding <= goal.onboardingHours ? 'positive' : 'negative',
         percent: null,
         route: '/tools/onboarding',
       },
@@ -132,8 +134,8 @@ export class KpisPageComponent {
       },
       {
         label: 'Leads this month',
-        value: `${k.leadsNew} new`,
-        hint: `${k.leadsConverted} converted · ${k.leadsLost} lost`,
+        value: t('{n} new', { n: k.leadsNew }),
+        hint: t('{converted} converted · {lost} lost', { converted: k.leadsConverted, lost: k.leadsLost }),
         tone: 'default',
         percent: null,
         route: '/tools/leads',
@@ -143,7 +145,7 @@ export class KpisPageComponent {
 
   protected readonly pipeline = computed(() => {
     const p = this.store.current()?.pipeline ?? {};
-    return LEAD_STAGES.map((s) => ({ label: s.label, count: p[s.value] ?? 0 }));
+    return LEAD_STAGES.map((s) => ({ label: t(s.label), count: p[s.value] ?? 0 }));
   });
 
   protected readonly mrrSeries: ChartSeries[] = [{ key: 'mrr', label: 'MRR', color: 'var(--chart-1)' }];

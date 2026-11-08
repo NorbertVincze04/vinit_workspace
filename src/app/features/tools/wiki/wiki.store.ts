@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { ApiService, apiError } from '../../../core/api/api.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { t } from '../../../core/i18n/i18n';
 
 export type WikiCategory = 'onboarding' | 'deploy' | 'json_schema' | 'backups' | 'sales' | 'other';
 
@@ -12,7 +13,7 @@ export const WIKI_CATEGORIES: readonly { value: WikiCategory; label: string }[] 
   { value: 'sales', label: 'Sales' },
   { value: 'other', label: 'Other' },
 ];
-export const wikiCategory = (c: string): string => WIKI_CATEGORIES.find((x) => x.value === c)?.label ?? c;
+export const wikiCategory = (c: string): string => t(WIKI_CATEGORIES.find((x) => x.value === c)?.label ?? c);
 
 export interface WikiListItem {
   id: string;
@@ -53,7 +54,7 @@ export class WikiStore {
       if (category !== 'all') params['category'] = category;
       return (await this.api.get<{ items: WikiListItem[] }>('/wiki', params)).items;
     } catch (error) {
-      this.toast.show(`Could not load the wiki: ${apiError(error).message}`, 6000);
+      this.toast.show(t('Could not load the wiki: {error}', { error: apiError(error).message }), 6000);
       return [];
     }
   }
@@ -86,7 +87,7 @@ export class WikiStore {
     try {
       return (await this.api.write<{ item: WikiPage }>(method, path, body)).item;
     } catch (error) {
-      this.toast.show(`Not saved: ${apiError(error).message}`, 9000);
+      this.toast.show(t('Not saved: {error}', { error: apiError(error).message }), 9000);
       throw error;
     }
   }

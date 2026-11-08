@@ -119,6 +119,39 @@ ul {
 .save.failed {
   color: var(--red);
 }
+
+/* Language: "Language  RO | EN". */
+.lang {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+}
+.lang-label {
+  margin-right: auto;
+  font-size: 13px;
+  color: var(--muted);
+}
+.lang button {
+  min-width: 38px;
+  padding: 4px 8px;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.lang button:hover {
+  color: var(--ink);
+}
+.lang button[aria-pressed="true"] {
+  color: var(--main);
+  background: var(--main-soft);
+  border-color: var(--main);
+}
 .save.failed .dot {
   background: var(--red);
 }

@@ -64,6 +64,9 @@ import { FeatureRequest, requestStatus } from '../../features/features.model';
 import { OnboardingChecklistComponent } from '../../onboarding/components/onboarding-checklist/onboarding-checklist.component';
 import { Onboarding } from '../../onboarding/onboarding.model';
 import { OnboardingStore } from '../../onboarding/onboarding.store';
+import { TPipe } from '../../../../core/i18n/t.pipe';
+import { t } from '../../../../core/i18n/i18n';
+import { translateServer } from '../../../../core/i18n/server-messages';
 
 interface SalonLead {
   id: string;
@@ -88,7 +91,7 @@ type Dialog =
 @Component({
   selector: 'app-salon-detail-page',
   standalone: true,
-  imports: [
+  imports: [TPipe, 
     RouterLink,
     PageHeaderComponent,
     ButtonComponent,
@@ -178,12 +181,12 @@ export class SalonDetailPageComponent {
       { label: 'Tenant slug', value: s.tenantSlug, hint: 'shops.slug in the booking product' },
       { label: 'Signed', value: formatDateTime(s.signedAt) },
       { label: 'Went live', value: formatDate(s.goLiveOn) },
-      { label: 'Deploy', value: deploy.label, tone: deploy.tone, hint: s.deployedAt ? `since ${formatDateTime(s.deployedAt)}` : '' },
+      { label: 'Deploy', value: t(deploy.label), tone: deploy.tone, hint: s.deployedAt ? t('since {date}', { date: formatDateTime(s.deployedAt) }) : '' },
       {
         label: 'JSON config',
-        value: s.configVersion || (s.configUrl ? 'Open' : ''),
+        value: s.configVersion || (s.configUrl ? t('Open') : ''),
         href: s.configUrl || undefined,
-        hint: s.configUpdatedAt ? `updated ${formatDateTime(s.configUpdatedAt)}` : '',
+        hint: s.configUpdatedAt ? t('updated {date}', { date: formatDateTime(s.configUpdatedAt) }) : '',
       },
       { label: 'Uptime monitor', value: s.uptimeMonitorId },
       { label: 'Referred by', value: referrer?.name ?? '', route: referrer ? `/tools/salons/${referrer.id}` : undefined },
@@ -249,7 +252,7 @@ export class SalonDetailPageComponent {
     try {
       this.timeline.set(await this.store.timeline(this.id()));
     } catch (e) {
-      this.toast.show(`Could not load the timeline: ${apiError(e).message}`, 6000);
+      this.toast.show(t('Could not load the timeline: {error}', { error: apiError(e).message }), 6000);
     }
   }
 
@@ -262,6 +265,8 @@ export class SalonDetailPageComponent {
   protected kindLabel = kindLabel;
   protected stageLabel = (s: string | null) => (s ? stageInfo(s).label : '');
   protected activityLabel = activityLabel;
+  /** Timeline summaries are written by the server in English. */
+  protected readonly tr = translateServer;
   protected formatDate = formatDate;
   protected formatDateTime = formatDateTime;
 
@@ -312,7 +317,7 @@ export class SalonDetailPageComponent {
           const body = statusBody(values);
           if (body.status === s.status) return;
           await this.store.setStatus(s.id, body);
-          this.toast.show(`${s.name} is now ${salonStatus(body.status).label.toLowerCase()}`);
+          this.toast.show(t('{name} is now {status}', { name: s.name, status: t(salonStatus(body.status).label).toLowerCase() }));
           break;
         }
         case 'domain':
@@ -346,12 +351,12 @@ export class SalonDetailPageComponent {
     try {
       if (target === 'salon') {
         await this.store.remove(s.id);
-        this.toast.show(`Deleted ${s.name}`);
+        this.toast.show(t('Deleted {name}', { name: s.name }));
         void this.router.navigate(['/tools/salons']);
         return;
       }
       await this.store.removeDomain(s.id, target.id);
-      this.toast.show(`Removed ${target.domain}`);
+      this.toast.show(t('Removed {name}', { name: target.domain }));
       await this.load();
     } catch {
       /* toast shown */
@@ -360,7 +365,7 @@ export class SalonDetailPageComponent {
 
   protected deleteMessage(target: 'salon' | SalonDomain): string {
     return target === 'salon'
-      ? `“${this.salon()?.name}”, its domains and history will be removed. Salons with subscriptions, payments or tickets can't be deleted: mark them churned instead.`
-      : `“${target.domain}” will be removed from this salon.`;
+      ? t("“{name}”, its domains and history will be removed. Salons with subscriptions, payments or tickets can't be deleted: mark them churned instead.", { name: this.salon()?.name ?? '' })
+      : t('“{domain}” will be removed from this salon.', { domain: target.domain });
   }
 }

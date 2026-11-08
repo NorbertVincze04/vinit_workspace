@@ -22,17 +22,18 @@ export function clientFormFields(prefix = '', show?: (v: FormValues) => boolean)
       placeholder: 'Barber House SRL',
       show: when(),
     },
-    { key: k('contactPerson'), label: 'Contact person', type: 'text', maxLength: 200, show: when(isCompany) },
-    { key: k('phone'), label: 'Phone', type: 'tel', maxLength: 40, show: when() },
-    { key: k('email'), label: 'Email', type: 'email', maxLength: 200, show: when() },
+    { key: k('contactPerson'), label: 'Contact person', type: 'text', maxLength: 200, placeholder: 'e.g. Andrei Popescu', show: when(isCompany) },
+    { key: k('phone'), label: 'Phone', type: 'tel', maxLength: 40, placeholder: '0740 123 456', show: when() },
+    { key: k('email'), label: 'Email', type: 'email', maxLength: 200, placeholder: 'contact@barberhouse.ro', show: when() },
     // Inside a salon form the salon already has a city: this one is only needed when it differs.
-    { key: k('city'), label: prefix ? 'Client city (if different)' : 'City', type: 'text', maxLength: 100, show: when() },
+    { key: k('city'), label: prefix ? 'Client city (if different)' : 'City', type: 'text', maxLength: 100, placeholder: 'Cluj-Napoca', show: when() },
     {
       key: k('businessAddress'),
       label: 'Business address',
       type: 'text',
       required: true,
       maxLength: 500,
+      minLength: 10,
       span: 'full',
       placeholder: 'Street, number, city, county',
       hint: 'Registered address of the business, used on invoices and contracts.',
@@ -44,6 +45,7 @@ export function clientFormFields(prefix = '', show?: (v: FormValues) => boolean)
       type: 'email',
       maxLength: 200,
       span: 'full',
+      placeholder: 'facturi@barberhouse.ro',
       hint: 'Only if invoices go to a different address.',
       show: when(),
     },
@@ -52,7 +54,7 @@ export function clientFormFields(prefix = '', show?: (v: FormValues) => boolean)
 
 export const CLIENT_FIELDS: readonly FieldDef[] = [
   ...clientFormFields(),
-  { key: 'notes', label: 'Notes', type: 'textarea', span: 'full' },
+  { key: 'notes', label: 'Notes', type: 'textarea', span: 'full', placeholder: 'Anything useful about who pays: preferred contact, invoice details…' },
 ];
 
 /** Form values (optionally under a prefix) → API body for a client. */

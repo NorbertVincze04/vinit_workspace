@@ -3,7 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { apiError } from '../../core/api/api.service';
 import { safeNext } from '../../core/auth/auth.guard';
 import { AuthService } from '../../core/auth/auth.service';
+import { Lang, lang, setLang, t } from '../../core/i18n/i18n';
 import { ButtonComponent, CardComponent, LogoComponent, TextFieldComponent } from '../../shared/ui';
+import { TPipe } from '../../core/i18n/t.pipe';
 
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
@@ -11,7 +13,7 @@ const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ButtonComponent, CardComponent, LogoComponent, TextFieldComponent],
+  imports: [TPipe, ButtonComponent, CardComponent, LogoComponent, TextFieldComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,6 +28,11 @@ export class LoginComponent {
   protected readonly busy = signal(false);
   protected readonly errors = signal<{ email?: string; password?: string; form?: string }>({});
   protected readonly expired = this.route.snapshot.queryParamMap.get('expired') === '1';
+  protected readonly currentLang = lang();
+
+  protected switchLang(next: Lang): void {
+    if (next !== this.currentLang) setLang(next);
+  }
 
   protected async submit(event: Event): Promise<void> {
     event.preventDefault();
@@ -33,8 +40,8 @@ export class LoginComponent {
 
     const email = this.email().trim();
     const errors: { email?: string; password?: string } = {};
-    if (!EMAIL.test(email)) errors.email = 'Enter a valid email address.';
-    if (!this.password()) errors.password = 'Enter your password.';
+    if (!EMAIL.test(email)) errors.email = t('Enter a valid email address.');
+    if (!this.password()) errors.password = t('Enter your password.');
     this.errors.set(errors);
     if (errors.email || errors.password) return;
 

@@ -19,12 +19,14 @@ import { AttachmentsComponent } from '../../contracts/components/attachments/att
 import { ContractDialogComponent } from '../../contracts/components/contract-dialog/contract-dialog.component';
 import { Contract, SalonContracts, contractBody, contractFields, contractStatus, kindLabel } from '../../contracts/contracts.model';
 import { ContractsStore } from '../../contracts/contracts.store';
+import { TPipe } from '../../../../core/i18n/t.pipe';
+import { t } from '../../../../core/i18n/i18n';
 
 /** Salon page tab: signed contract and DPA at a glance, all contracts, and the salon's files. */
 @Component({
   selector: 'app-salon-contracts',
   standalone: true,
-  imports: [PanelComponent, FactsComponent, ButtonComponent, LedgerComponent, LedgerRowComponent, StatusPillComponent, FormDialogComponent, ConfirmDialogComponent, ContractDialogComponent, AttachmentsComponent],
+  imports: [TPipe, PanelComponent, FactsComponent, ButtonComponent, LedgerComponent, LedgerRowComponent, StatusPillComponent, FormDialogComponent, ConfirmDialogComponent, ContractDialogComponent, AttachmentsComponent],
   template: `
     @if (data(); as d) {
       <div class="grid">
@@ -36,7 +38,7 @@ import { ContractsStore } from '../../contracts/contracts.store';
         </app-panel>
       </div>
       <app-panel heading="Contracts" [meta]="d.contracts.length + ''" [flush]="d.contracts.length > 0">
-        <button panelAction appButton variant="ghost" size="sm" type="button" (click)="openForm(null)">New contract</button>
+        <button panelAction appButton variant="ghost" size="sm" type="button" (click)="openForm(null)">{{ 'New contract' | t }}</button>
         @if (d.contracts.length) {
           <app-ledger [headers]="['Contract', 'Signed', 'Renewal', 'Status']" columns="minmax(0, 2fr) 110px 110px 110px">
             @for (c of d.contracts; track c.id) {
@@ -52,7 +54,7 @@ import { ContractsStore } from '../../contracts/contracts.store';
             }
           </app-ledger>
         } @else {
-          <p class="muted small pad">No contract yet. Signing the subscription contract starts the onboarding.</p>
+          <p class="muted small pad">{{ 'No contract yet. Signing the subscription contract starts the onboarding.' | t }}</p>
         }
       </app-panel>
     }
@@ -93,8 +95,8 @@ export class SalonContractsComponent {
     const d = this.data();
     if (!d) return [];
     return [
-      { label: 'Subscription contract', value: d.contractSignedOn ? `Signed ${formatDate(d.contractSignedOn)}` : 'Not signed', warn: !d.contractSignedOn },
-      { label: 'DPA (GDPR)', value: d.dpaSignedOn ? `Signed ${formatDate(d.dpaSignedOn)}` : 'Not signed', warn: !d.dpaSignedOn },
+      { label: 'Subscription contract', value: d.contractSignedOn ? t('Signed {date}', { date: formatDate(d.contractSignedOn) }) : t('Not signed'), warn: !d.contractSignedOn },
+      { label: 'DPA (GDPR)', value: d.dpaSignedOn ? t('Signed {date}', { date: formatDate(d.dpaSignedOn) }) : t('Not signed'), warn: !d.dpaSignedOn },
     ];
   });
 

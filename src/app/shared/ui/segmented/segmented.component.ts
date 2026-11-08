@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
 import { SelectOption } from '../form-field/field.types';
+import { TPipe } from '../../../core/i18n/t.pipe';
 
 /**
  * Segmented switch for a few mutually exclusive options (e.g. Income / Expense / Invest).
@@ -8,11 +9,12 @@ import { SelectOption } from '../form-field/field.types';
 @Component({
   selector: 'app-segmented',
   standalone: true,
+  imports: [TPipe],
   template: `
-    <div class="seg" role="group" [attr.aria-label]="label()" [style.--seg-count]="options().length">
+    <div class="seg" role="group" [attr.aria-label]="label() | t" [style.--seg-count]="options().length">
       @for (option of options(); track option.value) {
         <button type="button" [attr.aria-pressed]="option.value === value()" (click)="value.set(option.value)">
-          {{ option.label }}
+          {{ option.label | t }}
         </button>
       }
     </div>

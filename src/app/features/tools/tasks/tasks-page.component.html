@@ -2,12 +2,12 @@
   <div pageActions>
     <app-backup-menu [store]="store" name="tasks">
       <button appMenuItem tone="danger" type="button" (click)="resetting.set(true)">
-        <app-icon name="refresh" [size]="16" /> Reset to the plan…
+        <app-icon name="refresh" [size]="16" /> {{ 'Reset to the plan…' | t }}
       </button>
     </app-backup-menu>
   </div>
   <app-progress-summary
-    [label]="store.overall().done + ' of ' + store.overall().total + ' tasks done'"
+    [label]="'{n} of {total} tasks done' | t: { n: store.overall().done, total: store.overall().total }"
     [percent]="store.overall().percent"
   />
 </app-page-header>
@@ -23,7 +23,7 @@
   @for (column of store.columns(); track column.phase.id) {
     <app-phase-card [phase]="column.phase" [done]="column.done" [total]="column.total" unit="tasks" [current]="column.current">
       <button appButton variant="ghost" size="sm" class="add" type="button" (click)="addTask(column.phase.id)">
-        <app-icon name="plus" [size]="16" /> Add task
+        <app-icon name="plus" [size]="16" /> {{ 'Add task' | t }}
       </button>
       @if (column.visible.length) {
         <ul class="tasks">
@@ -43,7 +43,7 @@
           }
         </ul>
       } @else {
-        <p class="none">{{ column.total ? 'No tasks match the filters.' : 'No tasks yet.' }}</p>
+        <p class="none">{{ (column.total ? 'No tasks match the filters.' : 'No tasks yet.') | t }}</p>
       }
     </app-phase-card>
   }

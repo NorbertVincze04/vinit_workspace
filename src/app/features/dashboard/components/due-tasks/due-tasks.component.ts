@@ -2,6 +2,9 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { RouterLink } from '@angular/router';
 import { BadgeComponent, CheckboxComponent, PanelComponent } from '../../../../shared/ui';
 import { TasksStore } from '../../../tools/tasks/tasks.store';
+import { TPipe } from '../../../../core/i18n/t.pipe';
+import { t } from '../../../../core/i18n/i18n';
+import { TcPipe } from '../../../../core/i18n/tc.pipe';
 
 const LIMIT = 6;
 
@@ -9,32 +12,32 @@ const LIMIT = 6;
 @Component({
   selector: 'app-due-tasks',
   standalone: true,
-  imports: [RouterLink, PanelComponent, CheckboxComponent, BadgeComponent],
+  imports: [TcPipe, TPipe, RouterLink, PanelComponent, CheckboxComponent, BadgeComponent],
   template: `
     <app-panel heading="Tasks due" [meta]="meta()" [flush]="true">
-      <a panelAction routerLink="/tools/tasks">All tasks</a>
+      <a panelAction routerLink="/tools/tasks">{{ 'All tasks' | t }}</a>
       @if (shown().length) {
         <ul>
           @for (view of shown(); track view.task.id) {
             <li>
-              <app-checkbox [ariaLabel]="'Mark done: ' + view.task.text" (checkedChange)="complete(view.task.id, $event)" />
-              <span class="text">{{ view.task.text || 'Untitled task' }}</span>
+              <app-checkbox [ariaLabel]="'Mark done: {task}' | t: { task: (view.task.text | tc) }" (checkedChange)="complete(view.task.id, $event)" />
+              <span class="text">{{ (view.task.text | tc) || ('Untitled task' | t) }}</span>
               <span class="meta">
                 <app-badge [variant]="view.overdue ? 'danger' : 'outline'">
-                  {{ view.overdue ? 'Overdue · ' : '' }}{{ view.dueLabel }}
+                  {{ view.overdue ? ('Overdue' | t) + ' · ' : '' }}{{ view.dueLabel }}
                 </app-badge>
                 @if (view.task.prio === 'High') {
-                  <app-badge variant="danger">High</app-badge>
+                  <app-badge variant="danger">{{ 'High' | t }}</app-badge>
                 }
               </span>
             </li>
           }
         </ul>
         @if (more()) {
-          <a class="more" routerLink="/tools/tasks">+ {{ more() }} more due</a>
+          <a class="more" routerLink="/tools/tasks">{{ '+{n} more due' | t: { n: more() } }}</a>
         }
       } @else {
-        <p class="empty">Nothing due right now.</p>
+        <p class="empty">{{ 'Nothing due right now.' | t }}</p>
       }
     </app-panel>
   `,
@@ -65,7 +68,7 @@ export class DueTasksComponent {
   protected readonly more = computed(() => Math.max(0, this.store.dueNow().length - LIMIT));
   protected readonly meta = computed(() => {
     const month = this.store.currentMonth();
-    return month < 1 ? 'Before the plan starts' : month > 12 ? 'Year 1 finished' : `Plan month ${month}`;
+    return month < 1 ? t('Before the plan starts') : month > 12 ? t('Year 1 finished') : t('Plan month {month}', { month });
   });
 
   protected complete(id: string, done: boolean): void {

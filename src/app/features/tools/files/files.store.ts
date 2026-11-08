@@ -6,6 +6,7 @@ import { ApiService, apiError } from '../../../core/api/api.service';
 import { matchesSearch } from '../../../core/utils/text';
 import { ChipOption } from '../../../shared/ui';
 import { FILE_KINDS, FileFilters, MAX_FILE_BYTES, StoredFile, formatBytes, kindInfo, kindOf } from './files.model';
+import { t } from '../../../core/i18n/i18n';
 
 export interface UploadResult {
   added: StoredFile[];
@@ -64,9 +65,9 @@ export class FilesStore {
     for (const file of list) {
       try {
         if (!file.size) {
-          result.failed.push(`${file.name}: the file is empty`);
+          result.failed.push(t('{name}: the file is empty', { name: file.name }));
         } else if (file.size > MAX_FILE_BYTES) {
-          result.failed.push(`${file.name}: larger than ${formatBytes(MAX_FILE_BYTES)}`);
+          result.failed.push(t('{name}: larger than {size}', { name: file.name, size: formatBytes(MAX_FILE_BYTES) }));
         } else {
           result.added.push(await this.send(file));
         }

@@ -128,7 +128,7 @@ Wiki, Files).
 | Wiki | `/tools/wiki` | How-tos and SOPs in Markdown (live preview), search that ignores diacritics, every version kept and restorable, archive; starts with onboarding, plans & offers and backups pages |
 | Infra | `/tools/infra` | Services and their monthly cost (from the linked Finances payment, decision G, or an estimate), SMS against the 1.500 budget, backups and restore tests (`npm run db:backup` records itself), storage; renewals go to the Calendar |
 | Finances | `/tools/finances` | Transactions, recurring payments, investments, accounts, budgets, cash-flow chart, CSV export |
-| Marketing | `/tools/marketing` | 12-month content calendar, communication mix vs. target, copy & hashtags |
+| Marketing | `/tools/marketing` | **Strategy**: objectives, audience & persona, positioning & offer, channel mix, budget and the 12-month campaign plan, all editable, per plan year (Add Year, past years stay visible; Year 1 starts from the business plan, `/marketing/years`). **Content calendar**: posts, ads, DMs and emails per month against the strategy, with copy & hashtags |
 | Roadmap | `/tools/roadmap` | One plan per year (Year 1 = Dec 2026 – Nov 2027, from the plan start): its goals (salons, money, quality, operations) against what actually happened, and its phases with steps. Edit goals; Edit roadmap to add, rename or remove phases and steps; Add Year for the next one. Past years show Reached / Missed. The current year's goals drive the Overview, Subscriptions, KPIs, Infra and alerts |
 | Files | `/tools/files` | Upload shared documents (PDF, PowerPoint, Excel, Word, images…), filter, download, delete |
 
@@ -185,6 +185,8 @@ docker-compose.yml        db (Postgres 16) + api + web (nginx serving the build,
 
 ## Conventions
 
+- **Romanian and English.** The app opens in Romanian; RO | EN in the sidebar (and on the sign-in page) switches and reloads. Write UI text in English and translate it: `{{ 'New deadline' | t }}` in templates, `t('Year {n} added', { n })` in code, `countOf(n, 'day', 'days')` for counts. Add the Romanian text to `core/i18n/ro/<area>.ts` (the English text is the key). Shared components (page header, panel, dialog, form dialog, facts, tabs, chips, toasts…) translate their own labels. Built-in content (Year-1 tasks, roadmap, wiki pages, onboarding checklist, marketing strategy, plans) is shown in the chosen language until someone edits it: `| tc` / `tc()`, pairs in `core/i18n/content/`. Server messages go through `translateServer()` (`apiError()` already does it). In development, a text without a Romanian entry is logged as `[i18n] missing ro:`.
+- **Forms check what is typed.** Every `FieldDef` is validated as you go (required, length, numbers with `min`/`max`, `email`, `tel`, `url`, dates, times) and Save is refused while a field is wrong; add field rules with `validate` (`validDomain`, `validIban`, `validCui`, `validInstagram`, `validWebsite`, `notBefore` in `shared/ui/form/form.model.ts`). Give fields a suggestive `placeholder`.
 - **Reuse before you build.** Import primitives from `shared/ui` and composites from `shared/components`.
 - **Every page starts the same way:**
   ```html

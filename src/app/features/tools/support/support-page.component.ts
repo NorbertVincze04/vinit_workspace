@@ -28,12 +28,14 @@ import { TimeListComponent } from './components/time-list/time-list.component';
 import { ticketBody, ticketFields } from './support.fields';
 import { OPEN_STATUSES, Ticket, TimeEntry, duration, ticketNo } from './support.model';
 import { SupportStore } from './support.store';
+import { TPipe } from '../../../core/i18n/t.pipe';
+import { t } from '../../../core/i18n/i18n';
 
 /** Support tool: tickets from salons and the time spent on them. */
 @Component({
   selector: 'app-support-page',
   standalone: true,
-  imports: [
+  imports: [TPipe, 
     PageHeaderComponent,
     ButtonComponent,
     IconComponent,
@@ -128,19 +130,19 @@ export class SupportPageComponent {
         this.toast.show('Ticket saved');
         this.detail()?.refresh();
       } else {
-        const t = await this.store.createTicket(ticketBody(values, false));
-        this.toast.show(`${ticketNo(t.number)} opened`);
+        const created = await this.store.createTicket(ticketBody(values, false));
+        this.toast.show(t('{ticket} opened', { ticket: ticketNo(created.number) }));
       }
     } catch {
       /* toast shown */
     }
   }
 
-  protected async confirmDelete(t: Ticket): Promise<void> {
+  protected async confirmDelete(ticket: Ticket): Promise<void> {
     try {
-      await this.store.removeTicket(t);
+      await this.store.removeTicket(ticket);
       this.openId.set(null);
-      this.toast.show(`${ticketNo(t.number)} deleted`);
+      this.toast.show(t('{ticket} deleted', { ticket: ticketNo(ticket.number) }));
     } catch {
       /* toast shown */
     }

@@ -18,6 +18,10 @@ import {
 } from '../../../../../shared/ui';
 import { ONBOARDING_HOURS, Onboarding, OnboardingStep, STEP_CATEGORIES, StepCategory, clockOf, statusOf } from '../../onboarding.model';
 import { OnboardingStore } from '../../onboarding.store';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
+import { t } from '../../../../../core/i18n/i18n';
+import { tc } from '../../../../../core/i18n/content';
+import { TcPipe } from '../../../../../core/i18n/tc.pipe';
 
 type Dialog = { kind: 'materials' | 'live' | 'block' | 'signed'; fields: FieldDef[]; values: FormValues };
 
@@ -27,7 +31,7 @@ const nowLocal = (): string => toLocalDateTime(new Date().toISOString());
 @Component({
   selector: 'app-onboarding-checklist',
   standalone: true,
-  imports: [PanelComponent, FactsComponent, MeterComponent, StatusPillComponent, CheckboxComponent, ButtonComponent, MenuComponent, MenuItemComponent, FormDialogComponent],
+  imports: [TcPipe, TPipe, PanelComponent, FactsComponent, MeterComponent, StatusPillComponent, CheckboxComponent, ButtonComponent, MenuComponent, MenuItemComponent, FormDialogComponent],
   templateUrl: './onboarding-checklist.component.html',
   styleUrl: './onboarding-checklist.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -57,12 +61,12 @@ export class OnboardingChecklistComponent {
       { label: 'Signed', value: formatDateTime(o.signedAt) },
       {
         label: 'Materials received',
-        value: o.materialsReceivedAt ? formatDateTime(o.materialsReceivedAt) : 'Not yet',
-        hint: o.materialsReceivedAt ? `the ${ONBOARDING_HOURS}h clock started` : 'the clock starts when they arrive',
+        value: o.materialsReceivedAt ? formatDateTime(o.materialsReceivedAt) : t('Not yet'),
+        hint: o.materialsReceivedAt ? t('the {h}h clock started', { h: ONBOARDING_HOURS }) : t('the clock starts when they arrive'),
       },
-      { label: `Live by (${ONBOARDING_HOURS}h)`, value: formatDateTime(o.targetLiveAt) },
+      { label: t('Live by ({h}h)', { h: ONBOARDING_HOURS }), value: formatDateTime(o.targetLiveAt) },
       { label: 'Went live', value: formatDateTime(o.wentLiveAt) },
-      { label: 'Checklist', value: `${o.stepsDone} of ${o.stepsTotal} done` },
+      { label: 'Checklist', value: t('{n} of {total} done', { n: o.stepsDone, total: o.stepsTotal }) },
     ];
   });
 
@@ -73,7 +77,7 @@ export class OnboardingChecklistComponent {
   }
 
   protected async removeStep(step: OnboardingStep): Promise<void> {
-    await this.run(() => this.store.removeStep(step.id), `Removed “${step.title}”`);
+    await this.run(() => this.store.removeStep(step.id), t('Removed “{name}”', { name: tc(step.title) }));
   }
 
   protected async addStep(): Promise<void> {
@@ -123,7 +127,7 @@ export class OnboardingChecklistComponent {
     const at = fromLocalDateTime(asString(v['at']));
     switch (d.kind) {
       case 'materials':
-        await this.run(() => this.store.update(o.id, { materialsReceivedAt: at }), `The ${ONBOARDING_HOURS}h clock started`);
+        await this.run(() => this.store.update(o.id, { materialsReceivedAt: at }), t('The {h}h clock started', { h: ONBOARDING_HOURS }));
         break;
       case 'signed':
         await this.run(() => this.store.update(o.id, { signedAt: at }));

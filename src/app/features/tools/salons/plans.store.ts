@@ -2,6 +2,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { ApiService, apiError } from '../../../core/api/api.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { Plan, Promotion, planFromApi, promotionFromApi } from './salons.model';
+import { t } from '../../../core/i18n/i18n';
 
 /** Plans (Standard, Premium, Custom) and promotions (Early Bird, beta…), seeded on the server. */
 @Injectable({ providedIn: 'root' })
@@ -42,7 +43,7 @@ export class PlansStore {
       this.promotions.set(promotions.items.map(promotionFromApi));
       this.loaded.set(true);
     } catch (error) {
-      this.toast.show(`Could not load plans: ${apiError(error).message}`, 6000);
+      this.toast.show(t('Could not load plans: {error}', { error: apiError(error).message }), 6000);
     }
   }
 }

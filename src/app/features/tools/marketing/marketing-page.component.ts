@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { PlanCalendarService } from '../../../core/services/plan-calendar.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { persistedSignal } from '../../../core/utils/persisted-signal';
 import { BackupMenuComponent, PlanStartFieldComponent } from '../../../shared/components';
 import {
   ButtonComponent,
@@ -14,22 +15,29 @@ import {
   PageHeaderComponent,
   SelectFieldComponent,
   SelectOption,
+  TabsComponent,
   TextFieldComponent,
 } from '../../../shared/ui';
 import { MarketingOverviewComponent } from './components/marketing-overview/marketing-overview.component';
 import { MonthBriefComponent } from './components/month-brief/month-brief.component';
 import { MonthRailComponent } from './components/month-rail/month-rail.component';
 import { PostItemComponent } from './components/post-item/post-item.component';
-import { FORMATS, MONTH_PLAN } from './marketing.data';
+import { MarketingStrategyComponent } from './components/strategy/marketing-strategy.component';
+import { FORMATS } from './marketing.data';
 import { postFields, postFromForm, postToForm } from './marketing.fields';
 import { Post, PostStatus } from './marketing.model';
 import { MarketingStore } from './marketing.store';
+import { TPipe } from '../../../core/i18n/t.pipe';
+import { t } from '../../../core/i18n/i18n';
+import { TcPipe } from '../../../core/i18n/tc.pipe';
 
-/** Marketing plan tool: the 12-month content calendar from Annex 3. */
+type MarketingTab = 'strategy' | 'content';
+
+/** Marketing tool: the strategy (audience, positioning, channels, budget, 12-month plan) and the content calendar. */
 @Component({
   selector: 'app-marketing-page',
   standalone: true,
-  imports: [
+  imports: [TcPipe, TPipe, 
     PageHeaderComponent,
     ButtonComponent,
     IconComponent,
@@ -46,6 +54,8 @@ import { MarketingStore } from './marketing.store';
     MonthRailComponent,
     MonthBriefComponent,
     PostItemComponent,
+    TabsComponent,
+    MarketingStrategyComponent,
   ],
   templateUrl: './marketing-page.component.html',
   styleUrl: './marketing-page.component.css',
@@ -56,9 +66,28 @@ export class MarketingPageComponent {
   protected readonly plan = inject(PlanCalendarService);
   private readonly toast = inject(ToastService);
 
-  protected readonly monthPlan = MONTH_PLAN;
+  protected readonly tabs = [
+    { value: 'strategy', label: 'Strategy' },
+    { value: 'content', label: 'Content calendar' },
+  ];
+  protected readonly tab = persistedSignal<MarketingTab>('marketing.tab', () => 'strategy', {
+    validate: (v): v is MarketingTab => v === 'strategy' || v === 'content',
+  });
   protected readonly formatOptions: readonly SelectOption[] = [{ value: 'all', label: 'All formats' }, ...FORMATS];
-  protected readonly monthLabel = (n: number): string => this.plan.monthLabel(n);
+  /** "Dec 2026" for month n of the selected year. */
+  protected readonly monthLabel = (n: number): string => this.plan.monthLabel(this.store.planMonth(n));
+
+  protected readonly yearOptions = computed(() =>
+    this.store.years().map((y) => ({ value: String(y.year), label: t('Year {n}', { n: y.year }) + (y.status === 'current' ? ' · ' + t('now') : '') })),
+  );
+  protected readonly yearValue = computed(() => String(this.store.year().year));
+  /** "Dec 2026 – Nov 2027 · This year". */
+  protected readonly range = computed(() => {
+    const y = this.store.year();
+    const status = t(y.status === 'past' ? 'Ended' : y.status === 'current' ? 'This year' : 'Not started');
+    return `${this.monthLabel(1)} – ${this.monthLabel(12)} · ${status}`;
+  });
+  protected readonly removingYear = signal<number | null>(null);
 
   protected readonly expanded = signal<ReadonlySet<string>>(new Set());
   protected readonly form = signal<{ post: Post | null; values: FormValues } | null>(null);
@@ -66,13 +95,33 @@ export class MarketingPageComponent {
 
   /** Field definitions depend on the plan calendar (month labels) and the selected month. */
   protected readonly fields = computed(() =>
-    postFields(this.monthLabel, this.store.filters().month || 1),
+    postFields(this.monthLabel, this.store.filters().month || 1, this.store.strategy()),
   );
 
   protected readonly selectedStats = computed(() => {
     const month = this.store.filters().month;
     return month ? this.store.monthStats()[month - 1] : null;
   });
+
+  protected pickYear(value: string): void {
+    this.store.selectYear(Number(value) || 0);
+    this.expanded.set(new Set());
+  }
+
+  protected async addYear(): Promise<void> {
+    await this.store.addYear();
+    this.expanded.set(new Set());
+  }
+
+  protected setTab(value: string): void {
+    this.tab.set(value === 'content' ? 'content' : 'strategy');
+  }
+
+  /** From the strategy's 12-month plan: that month's content. */
+  protected showMonth(month: number): void {
+    this.selectMonth(month);
+    this.tab.set('content');
+  }
 
   protected selectMonth(month: number): void {
     this.store.setFilters({ month });
@@ -89,6 +138,7 @@ export class MarketingPageComponent {
   }
 
   protected openNew(): void {
+    this.tab.set('content');
     this.form.set({ post: null, values: {} });
   }
 
@@ -101,10 +151,10 @@ export class MarketingPageComponent {
     const editing = this.form()?.post;
     if (editing) {
       this.store.update(editing.id, data);
-      this.toast.show(`Saved ${data.title}`);
+      this.toast.show(t('Saved {name}', { name: data.title }));
     } else {
       this.store.add(data);
-      this.toast.show(`Added ${data.title}`);
+      this.toast.show(t('Added {name}', { name: data.title }));
     }
   }
 
@@ -115,12 +165,12 @@ export class MarketingPageComponent {
 
   protected duplicate(post: Post): void {
     this.store.duplicate(post);
-    this.toast.show(`Duplicated ${post.title || 'item'}`);
+    this.toast.show(t('Duplicated {name}', { name: post.title || t('item') }));
   }
 
   protected confirmDelete(post: Post): void {
     this.store.remove(post.id);
-    this.toast.show(`Deleted ${post.title || 'item'}`);
+    this.toast.show(t('Deleted {name}', { name: post.title || t('item') }));
   }
 
   protected async copyCaption(post: Post): Promise<void> {

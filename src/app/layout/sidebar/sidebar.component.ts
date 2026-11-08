@@ -3,6 +3,8 @@ import { ApiService } from '../../core/api/api.service';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { ACTIVITY_LINK, OVERVIEW_LINK, TOOL_GROUPS, toNavLink } from '../../core/data/tools.data';
 import { AuthService } from '../../core/auth/auth.service';
+import { Lang, lang, setLang } from '../../core/i18n/i18n';
+import { TPipe } from '../../core/i18n/t.pipe';
 import { StorageService } from '../../core/services/storage.service';
 import { ThemeService } from '../../core/services/theme.service';
 import { IconComponent, LogoComponent } from '../../shared/ui';
@@ -16,7 +18,7 @@ import { SearchService } from '../search/search-palette.component';
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, IconComponent, LogoComponent, BellComponent],
+  imports: [RouterLink, RouterLinkActive, IconComponent, LogoComponent, BellComponent, TPipe],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,6 +40,19 @@ export class SidebarComponent {
   protected readonly overview = OVERVIEW_LINK;
   protected readonly activity = ACTIVITY_LINK;
   private readonly search = inject(SearchService);
+
+  protected readonly currentLang = lang();
+  protected readonly languages: readonly { value: Lang; short: string; name: string }[] = [
+    { value: 'ro', short: 'RO', name: 'Română' },
+    { value: 'en', short: 'EN', name: 'English' },
+  ];
+
+  /** Reloads the app in the other language, once pending saves have reached the server. */
+  protected async switchLang(next: Lang): Promise<void> {
+    if (next === this.currentLang) return;
+    for (let i = 0; i < 50 && this.api.pending() > 0; i++) await new Promise((r) => setTimeout(r, 100));
+    setLang(next);
+  }
 
   protected openSearch(): void {
     this.navigate.emit();

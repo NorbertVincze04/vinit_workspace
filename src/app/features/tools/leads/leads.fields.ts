@@ -1,5 +1,5 @@
 import { fromLocalDateTime } from '../../../core/utils/date';
-import { FieldDef, FormValues, asNumber, asString } from '../../../shared/ui';
+import { FieldDef, FormValues, asNumber, asString, validInstagram, validWebsite } from '../../../shared/ui';
 import { clientFormFields } from '../clients/clients.fields';
 import { cleanDomain } from '../clients/clients.model';
 import { planOptions } from '../salons/salons.fields';
@@ -11,13 +11,13 @@ const isLost = (v: FormValues): boolean => v['stage'] === 'lost';
 export function leadFields(plans: readonly Plan[], salons: readonly Salon[], isNew: boolean): FieldDef[] {
   const fields: FieldDef[] = [
     { key: 'businessName', label: 'Business name', type: 'text', required: true, maxLength: 200, span: 'full', placeholder: 'Barber Club' },
-    { key: 'contactName', label: 'Contact person', type: 'text', maxLength: 200 },
-    { key: 'city', label: 'City', type: 'text', maxLength: 100 },
-    { key: 'phone', label: 'Phone', type: 'tel', maxLength: 40 },
-    { key: 'email', label: 'Email', type: 'email', maxLength: 200 },
-    { key: 'instagram', label: 'Instagram', type: 'text', maxLength: 200, placeholder: '@barberclub' },
-    { key: 'website', label: 'Website', type: 'text', maxLength: 500 },
-    { key: 'employees', label: 'Barbers / staff', type: 'number', integer: true, placeholder: 'Unknown' },
+    { key: 'contactName', label: 'Contact person', type: 'text', maxLength: 200, placeholder: 'e.g. Andrei Popescu' },
+    { key: 'city', label: 'City', type: 'text', maxLength: 100, placeholder: 'Cluj-Napoca' },
+    { key: 'phone', label: 'Phone', type: 'tel', maxLength: 40, placeholder: '0740 123 456' },
+    { key: 'email', label: 'Email', type: 'email', maxLength: 200, placeholder: 'contact@barberclub.ro' },
+    { key: 'instagram', label: 'Instagram', type: 'text', maxLength: 200, placeholder: '@barberclub', validate: validInstagram },
+    { key: 'website', label: 'Website', type: 'text', maxLength: 500, placeholder: 'barberclub.ro', validate: validWebsite },
+    { key: 'employees', label: 'Barbers / staff', type: 'number', integer: true, min: 0, max: 500, placeholder: 'Unknown' },
     { key: 'services', label: 'Services', type: 'text', maxLength: 2000, placeholder: 'Haircut, beard, kids' },
     { key: 'source', label: 'Source', type: 'select', default: 'instagram_dm', options: LEAD_SOURCES },
     { key: 'sourceDetail', label: 'Source detail', type: 'text', maxLength: 500, placeholder: 'Campaign, event, who referred them' },
@@ -44,7 +44,7 @@ export function leadFields(plans: readonly Plan[], salons: readonly Salon[], isN
       { key: 'lostReason', label: 'Why lost', type: 'select', show: isLost, options: LOST_REASONS },
     );
   }
-  fields.push({ key: 'notes', label: 'Notes', type: 'textarea', span: 'full' });
+  fields.push({ key: 'notes', label: 'Notes', type: 'textarea', span: 'full', placeholder: 'What matters for the sale: current booking tool, prices, objections…' });
   return fields;
 }
 
@@ -81,7 +81,7 @@ export const LOST_FIELDS: readonly FieldDef[] = [
 
 export const ACTIVITY_FIELDS: readonly FieldDef[] = [
   { key: 'kind', label: 'Type', type: 'switch', default: 'dm', options: ACTIVITY_KINDS, span: 'full' },
-  { key: 'body', label: 'What happened', type: 'textarea', required: true, maxLength: 5000, span: 'full' },
+  { key: 'body', label: 'What happened', type: 'textarea', required: true, maxLength: 5000, span: 'full', placeholder: 'What happened? e.g. Sent the demo link, they reply next week' },
   { key: 'nextFollowUpOn', label: 'Next follow-up', type: 'date', hint: 'Leave empty to keep the current one.' },
 ];
 
@@ -90,8 +90,8 @@ const NEW_CLIENT = 'new';
 /** Convert: the salon (pre-filled from the lead) and who pays for it (a new client by default). */
 export function convertFields(lead: Lead, plans: readonly Plan[], freeClients: readonly { id: string; name: string }[]): FieldDef[] {
   return [
-    { key: 'name', label: 'Salon name', type: 'text', required: true, maxLength: 200, default: lead.businessName },
-    { key: 'city', label: 'City', type: 'text', maxLength: 100, default: lead.city },
+    { key: 'name', label: 'Salon name', type: 'text', required: true, maxLength: 200, default: lead.businessName, placeholder: 'Barber Club' },
+    { key: 'city', label: 'City', type: 'text', maxLength: 100, default: lead.city, placeholder: 'Cluj-Napoca' },
     {
       key: 'status',
       label: 'Starts as',

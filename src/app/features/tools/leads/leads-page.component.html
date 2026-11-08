@@ -1,10 +1,10 @@
 <app-page-header title="Leads" description="Sales pipeline: drag a salon from first message to demo, then convert it into a client and salon.">
   <div pageActions>
     <app-menu ariaLabel="More lead actions">
-      <button appMenuItem type="button" (click)="picker.click()"><app-icon name="upload" [size]="16" /> Import from CSV…</button>
+      <button appMenuItem type="button" (click)="picker.click()"><app-icon name="upload" [size]="16" /> {{ 'Import from CSV…' | t }}</button>
     </app-menu>
     <button appButton variant="primary" type="button" (click)="openNew()">
-      <app-icon name="plus" [size]="16" /> New lead
+      <app-icon name="plus" [size]="16" /> {{ 'New lead' | t }}
     </button>
   </div>
 </app-page-header>
@@ -39,14 +39,14 @@
     heading="No leads yet"
     text="Add the salons you contact (Instagram DMs, visits, calls), or import your prospect list from a CSV file."
   >
-    <button appButton variant="primary" type="button" (click)="openNew()">Add lead</button>
-    <button appButton type="button" (click)="picker.click()">Import CSV</button>
+    <button appButton variant="primary" type="button" (click)="openNew()">{{ 'Add lead' | t }}</button>
+    <button appButton type="button" (click)="picker.click()">{{ 'Import CSV' | t }}</button>
   </app-empty-state>
 } @else if (store.view() === 'board') {
   <app-lead-board [columns]="store.columns()" (moved)="onDrop($event)" (open)="openId.set($event.id)" />
 } @else if (!store.visible().length) {
   <app-empty-state heading="No leads match" text="Try a different search or follow-up filter.">
-    <button appButton type="button" (click)="store.clearFilters()">Clear filters</button>
+    <button appButton type="button" (click)="store.clearFilters()">{{ 'Clear filters' | t }}</button>
   </app-empty-state>
 } @else {
   <app-ledger [headers]="['Lead', 'Contact', 'Stage', 'Follow-up']" columns="minmax(0, 1.8fr) minmax(0, 1.4fr) 130px 120px">
@@ -112,25 +112,25 @@
 @if (importing(); as p) {
   <app-dialog #importDialog heading="Import leads" [subheading]="p.file" (closed)="importing.set(null)">
     <p>
-      <strong>{{ p.rows.length }}</strong> leads found.
+      <strong>{{ p.rows.length }}</strong> {{ (p.rows.length === 1 ? 'lead found.' : 'leads found.') | t }}
       @if (p.withoutName) {
-        {{ p.withoutName }} {{ p.withoutName === 1 ? 'row' : 'rows' }} without a business name will be skipped.
+        {{ (p.withoutName === 1 ? '1 row without a business name will be skipped.' : '{n} rows without a business name will be skipped.') | t: { n: p.withoutName } }}
       }
-      Leads already on the board (same name and phone) are skipped too. New leads start in Contacted.
+      {{ 'Leads already on the board (same name and phone) are skipped too. New leads start in Contacted.' | t }}
     </p>
     <div class="mapping">
       @for (m of p.mapping; track $index) {
         <span>{{ m.header }}</span>
         @if (m.field) {
-          <span>→ {{ fieldLabel(m.field) }}</span>
+          <span>→ {{ fieldLabel(m.field) | t }}</span>
         } @else {
-          <span class="muted">not imported</span>
+          <span class="muted">{{ 'not imported' | t }}</span>
         }
       }
     </div>
     <div dialogFooter>
-      <button appButton type="button" (click)="importDialog.close()">Cancel</button>
-      <button appButton variant="primary" type="button" (click)="runImport(importDialog)">Import {{ p.rows.length }} leads</button>
+      <button appButton type="button" (click)="importDialog.close()">{{ 'Cancel' | t }}</button>
+      <button appButton variant="primary" type="button" (click)="runImport(importDialog)">{{ 'Import' | t }} {{ p.rows.length }} {{ 'leads' | t }}</button>
     </div>
   </app-dialog>
 }

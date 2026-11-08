@@ -4,6 +4,7 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 import { Lead, LeadStage } from '../../leads.model';
 import { LeadColumn } from '../../leads.store';
 import { LeadCardComponent } from '../lead-card/lead-card.component';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
 
 export interface LeadDrop {
   lead: Lead;
@@ -20,14 +21,14 @@ export interface LeadDrop {
 @Component({
   selector: 'app-lead-board',
   standalone: true,
-  imports: [CdkDropListGroup, CdkDropList, CdkDrag, CdkScrollable, LeadCardComponent],
+  imports: [TPipe, CdkDropListGroup, CdkDropList, CdkDrag, CdkScrollable, LeadCardComponent],
   template: `
     <!-- cdkScrollable: the board scrolls sideways by itself while a card is dragged near its edge. -->
     <div class="board" cdkDropListGroup cdkScrollable>
       @for (col of columns(); track col.stage) {
         <section class="col" [attr.aria-label]="col.label">
           <header>
-            <span class="title">{{ col.label }}</span>
+            <span class="title">{{ col.label | t }}</span>
             <span class="n">{{ col.leads.length }}</span>
           </header>
           <div

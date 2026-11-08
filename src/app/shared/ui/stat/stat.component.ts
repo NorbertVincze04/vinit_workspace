@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { TPipe } from '../../../core/i18n/t.pipe';
 
 export type StatTone = 'default' | 'positive' | 'negative' | 'brand' | 'inverse';
 
@@ -9,11 +10,12 @@ export type StatTone = 'default' | 'positive' | 'negative' | 'brand' | 'inverse'
 @Component({
   selector: 'app-stat',
   standalone: true,
+  imports: [TPipe],
   template: `
-    <span class="label">{{ label() }}</span>
+    <span class="label">{{ label() | t }}</span>
     <b class="value">{{ value() }}</b>
     @if (hint()) {
-      <span class="hint">{{ hint() }}</span>
+      <span class="hint">{{ hint() | t }}</span>
     }
   `,
   styleUrl: './stat.component.css',

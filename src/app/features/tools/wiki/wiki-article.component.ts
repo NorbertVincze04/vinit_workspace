@@ -14,12 +14,16 @@ import {
   SegmentedComponent,
 } from '../../../shared/ui';
 import { WIKI_CATEGORIES, WikiPage, WikiRevision, WikiStore, wikiCategory } from './wiki.store';
+import { TPipe } from '../../../core/i18n/t.pipe';
+import { t } from '../../../core/i18n/i18n';
+import { TcPipe } from '../../../core/i18n/tc.pipe';
+import { tc } from '../../../core/i18n/content';
 
 /** /tools/wiki/:slug — read a page, edit it (Markdown with live preview), see and restore old versions. */
 @Component({
   selector: 'app-wiki-article',
   standalone: true,
-  imports: [RouterLink, PageHeaderComponent, ButtonComponent, MenuComponent, MenuItemComponent, SegmentedComponent, DialogComponent, EmptyStateComponent],
+  imports: [TcPipe, TPipe, RouterLink, PageHeaderComponent, ButtonComponent, MenuComponent, MenuItemComponent, SegmentedComponent, DialogComponent, EmptyStateComponent],
   templateUrl: './wiki-article.component.html',
   styleUrl: './wiki-article.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -50,13 +54,14 @@ export class WikiArticleComponent {
   ];
   protected readonly category = wikiCategory;
   protected readonly when = formatDateTime;
-  protected readonly html = computed(() => renderMarkdown(this.page()?.bodyMd ?? ''));
+  /** Built-in pages show in the app's language until they are edited. */
+  protected readonly html = computed(() => renderMarkdown(tc(this.page()?.bodyMd ?? '')));
   protected readonly previewHtml = computed(() => renderMarkdown(this.draftBody()));
   protected readonly dirty = computed(() => {
     const p = this.page();
-    return !!p && (this.draftTitle() !== p.title || this.draftCategory() !== p.category || this.draftBody() !== p.bodyMd);
+    return !!p && (this.draftTitle() !== tc(p.title) || this.draftCategory() !== p.category || this.draftBody() !== tc(p.bodyMd));
   });
-  protected readonly render = renderMarkdown;
+  protected readonly render = (md: string): string => renderMarkdown(tc(md));
 
   constructor() {
     effect(
@@ -82,9 +87,9 @@ export class WikiArticleComponent {
   protected startEdit(): void {
     const p = this.page();
     if (!p) return;
-    this.draftTitle.set(p.title);
+    this.draftTitle.set(tc(p.title));
     this.draftCategory.set(p.category);
-    this.draftBody.set(p.bodyMd);
+    this.draftBody.set(tc(p.bodyMd));
     this.pane.set('write');
     this.editing.set(true);
   }
@@ -107,7 +112,7 @@ export class WikiArticleComponent {
       });
       this.page.set(saved);
       this.editing.set(false);
-      this.toast.show(saved.revision > p.revision ? `Saved as version ${saved.revision}` : 'No changes');
+      this.toast.show(saved.revision > p.revision ? t('Saved as version {n}', { n: saved.revision }) : t('No changes'));
     } catch {
       /* the store showed why (e.g. someone else saved meanwhile); the draft stays */
     } finally {
@@ -127,7 +132,7 @@ export class WikiArticleComponent {
     try {
       this.history.set(await this.store.revisions(p.slug));
     } catch (e) {
-      this.toast.show(`Could not load the history: ${apiError(e).message}`, 6000);
+      this.toast.show(t('Could not load the history: {error}', { error: apiError(e).message }), 6000);
     }
   }
 
@@ -136,7 +141,7 @@ export class WikiArticleComponent {
     if (!p) return;
     try {
       this.page.set(await this.store.restore(p.slug, rev.revision));
-      this.toast.show(`Version ${rev.revision} is back (saved as a new version)`);
+      this.toast.show(t('Version {n} is back (saved as a new version)', { n: rev.revision }));
       dialog.close();
     } catch {
       /* toast shown */

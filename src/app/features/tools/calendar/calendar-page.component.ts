@@ -22,6 +22,8 @@ import { SalonsStore } from '../salons/salons.store';
 import { Deadline, categoryLabel, deadlineBody, deadlineFields, deadlineValues, monthWeeks, reminderLabel, timeLabel, whenInfo } from './calendar.model';
 import { CalendarStore } from './calendar.store';
 import { MonthGridComponent } from './components/month-grid/month-grid.component';
+import { TPipe } from '../../../core/i18n/t.pipe';
+import { t } from '../../../core/i18n/i18n';
 
 /** Calendar of deadlines: a month grid (agenda on phones) and the upcoming list. */
 const REPEATS: Record<Deadline['recurrence'], string> = { none: 'Never', monthly: 'Every month', quarterly: 'Every 3 months', yearly: 'Every year' };
@@ -29,7 +31,7 @@ const REPEATS: Record<Deadline['recurrence'], string> = { none: 'Never', monthly
 @Component({
   selector: 'app-calendar-page',
   standalone: true,
-  imports: [
+  imports: [TPipe, 
     PageHeaderComponent,
     ButtonComponent,
     IconComponent,
@@ -93,10 +95,10 @@ export class CalendarPageComponent {
       { label: 'Due', value: `${formatDate(d.dueOn)} · ${timeLabel(d)}`, hint: w.text },
       { label: 'Type', value: categoryLabel(d.category) },
       { label: 'Salon', value: d.salonName ?? '', route: d.salonId ? `/tools/salons/${d.salonId}` : undefined },
-      { label: 'Repeats', value: REPEATS[d.recurrence] },
-      { label: 'Reminders', value: d.reminders.length ? d.reminders.map((m) => reminderLabel(m, d.allDay)).join(', ') : 'None' },
-      { label: 'From', value: d.sourceType ? 'Generated from the data' : 'Added by hand' },
-      { label: 'Link', value: d.url ? 'Open' : '', href: d.url || undefined },
+      { label: 'Repeats', value: t(REPEATS[d.recurrence]) },
+      { label: 'Reminders', value: d.reminders.length ? d.reminders.map((m) => reminderLabel(m, d.allDay)).join(', ') : t('None') },
+      { label: 'From', value: t(d.sourceType ? 'Generated from the data' : 'Added by hand') },
+      { label: 'Link', value: d.url ? t('Open') : '', href: d.url || undefined },
     ];
   });
 
@@ -155,7 +157,7 @@ export class CalendarPageComponent {
   protected async markDone(d: Deadline, dialog?: DialogComponent): Promise<void> {
     try {
       const next = await this.store.done(d);
-      this.toast.show(next ? `Done. Next one on ${formatDate(next)}` : 'Done');
+      this.toast.show(next ? t('Done. Next one on {date}', { date: formatDate(next) }) : t('Done'));
       dialog?.close();
       await this.refresh();
     } catch {

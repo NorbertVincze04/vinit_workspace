@@ -11,12 +11,14 @@ import { LegacyClientsBannerComponent } from '../tools/salons/components/legacy-
 import { DueTasksComponent } from './components/due-tasks/due-tasks.component';
 import { StatusGridComponent } from './components/status-grid/status-grid.component';
 import { ToolTileComponent } from './components/tool-tile/tool-tile.component';
+import { locale, t } from '../../core/i18n/i18n';
+import { TPipe } from '../../core/i18n/t.pipe';
 
 /** Workspace home: today's context, tool launcher, live figures and what needs attention. */
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [
+  imports: [TPipe, 
     PageHeaderComponent,
     LocalDataBannerComponent,
     LegacyClientsBannerComponent,
@@ -35,7 +37,7 @@ export class DashboardComponent {
   private readonly plan = inject(PlanCalendarService);
   protected readonly groups = TOOL_GROUPS;
 
-  protected readonly today = new Date().toLocaleDateString('en-GB', {
+  protected readonly today = new Date().toLocaleDateString(locale(), {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
@@ -44,9 +46,9 @@ export class DashboardComponent {
   /** "Plan month 3 of 12 · Build phase" (or before / after Year 1). */
   protected readonly planStatus = computed(() => {
     const month = this.plan.currentMonth();
-    if (month < 1) return `Year 1 starts ${this.plan.monthLabel(1)}`;
-    if (month > 12) return 'Year 1 complete';
+    if (month < 1) return t('Year 1 starts {month}', { month: this.plan.monthLabel(1) });
+    if (month > 12) return t('Year 1 complete');
     const phase = PHASES.find((p) => month >= p.months[0] && month <= p.months[1]);
-    return `Plan month ${month} of 12${phase ? ` · ${phase.name} phase` : ''}`;
+    return t('Plan month {month} of 12', { month }) + (phase ? ' · ' + t('{phase} phase', { phase: t(phase.name) }) : '');
   });
 }

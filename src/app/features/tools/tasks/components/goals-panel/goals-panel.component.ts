@@ -2,19 +2,20 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 import { ButtonComponent, IconComponent, PanelComponent } from '../../../../../shared/ui';
 import { GoalStat } from '../../tasks.model';
 import { GoalRowComponent } from '../goal-row/goal-row.component';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
 
 /** Goals editor: one editable row per goal plus "Add goal". Deleted goals leave their tasks without a goal. */
 @Component({
   selector: 'app-goals-panel',
   standalone: true,
-  imports: [PanelComponent, ButtonComponent, IconComponent, GoalRowComponent],
+  imports: [TPipe, PanelComponent, ButtonComponent, IconComponent, GoalRowComponent],
   template: `
-    <app-panel heading="Goals" [meta]="goals().length + ' goals'">
+    <app-panel heading="Goals" [meta]="'{n} goals' | t: { n: goals().length }">
       <button panelAction appButton size="sm" type="button" (click)="add.emit()">
-        <app-icon name="plus" [size]="16" /> Add goal
+        <app-icon name="plus" [size]="16" /> {{ 'Add goal' | t }}
       </button>
       <div class="head" aria-hidden="true">
-        <span>Goal</span><span>Target</span><span>Progress</span><span></span>
+        <span>{{ 'Goal' | t }}</span><span>{{ 'Target' | t }}</span><span>{{ 'Progress' | t }}</span><span></span>
       </div>
       @for (stat of goals(); track stat.goal.id) {
         <app-goal-row
@@ -24,7 +25,7 @@ import { GoalRowComponent } from '../goal-row/goal-row.component';
           (remove)="remove.emit(stat.goal.id)"
         />
       } @empty {
-        <p class="muted">No goals yet.</p>
+        <p class="muted">{{ 'No goals yet.' | t }}</p>
       }
     </app-panel>
   `,

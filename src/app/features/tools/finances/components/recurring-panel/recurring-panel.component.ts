@@ -10,12 +10,14 @@ import {
 import { Recurring } from '../../finances.model';
 import { FinancesStore } from '../../finances.store';
 import { AmountComponent } from '../amount/amount.component';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
+import { TcPipe } from '../../../../../core/i18n/tc.pipe';
 
 /** Recurring tab: bills, subscriptions and salaries with due dates and a one-click "Log paid". */
 @Component({
   selector: 'app-recurring-panel',
   standalone: true,
-  imports: [ButtonComponent, EmptyStateComponent, InlineStatsComponent, LedgerComponent, LedgerRowComponent, StatusPillComponent, AmountComponent],
+  imports: [TcPipe, TPipe, ButtonComponent, EmptyStateComponent, InlineStatsComponent, LedgerComponent, LedgerRowComponent, StatusPillComponent, AmountComponent],
   template: `
     <div class="toolbar">
       <app-inline-stats class="grow" [items]="store.recurringSummary()" />
@@ -26,7 +28,7 @@ import { AmountComponent } from '../amount/amount.component';
         heading="No recurring payments"
         text="Add hosting, software, accounting, salaries and other repeating items once. Each shows when it is due next, and one click logs it as a transaction."
       >
-        <button appButton variant="primary" type="button" (click)="add.emit()">Add a recurring payment</button>
+        <button appButton variant="primary" type="button" (click)="add.emit()">{{ 'Add a recurring payment' | t }}</button>
       </app-empty-state>
     } @else {
       <app-ledger
@@ -37,7 +39,7 @@ import { AmountComponent } from '../amount/amount.component';
         @for (row of store.recurringRows(); track row.item.id) {
           <app-ledger-row clickable (activate)="edit.emit(row.item)">
             <div>
-              <span class="cell-title">{{ row.item.name || 'Untitled' }}</span>
+              <span class="cell-title">{{ (row.item.name | tc) || ('Untitled' | t) }}</span>
               <span class="cell-sub">{{ row.sub }}</span>
             </div>
             <div class="due">
@@ -48,10 +50,10 @@ import { AmountComponent } from '../amount/amount.component';
             <app-amount label="Per month" [text]="row.perMonthText" />
             <div class="cell-actions">
               @if (row.canLog) {
-                <button appButton variant="ghost" size="sm" type="button" (click)="log.emit(row.item)">Log paid</button>
+                <button appButton variant="ghost" size="sm" type="button" (click)="log.emit(row.item)">{{ 'Log paid' | t }}</button>
               }
-              <button appButton variant="ghost" size="sm" type="button" (click)="edit.emit(row.item)">Edit</button>
-              <button appButton variant="ghost" size="sm" type="button" (click)="remove.emit(row.item)">Delete</button>
+              <button appButton variant="ghost" size="sm" type="button" (click)="edit.emit(row.item)">{{ 'Edit' | t }}</button>
+              <button appButton variant="ghost" size="sm" type="button" (click)="remove.emit(row.item)">{{ 'Delete' | t }}</button>
             </div>
           </app-ledger-row>
         }

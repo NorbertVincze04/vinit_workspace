@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { formatRon } from '../../../../../core/utils/format';
 import { CardComponent } from '../../../../../shared/ui';
 import { Totals } from '../../finances.model';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
+import { t } from '../../../../../core/i18n/i18n';
 
 interface Delta {
   text: string;
@@ -12,7 +14,7 @@ interface Delta {
 @Component({
   selector: 'app-finance-overview',
   standalone: true,
-  imports: [CardComponent],
+  imports: [TPipe, CardComponent],
   templateUrl: './finance-overview.component.html',
   styleUrl: './finance-overview.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,19 +42,19 @@ export class FinanceOverviewComponent {
   });
 
   protected readonly savingsRate = computed<Delta>(() => {
-    const t = this.totals();
-    if (t.income <= 0) return { text: '', tone: '' };
-    const rate = Math.round(((t.income - t.expense) / t.income) * 100);
-    return { text: `Savings rate ${rate}%`, tone: rate >= 20 ? 'good' : rate < 0 ? 'bad' : '' };
+    const totals = this.totals();
+    if (totals.income <= 0) return { text: '', tone: '' };
+    const rate = Math.round(((totals.income - totals.expense) / totals.income) * 100);
+    return { text: t('Savings rate {pct}%', { pct: rate }), tone: rate >= 20 ? 'good' : rate < 0 ? 'bad' : '' };
   });
 
   private delta(current: number, previous: number, upIsGood: boolean): Delta {
     if (!previous && !current) return { text: '', tone: '' };
-    if (!previous) return { text: 'Nothing last month', tone: '' };
+    if (!previous) return { text: t('Nothing last month'), tone: '' };
     const pct = ((current - previous) / Math.abs(previous)) * 100;
     const up = pct >= 0;
     return {
-      text: `${up ? '▲' : '▼'} ${Math.abs(Math.round(pct))}% vs ${this.previousLabel()}`,
+      text: `${up ? '▲' : '▼'} ${t('{pct}% vs {month}', { pct: Math.abs(Math.round(pct)), month: this.previousLabel() })}`,
       tone: up === upIsGood ? 'good' : 'bad',
     };
   }

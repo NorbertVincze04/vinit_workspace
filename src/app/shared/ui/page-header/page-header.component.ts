@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { TPipe } from '../../../core/i18n/t.pipe';
 
 /**
  * Top of every page: title, an optional one-line description, actions on the right,
@@ -10,12 +11,13 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 @Component({
   selector: 'app-page-header',
   standalone: true,
+  imports: [TPipe],
   template: `
     <div class="top">
       <div class="titles">
-        <h1>{{ title() }}</h1>
+        <h1>{{ title() | t }}</h1>
         @if (description()) {
-          <p>{{ description() }}</p>
+          <p>{{ description() | t }}</p>
         }
       </div>
       <div class="actions"><ng-content select="[pageActions]" /></div>

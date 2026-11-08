@@ -3,13 +3,17 @@
     <div class="brand">
       <app-logo [size]="32" />
       <div>
-        <h1 class="title-md">VINIT Workspace</h1>
-        <p class="muted small">Sign in with your team account.</p>
+        <h1 class="title-md">{{ 'VINIT Workspace' | t }}</h1>
+        <p class="muted small">{{ 'Sign in with your team account.' | t }}</p>
+      </div>
+      <div class="lang" role="group" [attr.aria-label]="'Language' | t">
+        <button type="button" lang="ro" title="Română" [attr.aria-pressed]="currentLang === 'ro'" (click)="switchLang('ro')">RO</button>
+        <button type="button" lang="en" title="English" [attr.aria-pressed]="currentLang === 'en'" (click)="switchLang('en')">EN</button>
       </div>
     </div>
 
     @if (expired) {
-      <p class="note" role="status">Your session ended. Please sign in again.</p>
+      <p class="note" role="status">{{ 'Your session ended. Please sign in again.' | t }}</p>
     }
 
     <form class="stack" novalidate (submit)="submit($event)">
@@ -46,7 +50,7 @@
       }
 
       <button appButton variant="primary" type="submit" block [disabled]="busy()">
-        {{ busy() ? 'Signing in…' : 'Sign in' }}
+        {{ (busy() ? 'Signing in…' : 'Sign in') | t }}
       </button>
     </form>
   </app-card>

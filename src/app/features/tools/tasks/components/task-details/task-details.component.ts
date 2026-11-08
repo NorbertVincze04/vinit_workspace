@@ -8,12 +8,13 @@ import {
 } from '../../../../../shared/ui';
 import { Task, TaskOwner, TaskPatch, TaskPriority } from '../../tasks.model';
 import { OWNER_OPTIONS, PHASE_OPTIONS, PRIORITY_OPTIONS } from '../../tasks.options';
+import { TcPipe } from '../../../../../core/i18n/tc.pipe';
 
 /** Expanded editor under a task: goal, owner, priority, phase, due month, notes, delete. */
 @Component({
   selector: 'app-task-details',
   standalone: true,
-  imports: [SelectFieldComponent, TextFieldComponent, ConfirmButtonComponent],
+  imports: [TcPipe, SelectFieldComponent, TextFieldComponent, ConfirmButtonComponent],
   templateUrl: './task-details.component.html',
   styleUrl: './task-details.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

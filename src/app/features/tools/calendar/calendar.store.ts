@@ -1,7 +1,8 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { ApiService, apiError } from '../../../core/api/api.service';
 import { ToastService } from '../../../core/services/toast.service';
-import { Deadline } from './calendar.model';
+import { Deadline, localizeDeadline } from './calendar.model';
+import { t } from '../../../core/i18n/i18n';
 
 type Row = Record<string, unknown>;
 
@@ -20,7 +21,7 @@ export class CalendarStore {
 
   async loadUpcoming(days = 30): Promise<void> {
     try {
-      this.upcoming.set((await this.api.get<{ items: Deadline[] }>('/deadlines/upcoming', { days })).items);
+      this.upcoming.set((await this.api.get<{ items: Deadline[] }>('/deadlines/upcoming', { days })).items.map(localizeDeadline));
     } catch {
       /* the page shows its own errors */
     }
@@ -28,9 +29,9 @@ export class CalendarStore {
 
   async range(from: string, to: string): Promise<Deadline[]> {
     try {
-      return (await this.api.get<{ items: Deadline[] }>('/deadlines', { from, to })).items;
+      return (await this.api.get<{ items: Deadline[] }>('/deadlines', { from, to })).items.map(localizeDeadline);
     } catch (error) {
-      this.toast.show(`Could not load deadlines: ${apiError(error).message}`, 6000);
+      this.toast.show(t('Could not load deadlines: {error}', { error: apiError(error).message }), 6000);
       return [];
     }
   }
@@ -59,7 +60,7 @@ export class CalendarStore {
       void this.loadUpcoming();
       return res;
     } catch (error) {
-      this.toast.show(`Not saved: ${apiError(error).message}`, 6000);
+      this.toast.show(t('Not saved: {error}', { error: apiError(error).message }), 6000);
       throw error;
     }
   }

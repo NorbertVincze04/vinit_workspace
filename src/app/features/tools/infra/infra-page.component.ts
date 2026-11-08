@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { formatDate, formatDateTime, todayISO } from '../../../core/utils/date';
-import { formatMoney, formatRon, percent, plural } from '../../../core/utils/format';
+import { formatMoney, formatRon, percent } from '../../../core/utils/format';
 import { KpiCardComponent } from '../../../shared/components';
 import {
   ButtonComponent,
@@ -27,6 +27,9 @@ import { ToastService } from '../../../core/services/toast.service';
 import { BackupCheck, InfraService, SmsUsage, backupTone, optionalAmount, parseOptionalAmount, serviceBody, serviceCategory, serviceFields } from './infra.model';
 import { InfraStore } from './infra.store';
 import { IntegrationsPanelComponent } from './integrations-panel.component';
+import { TPipe } from '../../../core/i18n/t.pipe';
+import { countOf, t } from '../../../core/i18n/i18n';
+import { TcPipe } from '../../../core/i18n/tc.pipe';
 
 type Dialog =
   | { kind: 'service'; item: InfraService | null; fields: FieldDef[]; values: FormValues }
@@ -37,7 +40,7 @@ type Dialog =
 @Component({
   selector: 'app-infra-page',
   standalone: true,
-  imports: [
+  imports: [TcPipe, TPipe, 
     PageHeaderComponent,
     ButtonComponent,
     IconComponent,
@@ -88,27 +91,27 @@ export class InfraPageComponent {
     const h = this.store.health();
     if (!h) return [];
     const b = h.backups;
-    const toneOf = (t: string): StatTone => (t === 'bad' ? 'negative' : t === 'ok' ? 'positive' : 'default');
-    const age = (days: number | null) => (days === null ? 'Never' : days === 0 ? 'Today' : `${days} days ago`);
+    const toneOf = (tone: string): StatTone => (tone === 'bad' ? 'negative' : tone === 'ok' ? 'positive' : 'default');
+    const age = (days: number | null) => (days === null ? t('Never') : days === 0 ? t('Today') : t('{days} ago', { days: countOf(days, 'day', 'days') }));
     return [
       {
         label: 'Infrastructure per month',
         value: this.ron(h.costs.monthlyRonBani),
-        hint: `${h.costs.services} services · plan budget ${this.ron(h.costs.planBani)} (all operating costs)`,
+        hint: t('{services} · plan budget {budget} (all operating costs)', { services: countOf(h.costs.services, 'service', 'services'), budget: this.ron(h.costs.planBani) }),
         tone: (h.costs.monthlyRonBani > h.costs.planBani ? 'negative' : 'default') as StatTone,
         percent: percent(h.costs.monthlyRonBani, h.costs.planBani),
       },
       {
         label: 'SMS this month',
         value: `${h.sms.sent} / ${h.sms.budget}`,
-        hint: h.sms.premiumSalons ? `${h.sms.premiumSalons} ${plural(h.sms.premiumSalons, 'salon', 'salons')} with SMS · about ${h.sms.perSalonBudget} each` : 'No salon with SMS reminders yet',
+        hint: h.sms.premiumSalons ? t('{salons} with SMS · about {n} each', { salons: countOf(h.sms.premiumSalons, 'salon', 'salons'), n: h.sms.perSalonBudget ?? '—' }) : t('No salon with SMS reminders yet'),
         tone: (h.sms.pct >= 100 ? 'negative' : 'default') as StatTone,
         percent: h.sms.pct,
       },
       {
         label: 'Last backup',
         value: age(b.lastBackupDays),
-        hint: b.lastBackupFile ? b.lastBackupFile : 'Run npm run db:backup and keep a copy off this PC',
+        hint: b.lastBackupFile ? b.lastBackupFile : t('Run npm run db:backup and keep a copy off this PC'),
         tone: toneOf(backupTone(b.lastBackupDays, 7, 30)),
         percent: null,
       },
@@ -122,7 +125,7 @@ export class InfraPageComponent {
       {
         label: 'Storage',
         value: formatBytes(h.storage.dbBytes),
-        hint: `database, of which ${formatBytes(h.storage.fileBytes)} uploaded files`,
+        hint: t('database, of which {size} uploaded files', { size: formatBytes(h.storage.fileBytes) }),
         tone: 'default' as StatTone,
         percent: null,
       },
@@ -186,7 +189,7 @@ export class InfraPageComponent {
       kind: 'sms',
       fields: [
         { key: 'salonId', label: 'Salon', type: 'select', span: 'full', options: [{ value: '', label: 'Whole account (no split per salon)' }, ...premium.map((s) => ({ value: s.id, label: s.name }))] },
-        { key: 'sent', label: 'SMS sent', type: 'number', required: true, integer: true },
+        { key: 'sent', label: 'SMS sent', type: 'number', required: true, integer: true, min: 0, placeholder: '320' },
         { key: 'cost', label: 'Cost (RON)', type: 'text', maxLength: 12, placeholder: 'Empty: 0,20 RON per SMS', validate: optionalAmount },
       ],
       values: {},
@@ -258,7 +261,7 @@ export class InfraPageComponent {
   protected async confirmDelete(s: InfraService): Promise<void> {
     try {
       await this.store.removeService(s.id);
-      this.toast.show(`Removed ${s.name}`);
+      this.toast.show(t('Removed {name}', { name: s.name }));
     } catch {
       /* toast shown */
     }

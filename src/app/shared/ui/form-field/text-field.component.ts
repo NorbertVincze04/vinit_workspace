@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, model, output } from '@angular/core';
 import { FieldLabelMode } from './field.types';
+import { TPipe } from '../../../core/i18n/t.pipe';
 
 /**
  * Labelled text input. `valueChange` fires on every keystroke, `committed` on blur/enter.
@@ -9,10 +10,11 @@ import { FieldLabelMode } from './field.types';
 @Component({
   selector: 'app-text-field',
   standalone: true,
+  imports: [TPipe],
   template: `
     <label class="field" [attr.data-label]="labelMode()">
-      <span class="field-label" [class.sr-only]="labelMode() === 'hidden'">{{ label() }}</span>
-      <input class="input" [type]="type()" [value]="value()" [placeholder]="placeholder()"
+      <span class="field-label" [class.sr-only]="labelMode() === 'hidden'">{{ label() | t }}</span>
+      <input class="input" [type]="type()" [value]="value()" [placeholder]="placeholder() | t"
         [attr.name]="name() || null" [attr.autocomplete]="autocomplete() || null" [attr.aria-invalid]="invalid() || null"
         (input)="onInput($event)" (change)="committed.emit(value())" />
     </label>

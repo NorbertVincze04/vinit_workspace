@@ -1,16 +1,16 @@
-<a class="back" routerLink="/tools/wiki"><span aria-hidden="true">←</span> Wiki</a>
+<a class="back" routerLink="/tools/wiki"><span aria-hidden="true">←</span> {{ 'Wiki' | t }}</a>
 
 @if (page(); as p) {
   @if (!editing()) {
     <app-page-header
-      [title]="p.title"
+      [title]="p.title | tc"
       [description]="category(p.category) + ' · version ' + p.revision + ' · ' + when(p.updatedAt) + (p.updatedByName ? ' by ' + p.updatedByName : '') + (p.archived ? ' · archived' : '')"
     >
       <div pageActions>
-        <button appButton variant="primary" type="button" (click)="startEdit()">Edit</button>
+        <button appButton variant="primary" type="button" (click)="startEdit()">{{ 'Edit' | t }}</button>
         <app-menu ariaLabel="More page actions">
-          <button appMenuItem type="button" (click)="openHistory()">History…</button>
-          <button appMenuItem type="button" (click)="toggleArchive()">{{ p.archived ? 'Unarchive' : 'Archive' }}</button>
+          <button appMenuItem type="button" (click)="openHistory()">{{ 'History…' | t }}</button>
+          <button appMenuItem type="button" (click)="toggleArchive()">{{ (p.archived ? 'Unarchive' : 'Archive') | t }}</button>
         </app-menu>
       </div>
     </app-page-header>
@@ -18,16 +18,16 @@
       <article class="md" [innerHTML]="html()"></article>
     } @else {
       <app-empty-state heading="This page is empty" text="Press Edit to write it. Markdown works: # headings, - lists, **bold**, tables, ``` code.">
-        <button appButton variant="primary" type="button" (click)="startEdit()">Write it</button>
+        <button appButton variant="primary" type="button" (click)="startEdit()">{{ 'Write it' | t }}</button>
       </app-empty-state>
     }
   } @else {
     <div class="editor">
       <div class="top">
-        <input class="input title" maxlength="200" aria-label="Title" [value]="draftTitle()" (input)="input('title', $event)" />
-        <select class="input" aria-label="Category" (change)="draftCategory.set($any($event.target).value)">
+        <input class="input title" maxlength="200" [attr.aria-label]="'Title' | t" [value]="draftTitle()" (input)="input('title', $event)" />
+        <select class="input" [attr.aria-label]="'Category' | t" (change)="draftCategory.set($any($event.target).value)">
           @for (c of categories; track c.value) {
-            <option [value]="c.value" [selected]="c.value === draftCategory()">{{ c.label }}</option>
+            <option [value]="c.value" [selected]="c.value === draftCategory()">{{ c.label | t }}</option>
           }
         </select>
       </div>
@@ -35,25 +35,30 @@
       <div class="split" [attr.data-pane]="pane()">
         <textarea
           class="input body"
-          aria-label="Page text (Markdown)"
-          placeholder="# Heading&#10;&#10;Write the steps…&#10;&#10;- one&#10;- two"
+          [attr.aria-label]="'Page text (Markdown)' | t"
+          [placeholder]="'# Heading
+
+Write the steps…
+
+- one
+- two' | t"
           [value]="draftBody()"
           (input)="input('body', $event)"
         ></textarea>
-        <article class="md preview" aria-label="Preview" [innerHTML]="previewHtml()"></article>
+        <article class="md preview" [attr.aria-label]="'Preview' | t" [innerHTML]="previewHtml()"></article>
       </div>
-      <p class="hint">Markdown: # heading, - list, - [ ] checklist, **bold**, *italic*, [link](https://…), tables with |, ``` for code. Never paste passwords here: note where they are in the password manager.</p>
+      <p class="hint">{{ 'Markdown: # heading, - list, - [ ] checklist, **bold**, *italic*, [link](https://…), tables with |, ``` for code. Never paste passwords here: note where they are in the password manager.' | t }}</p>
       <div class="actions">
-        <button appButton type="button" (click)="cancel()">Cancel</button>
+        <button appButton type="button" (click)="cancel()">{{ 'Cancel' | t }}</button>
         <button appButton variant="primary" type="button" [disabled]="saving() || !draftTitle().trim()" (click)="save()">
-          {{ saving() ? 'Saving…' : 'Save' }}
+          {{ (saving() ? 'Saving…' : 'Save') | t }}
         </button>
       </div>
     </div>
   }
 } @else if (error()) {
   <app-empty-state heading="Could not open this page" [text]="error()">
-    <a appButton routerLink="/tools/wiki">Back to the wiki</a>
+    <a appButton routerLink="/tools/wiki">{{ 'Back to the wiki' | t }}</a>
   </app-empty-state>
 } @else {
   <app-empty-state heading="Loading…" text="" />
@@ -65,19 +70,19 @@
       @for (r of revs; track r.revision) {
         <li [class.on]="viewing()?.revision === r.revision">
           <button type="button" class="rev" (click)="viewing.set(r)">
-            <strong>Version {{ r.revision }}</strong>
+            <strong>{{ 'Version' | t }} {{ r.revision }}</strong>
             <span class="muted">{{ when(r.editedAt) }}{{ r.editedByName ? ' · ' + r.editedByName : '' }}</span>
           </button>
           @if (r.revision !== page()?.revision) {
-            <button appButton size="sm" variant="ghost" type="button" (click)="restore(r, dlg)">Restore</button>
+            <button appButton size="sm" variant="ghost" type="button" (click)="restore(r, dlg)">{{ 'Restore' | t }}</button>
           } @else {
-            <span class="muted small">current</span>
+            <span class="muted small">{{ 'current' | t }}</span>
           }
         </li>
       }
     </ol>
     @if (viewing(); as v) {
-      <h3>{{ v.title }}</h3>
+      <h3>{{ v.title | tc }}</h3>
       <article class="md old" [innerHTML]="render(v.bodyMd)"></article>
     }
   </app-dialog>

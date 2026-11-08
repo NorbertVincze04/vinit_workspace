@@ -2,6 +2,8 @@ import { monthName, shiftMonth } from '../../../core/utils/date';
 import { formatNumber, formatRon, percent } from '../../../core/utils/format';
 import { FieldDef, FormValues, SelectOption, StatusTone, asString } from '../../../shared/ui';
 import { GoalKey, Goals, PlanPhase, PlanYear, YearResults } from './roadmap.store';
+import { t } from '../../../core/i18n/i18n';
+import { tc } from '../../../core/i18n/content';
 
 type Kind = 'count' | 'money' | 'pct' | 'hours';
 
@@ -60,11 +62,11 @@ export function goalRows(year: PlanYear, results: YearResults | null): GoalRow[]
     if (value !== null && actual !== null) {
       if (def.atMost) {
         const ok = actual <= value;
-        status = ok ? { text: 'Within', tone: 'ok' } : { text: 'Over', tone: year.status === 'past' ? 'bad' : 'warn' };
+        status = ok ? { text: t('Within'), tone: 'ok' } : { text: t('Over'), tone: year.status === 'past' ? 'bad' : 'warn' };
       } else {
         pct = Math.min(100, percent(actual, value));
         const ok = actual >= value;
-        status = ok ? { text: 'Reached', tone: 'ok' } : year.status === 'past' ? { text: 'Missed', tone: 'bad' } : { text: `${pct}%`, tone: 'info' };
+        status = ok ? { text: t('Reached'), tone: 'ok' } : year.status === 'past' ? { text: t('Missed'), tone: 'bad' } : { text: `${pct}%`, tone: 'info' };
       }
     }
     return { def, set: year.goals[def.key], value, actual, percent: pct, status };
@@ -79,7 +81,7 @@ export function yearLabel(y: Pick<PlanYear, 'from' | 'to'>): string {
 // ---- forms ----
 
 const amount = (v: string): string | null => (/^\d{1,9}([.,]\d{1,2})?$/.test(v.trim()) ? null : 'Enter a number like 7500 or 7500,50.');
-const whole = (max: number) => (v: string): string | null => (/^\d+$/.test(v.trim()) && Number(v) <= max ? null : `Enter a whole number up to ${formatNumber(max)}.`);
+const whole = (max: number) => (v: string): string | null => (/^\d+$/.test(v.trim()) && Number(v) <= max ? null : t('Enter a whole number up to {max}.', { max: formatNumber(max) }));
 
 /** Goals form: leave a goal empty to keep the earlier year's. Money in RON. */
 export function goalFields(): FieldDef[] {
@@ -116,7 +118,7 @@ export function goalBody(v: FormValues): Partial<Goals> & { notes: string } {
 export function monthOptions(year: Pick<PlanYear, 'from'>): SelectOption[] {
   return Array.from({ length: 12 }, (_, i) => {
     const m = shiftMonth(year.from, i);
-    return { value: String(i + 1), label: `Month ${i + 1} · ${monthName(m, true)} ${m.slice(0, 4)}` };
+    return { value: String(i + 1), label: `${t('Month {n}', { n: i + 1 })} · ${monthName(m, true)} ${m.slice(0, 4)}` };
   });
 }
 
@@ -131,7 +133,7 @@ export function phaseFields(year: Pick<PlanYear, 'from'>): FieldDef[] {
   ];
 }
 
-export const phaseValues = (p: PlanPhase): FormValues => ({ name: p.name, goal: p.goal, monthFrom: String(p.monthFrom), monthTo: String(p.monthTo), milestone: p.milestone });
+export const phaseValues = (p: PlanPhase): FormValues => ({ name: tc(p.name), goal: tc(p.goal), monthFrom: String(p.monthFrom), monthTo: String(p.monthTo), milestone: tc(p.milestone) });
 
 export function phaseBody(v: FormValues): Partial<PlanPhase> {
   return {

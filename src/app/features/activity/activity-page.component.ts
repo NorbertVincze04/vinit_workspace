@@ -5,12 +5,14 @@ import { ACTIVITY_AREAS, ActivityEntry } from '../../core/data/activity.data';
 import { ToastService } from '../../core/services/toast.service';
 import { ButtonComponent, ChipGroupComponent, EmptyStateComponent, PageHeaderComponent, PanelComponent, SelectFieldComponent } from '../../shared/ui';
 import { ActivityListComponent } from './activity-list.component';
+import { t } from '../../core/i18n/i18n';
+import { TPipe } from '../../core/i18n/t.pipe';
 
 /** /activity — everything the team changed, newest first, by area and person. */
 @Component({
   selector: 'app-activity-page',
   standalone: true,
-  imports: [PageHeaderComponent, ChipGroupComponent, SelectFieldComponent, PanelComponent, ButtonComponent, EmptyStateComponent, ActivityListComponent],
+  imports: [TPipe, PageHeaderComponent, ChipGroupComponent, SelectFieldComponent, PanelComponent, ButtonComponent, EmptyStateComponent, ActivityListComponent],
   template: `
     <app-page-header title="Activity" description="Everything that changed in the workspace, by whom. Each line opens where it happened." />
     <div class="toolbar">
@@ -21,7 +23,7 @@ import { ActivityListComponent } from './activity-list.component';
       <app-panel heading="Changes" [meta]="items().length + (next() ? '+' : '')">
         <app-activity-list [items]="items()" />
         @if (next()) {
-          <button appButton type="button" [disabled]="loading()" (click)="more()">{{ loading() ? 'Loading…' : 'Show older' }}</button>
+          <button appButton type="button" [disabled]="loading()" (click)="more()">{{ (loading() ? 'Loading…' : 'Show older') | t }}</button>
         }
       </app-panel>
     } @else if (loading()) {
@@ -71,7 +73,7 @@ export class ActivityPageComponent {
       this.items.set(before ? [...this.items(), ...res.items] : res.items);
       this.next.set(res.next);
     } catch (error) {
-      this.toast.show(`Could not load the activity: ${apiError(error).message}`, 6000);
+      this.toast.show(t('Could not load the activity: {error}', { error: apiError(error).message }), 6000);
     } finally {
       this.loading.set(false);
     }

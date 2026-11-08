@@ -1,18 +1,20 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { ConfirmButtonComponent, ProgressBarComponent, TextFieldComponent } from '../../../../../shared/ui';
 import { GoalStat } from '../../tasks.model';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
+import { TcPipe } from '../../../../../core/i18n/tc.pipe';
 
 /** Editable goal: name, target, progress across its tasks, delete. */
 @Component({
   selector: 'app-goal-row',
   standalone: true,
-  imports: [TextFieldComponent, ProgressBarComponent, ConfirmButtonComponent],
+  imports: [TcPipe, TPipe, TextFieldComponent, ProgressBarComponent, ConfirmButtonComponent],
   template: `
-    <app-text-field label="Goal name" labelMode="hidden" [value]="stat().goal.name" (valueChange)="nameChange.emit($event)" />
-    <app-text-field label="Goal target" labelMode="hidden" [value]="stat().goal.target" (valueChange)="targetChange.emit($event)" />
+    <app-text-field label="Goal name" labelMode="hidden" [value]="stat().goal.name | tc" (valueChange)="nameChange.emit($event)" />
+    <app-text-field label="Goal target" labelMode="hidden" [value]="stat().goal.target | tc" (valueChange)="targetChange.emit($event)" />
     <div class="progress">
-      <app-progress-bar size="sm" [value]="stat().percent" [label]="stat().goal.name + ' progress'" />
-      <span class="count">{{ stat().done }} of {{ stat().total }} tasks</span>
+      <app-progress-bar size="sm" [value]="stat().percent" [label]="'{name} progress' | t: { name: (stat().goal.name | tc) }" />
+      <span class="count">{{ stat().done }} {{ 'of' | t }} {{ stat().total }} {{ 'tasks' | t }}</span>
     </div>
     <app-confirm-button label="✕" confirmLabel="?" ariaLabel="Delete goal" size="sm" iconOnly (confirmed)="remove.emit()" />
   `,

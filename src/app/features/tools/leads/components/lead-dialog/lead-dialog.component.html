@@ -1,17 +1,17 @@
 <app-dialog #dialog size="lg" [heading]="lead()?.businessName || 'Lead'" [subheading]="stage().hint" (closed)="closed.emit()">
   @if (lead(); as l) {
     <div class="top">
-      <app-status-pill [tone]="stage().tone">{{ stage().label }}</app-status-pill>
+      <app-status-pill [tone]="stage().tone">{{ stage().label | t }}</app-status-pill>
       @if (l.convertedSalonId) {
         <a class="salon-link" [routerLink]="['/tools/salons', l.convertedSalonId]" (click)="dialog.close()">
-          Open salon {{ l.convertedSalonName }} →
+          {{ 'Open salon' | t }} {{ l.convertedSalonName }} →
         </a>
       } @else {
         <label class="move">
-          <span>Move to</span>
+          <span>{{ 'Move to' | t }}</span>
           <select class="input" [value]="l.stage" (change)="moveTo($any($event.target))">
             @for (s of moveOptions; track s.value) {
-              <option [value]="s.value" [selected]="s.value === l.stage">{{ s.label }}</option>
+              <option [value]="s.value" [selected]="s.value === l.stage">{{ s.label | t }}</option>
             }
           </select>
         </label>
@@ -23,38 +23,38 @@
       <p class="notes">{{ l.notes }}</p>
     }
 
-    <section class="log" aria-label="Log a contact">
-      <h3>Log a contact</h3>
+    <section class="log" [attr.aria-label]="'Log a contact' | t">
+      <h3>{{ 'Log a contact' | t }}</h3>
       <app-segmented label="Type of contact" [options]="kinds" [value]="kind()" (valueChange)="kind.set($event)" />
       <textarea
         class="input"
         rows="2"
         maxlength="5000"
-        aria-label="What happened"
-        placeholder="What happened? e.g. Sent the demo link, they reply next week"
+        [attr.aria-label]="'What happened' | t"
+        [placeholder]="'What happened? e.g. Sent the demo link, they reply next week' | t"
         [value]="note()"
         (input)="onInput('note', $event)"
       ></textarea>
       <div class="log-row">
         <label class="follow">
-          <span>Next follow-up</span>
+          <span>{{ 'Next follow-up' | t }}</span>
           <input class="input" type="date" [value]="followUp()" (input)="onInput('followUp', $event)" />
         </label>
-        <button appButton type="button" [disabled]="!note().trim() || saving()" (click)="logContact()">Save contact</button>
+        <button appButton type="button" [disabled]="!note().trim() || saving()" (click)="logContact()">{{ 'Save contact' | t }}</button>
       </div>
     </section>
 
-    <section aria-label="History">
-      <h3>History</h3>
+    <section [attr.aria-label]="'History' | t">
+      <h3>{{ 'History' | t }}</h3>
       @if (activities(); as items) {
         <ol class="history">
           @for (a of items; track a.id) {
             <li>
               <span class="when">{{ formatDateTime(a.occurredAt) }}</span>
               <span>
-                <strong>{{ kindLabel(a.kind) }}</strong>
+                <strong>{{ kindLabel(a.kind) | t }}</strong>
                 @if (a.kind === 'stage_change') {
-                  {{ stageLabel(a.fromStage) }} → {{ stageLabel(a.toStage) }}
+                  {{ stageLabel(a.fromStage) | t }} → {{ stageLabel(a.toStage) | t }}
                 }
                 @if (a.body) {
                   · {{ a.body }}
@@ -65,22 +65,22 @@
               </span>
             </li>
           } @empty {
-            <li class="muted">No contact logged yet.</li>
+            <li class="muted">{{ 'No contact logged yet.' | t }}</li>
           }
         </ol>
       } @else {
-        <p class="muted">Loading…</p>
+        <p class="muted">{{ 'Loading…' | t }}</p>
       }
     </section>
   }
 
   <div dialogFooter class="footer">
     @if (lead(); as l) {
-      <button appButton variant="ghost" type="button" (click)="remove.emit(l)">Delete</button>
+      <button appButton variant="ghost" type="button" (click)="remove.emit(l)">{{ 'Delete' | t }}</button>
       <span class="spacer"></span>
-      <button appButton type="button" (click)="edit.emit(l)">Edit</button>
+      <button appButton type="button" (click)="edit.emit(l)">{{ 'Edit' | t }}</button>
       @if (!l.convertedSalonId) {
-        <button appButton variant="primary" type="button" (click)="convert.emit(l)">Convert to salon</button>
+        <button appButton variant="primary" type="button" (click)="convert.emit(l)">{{ 'Convert to salon' | t }}</button>
       }
     }
   </div>

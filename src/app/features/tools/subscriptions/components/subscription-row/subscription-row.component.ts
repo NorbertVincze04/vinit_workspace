@@ -4,12 +4,14 @@ import { formatDate } from '../../../../../core/utils/date';
 import { RonPipe } from '../../../../../shared/pipes/ron.pipe';
 import { LedgerRowComponent, MenuComponent, MenuItemComponent, StatusPillComponent } from '../../../../../shared/ui';
 import { CHANGES_FOR, CHANGE_ACTIONS, ChangeKind, Subscription, cycleInfo, subStatus } from '../../billing.model';
+import { t } from '../../../../../core/i18n/i18n';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
 
 /** One subscription: salon, plan, price, status, key date, and the changes it allows. */
 @Component({
   selector: 'app-subscription-row',
   standalone: true,
-  imports: [LedgerRowComponent, StatusPillComponent, MenuComponent, MenuItemComponent, RonPipe, RouterLink],
+  imports: [TPipe, LedgerRowComponent, StatusPillComponent, MenuComponent, MenuItemComponent, RonPipe, RouterLink],
   template: `
     <app-ledger-row>
       <div>
@@ -18,17 +20,17 @@ import { CHANGES_FOR, CHANGE_ACTIONS, ChangeKind, Subscription, cycleInfo, subSt
       </div>
       <div class="cell-num">
         <span>{{ sub().price | ron }}</span>
-        <span class="cell-sub">{{ cycle().per }}</span>
+        <span class="cell-sub">{{ cycle().per | t }}</span>
       </div>
-      <div><app-status-pill [tone]="status().tone">{{ status().label }}</app-status-pill></div>
+      <div><app-status-pill [tone]="status().tone">{{ status().label | t }}</app-status-pill></div>
       <div>
         <span>{{ dateLine() }}</span>
       </div>
       <div class="cell-actions">
         @if (actions().length) {
-          <app-menu [ariaLabel]="'Change subscription of ' + sub().salonName">
+          <app-menu [ariaLabel]="'Change subscription of {salon}' | t: { salon: sub().salonName }">
             @for (a of actions(); track a) {
-              <button appMenuItem type="button" [tone]="a === 'cancel' ? 'danger' : 'default'" (click)="change.emit(a)">{{ label(a) }}…</button>
+              <button appMenuItem type="button" [tone]="a === 'cancel' ? 'danger' : 'default'" (click)="change.emit(a)">{{ label(a) | t }}…</button>
             }
           </app-menu>
         }
@@ -53,8 +55,8 @@ export class SubscriptionRowComponent {
   protected readonly planLine = computed(() => [this.sub().planName, this.sub().promotionName].filter(Boolean).join(' · '));
   protected readonly dateLine = computed(() => {
     const s = this.sub();
-    if (s.status === 'trialing') return s.trialEndsOn ? `Free until ${formatDate(s.trialEndsOn)}` : 'Free (no end date)';
-    if (s.status === 'canceled' || s.status === 'ended') return `Ended ${formatDate(s.canceledOn)}`;
-    return `Since ${formatDate(s.startedOn)}`;
+    if (s.status === 'trialing') return s.trialEndsOn ? t('Free until {date}', { date: formatDate(s.trialEndsOn) }) : 'Free (no end date)';
+    if (s.status === 'canceled' || s.status === 'ended') return t('Ended {date}', { date: formatDate(s.canceledOn) });
+    return t('Since {date}', { date: formatDate(s.startedOn) });
   });
 }

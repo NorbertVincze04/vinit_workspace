@@ -8,6 +8,8 @@ import {
   viewChild,
 } from '@angular/core';
 import { uid } from '../../../core/utils/id';
+import { t } from '../../../core/i18n/i18n';
+import { TPipe } from '../../../core/i18n/t.pipe';
 
 /**
  * Modal sheet built on the native <dialog>. Opens as soon as it renders, so show it with @if.
@@ -24,6 +26,7 @@ import { uid } from '../../../core/utils/id';
 @Component({
   selector: 'app-dialog',
   standalone: true,
+  imports: [TPipe],
   templateUrl: './dialog.component.html',
   styleUrl: './dialog.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -77,7 +80,7 @@ export class DialogComponent {
   }
 
   private mayClose(): boolean {
-    return !this.dirty() || confirm('Discard your changes?');
+    return !this.dirty() || confirm(t('Discard your changes?'));
   }
 
   close(): void {

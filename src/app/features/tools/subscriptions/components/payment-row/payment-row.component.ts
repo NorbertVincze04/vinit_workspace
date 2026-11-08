@@ -4,6 +4,7 @@ import { formatDate } from '../../../../../core/utils/date';
 import { formatMoney } from '../../../../../core/utils/format';
 import { ButtonComponent, LedgerRowComponent, MenuComponent, MenuItemComponent, StatusPillComponent } from '../../../../../shared/ui';
 import { Payment, kindLabel, paymentStatus } from '../../billing.model';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
 
 export type PaymentAction = 'paid' | 'reopen' | 'waive' | 'delete';
 
@@ -11,7 +12,7 @@ export type PaymentAction = 'paid' | 'reopen' | 'waive' | 'delete';
 @Component({
   selector: 'app-payment-row',
   standalone: true,
-  imports: [LedgerRowComponent, StatusPillComponent, ButtonComponent, MenuComponent, MenuItemComponent, RouterLink],
+  imports: [TPipe, LedgerRowComponent, StatusPillComponent, ButtonComponent, MenuComponent, MenuItemComponent, RouterLink],
   template: `
     <app-ledger-row>
       @if (showSalon()) {
@@ -23,7 +24,7 @@ export type PaymentAction = 'paid' | 'reopen' | 'waive' | 'delete';
         <div>
           <span class="cell-title">{{ what() }}</span>
           @if (payment().invoiceNumber) {
-            <span class="cell-sub">Invoice {{ payment().invoiceNumber }}</span>
+            <span class="cell-sub">{{ 'Invoice' | t }} {{ payment().invoiceNumber }}</span>
           }
         </div>
       }
@@ -31,22 +32,22 @@ export type PaymentAction = 'paid' | 'reopen' | 'waive' | 'delete';
       <div>
         <span>{{ due() }}</span>
         @if (payment().paidOn) {
-          <span class="cell-sub">paid {{ paid() }}</span>
+          <span class="cell-sub">{{ 'paid' | t }} {{ paid() }}</span>
         }
       </div>
-      <div><app-status-pill [tone]="status().tone">{{ status().label }}</app-status-pill></div>
+      <div><app-status-pill [tone]="status().tone">{{ status().label | t }}</app-status-pill></div>
       <div class="cell-actions">
         @if (payment().status === 'due') {
-          <button appButton size="sm" type="button" (click)="act.emit('paid')">Mark paid</button>
+          <button appButton size="sm" type="button" (click)="act.emit('paid')">{{ 'Mark paid' | t }}</button>
         }
-        <app-menu [ariaLabel]="'More actions for ' + what()">
+        <app-menu [ariaLabel]="'More actions for {what}' | t: { what: what() }">
           @if (payment().status === 'paid') {
-            <button appMenuItem type="button" (click)="act.emit('reopen')">Mark not paid</button>
+            <button appMenuItem type="button" (click)="act.emit('reopen')">{{ 'Mark not paid' | t }}</button>
           } @else {
             @if (payment().status === 'due') {
-              <button appMenuItem type="button" (click)="act.emit('waive')">Waive (free)</button>
+              <button appMenuItem type="button" (click)="act.emit('waive')">{{ 'Waive (free)' | t }}</button>
             }
-            <button appMenuItem tone="danger" type="button" (click)="act.emit('delete')">Delete…</button>
+            <button appMenuItem tone="danger" type="button" (click)="act.emit('delete')">{{ 'Delete…' | t }}</button>
           }
         </app-menu>
       </div>

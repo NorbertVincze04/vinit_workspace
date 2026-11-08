@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ToastService } from '../../../core/services/toast.service';
 import { monthName, shiftMonth, todayISO } from '../../../core/utils/date';
-import { formatRon, percent, plural } from '../../../core/utils/format';
+import { formatRon, percent } from '../../../core/utils/format';
 import { BarChartComponent, ChartGroup, ChartSeries } from '../../../shared/components';
 import { RonPipe } from '../../../shared/pipes/ron.pipe';
 import {
@@ -28,12 +28,14 @@ import { PaymentAction, PaymentRowComponent } from './components/payment-row/pay
 import { SubscriptionRowComponent } from './components/subscription-row/subscription-row.component';
 import { ChangeKind, LIVE, Payment, Subscription } from './billing.model';
 import { BillingStore } from './billing.store';
+import { TPipe } from '../../../core/i18n/t.pipe';
+import { countOf, t } from '../../../core/i18n/i18n';
 
 /** Subscriptions tool: MRR, who pays what, payments to collect and billing warnings. */
 @Component({
   selector: 'app-subscriptions-page',
   standalone: true,
-  imports: [
+  imports: [TPipe, 
     PageHeaderComponent,
     ButtonComponent,
     IconComponent,
@@ -157,7 +159,7 @@ export class SubscriptionsPageComponent {
   protected async generate(month: string): Promise<void> {
     try {
       const n = await this.store.generate(month);
-      this.toast.show(n ? `${n} ${plural(n, 'payment', 'payments')} added for ${monthName(month)}` : `Nothing new: ${monthName(month)} is already generated`, 5000);
+      this.toast.show(n ? t('{payments} added for {month}', { payments: countOf(n, 'payment', 'payments'), month: monthName(month) }) : t('Nothing new: {month} is already generated', { month: monthName(month) }), 5000);
       this.tab.set('payments');
       this.payFilter.set('open');
     } catch {

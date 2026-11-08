@@ -1,10 +1,10 @@
 <app-page-header title="Onboarding" description="Every salon being set up. The 48h promise counts from when the client's materials arrive.">
   <div pageActions>
     <app-menu ariaLabel="More onboarding actions">
-      <button appMenuItem type="button" (click)="editingTemplate.set(true)">Edit the checklist template…</button>
+      <button appMenuItem type="button" (click)="editingTemplate.set(true)">{{ 'Edit the checklist template…' | t }}</button>
     </app-menu>
     <button appButton variant="primary" type="button" (click)="openStart()">
-      <app-icon name="plus" [size]="16" /> Start onboarding
+      <app-icon name="plus" [size]="16" /> {{ 'Start onboarding' | t }}
     </button>
   </div>
 </app-page-header>
@@ -23,7 +23,7 @@
     heading="No onboardings yet"
     text="Start one when a salon signs: it gets the checklist (materials, kickoff, setup, approval, launch) and the 48h clock."
   >
-    <button appButton variant="primary" type="button" (click)="openStart()">Start onboarding</button>
+    <button appButton variant="primary" type="button" (click)="openStart()">{{ 'Start onboarding' | t }}</button>
   </app-empty-state>
 } @else if (!visible().length) {
   <app-empty-state heading="Nothing here" text="No onboarding matches this filter." />
@@ -34,15 +34,15 @@
         <div>
           <a class="cell-title link" [routerLink]="['/tools/salons', o.salonId]" [queryParams]="{ tab: 'onboarding' }">{{ o.salonName }}</a>
           @if (o.status === 'blocked') {
-            <span class="cell-sub">Blocked: {{ o.blockedReason }}</span>
+            <span class="cell-sub">{{ 'Blocked' | t }}: {{ o.blockedReason }}</span>
           }
         </div>
         <div><app-status-pill [tone]="clockOf(o).tone">{{ clockOf(o).text }}</app-status-pill></div>
         <div class="progress">
-          <span>{{ o.stepsDone }} of {{ o.stepsTotal }} steps</span>
-          <app-progress-bar size="sm" [value]="percent(o)" [label]="o.stepsDone + ' of ' + o.stepsTotal + ' steps done'" />
+          <span>{{ o.stepsDone }} {{ 'of' | t }} {{ o.stepsTotal }} {{ 'steps' | t }}</span>
+          <app-progress-bar size="sm" [value]="percent(o)" [label]="'{n} of {total} steps done' | t: { n: o.stepsDone, total: o.stepsTotal }" />
         </div>
-        <div><app-status-pill [tone]="statusOf(o).tone">{{ statusOf(o).label }}</app-status-pill></div>
+        <div><app-status-pill [tone]="statusOf(o).tone">{{ statusOf(o).label | t }}</app-status-pill></div>
       </app-ledger-row>
     }
   </app-ledger>

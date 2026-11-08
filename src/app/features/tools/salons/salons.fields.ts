@@ -3,16 +3,22 @@ import { FieldDef, FormValues, SelectOption, asBoolean, asString } from '../../.
 import { clientBody, clientFormFields } from '../clients/clients.fields';
 import { Client, cleanDomain } from '../clients/clients.model';
 import { DEPLOY_STATUSES, DNS_STATUSES, Plan, SALON_STATUSES, SSL_STATUSES, Salon, asOptions } from './salons.model';
+import { t } from '../../../core/i18n/i18n';
+import { tc } from '../../../core/i18n/content';
 
 const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const checkSlug = (v: string): string | null =>
   v.length > 63 || !SLUG.test(v) ? 'Tenant slug: lower-case letters, digits and single dashes, like barber-house.' : null;
 const checkDomain = (v: string): string | null => (cleanDomain(v) ? null : 'Enter a domain like salonname.ro.');
-const checkUrl = (v: string): string | null => (/^https?:\/\/\S+$/i.test(v) ? null : 'Enter a full link, starting with https://');
+/** Going live on or after the signature (signedAt is "YYYY-MM-DDTHH:mm"). */
+const afterSigning = (v: string, values: FormValues): string | null => {
+  const signed = String(values['signedAt'] ?? '').slice(0, 10);
+  return signed && v < signed ? 'Going live can’t be before the signature.' : null;
+};
 
 export const planOptions = (plans: readonly Plan[]): SelectOption[] => [
   { value: '', label: 'No plan yet' },
-  ...plans.map((p) => ({ value: p.id, label: p.monthlyPrice ? `${p.name} (${p.monthlyPrice} RON / month)` : p.name })),
+  ...plans.map((p) => ({ value: p.id, label: p.monthlyPrice ? t('{name} ({price} RON / month)', { name: tc(p.name), price: p.monthlyPrice }) : tc(p.name) })),
 ];
 
 const NEW_CLIENT = 'new';
@@ -22,7 +28,7 @@ const isNewClient = (v: FormValues): boolean => v['clientId'] === NEW_CLIENT;
 export function newSalonFields(freeClients: readonly Client[], plans: readonly Plan[]): FieldDef[] {
   return [
     { key: 'name', label: 'Salon name', type: 'text', required: true, maxLength: 200, span: 'full', placeholder: 'Barber House' },
-    { key: 'city', label: 'City', type: 'text', maxLength: 100 },
+    { key: 'city', label: 'City', type: 'text', maxLength: 100, placeholder: 'Cluj-Napoca' },
     {
       key: 'status',
       label: 'Status',
@@ -45,7 +51,7 @@ export function newSalonFields(freeClients: readonly Client[], plans: readonly P
       hint: 'Usually new details. Only payers without a salon are listed.',
     },
     ...clientFormFields('client.', isNewClient),
-    { key: 'notes', label: 'Notes', type: 'textarea', span: 'full' },
+    { key: 'notes', label: 'Notes', type: 'textarea', span: 'full', placeholder: 'What to remember about this salon: wishes, how they like to be contacted…' },
   ];
 }
 
@@ -71,8 +77,8 @@ export function newSalonBody(v: FormValues): Record<string, unknown> {
 /** Editing the salon itself (status has its own dialog, client its own form). */
 export function editSalonFields(plans: readonly Plan[], others: readonly Salon[]): FieldDef[] {
   return [
-    { key: 'name', label: 'Salon name', type: 'text', required: true, maxLength: 200, span: 'full' },
-    { key: 'city', label: 'City', type: 'text', maxLength: 100 },
+    { key: 'name', label: 'Salon name', type: 'text', required: true, maxLength: 200, span: 'full', placeholder: 'Barber House' },
+    { key: 'city', label: 'City', type: 'text', maxLength: 100, placeholder: 'Cluj-Napoca' },
     { key: 'planId', label: 'Plan', type: 'select', options: planOptions(plans) },
     {
       key: 'tenantSlug',
@@ -85,17 +91,17 @@ export function editSalonFields(plans: readonly Plan[], others: readonly Salon[]
     },
     { key: 'deployStatus', label: 'Deploy', type: 'select', default: 'not_deployed', options: asOptions(DEPLOY_STATUSES) },
     { key: 'configVersion', label: 'JSON config version', type: 'text', maxLength: 100, placeholder: 'v3' },
-    { key: 'configUrl', label: 'JSON config link', type: 'text', maxLength: 500, placeholder: 'https://…', validate: checkUrl },
+    { key: 'configUrl', label: 'JSON config link', type: 'url', maxLength: 500, placeholder: 'https://…' },
     { key: 'signedAt', label: 'Signed', type: 'datetime' },
-    { key: 'goLiveOn', label: 'Went live on', type: 'date' },
-    { key: 'uptimeMonitorId', label: 'Uptime monitor id', type: 'text', maxLength: 100 },
+    { key: 'goLiveOn', label: 'Went live on', type: 'date', validate: afterSigning },
+    { key: 'uptimeMonitorId', label: 'Uptime monitor id', type: 'text', maxLength: 100, placeholder: '798123456' },
     {
       key: 'referredBySalonId',
       label: 'Referred by',
       type: 'select',
       options: [{ value: '', label: 'Nobody' }, ...others.map((s) => ({ value: s.id, label: s.name }))],
     },
-    { key: 'notes', label: 'Notes', type: 'textarea', span: 'full' },
+    { key: 'notes', label: 'Notes', type: 'textarea', span: 'full', placeholder: 'What to remember about this salon: wishes, how they like to be contacted…' },
   ];
 }
 
@@ -156,7 +162,7 @@ export const DOMAIN_FIELDS: readonly FieldDef[] = [
     placeholder: 'Bitwarden › Domains › barberhouse.ro',
     hint: 'Where the registrar login is stored. Never type the password here.',
   },
-  { key: 'notes', label: 'Notes', type: 'textarea', span: 'full' },
+  { key: 'notes', label: 'Notes', type: 'textarea', span: 'full', placeholder: 'e.g. Transferred from the old host, renewal paid by the salon' },
 ];
 
 export function domainBody(v: FormValues): Record<string, unknown> {

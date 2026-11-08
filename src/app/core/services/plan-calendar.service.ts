@@ -1,9 +1,11 @@
 import { Injectable, computed } from '@angular/core';
 import { remoteSetting } from '../api/remote-setting';
+import { locale } from '../i18n/i18n';
 import { isMonthKey } from '../utils/date';
 
 export const DEFAULT_PLAN_START = '2026-12';
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+/** Short month names in the app's language: "Dec" / "dec.". */
+const MONTHS = Array.from({ length: 12 }, (_, i) => new Date(2000, i, 1).toLocaleDateString(locale(), { month: 'short' }));
 
 /**
  * The Year-1 plan calendar shared by every tool: which calendar month is "Month 1",
@@ -27,7 +29,7 @@ export class PlanCalendarService {
     if (isMonthKey(value)) this.start.set(value);
   }
 
-  /** "Dec 2026" for plan month n. */
+  /** "Dec 2026" (Romanian: "dec. 2026") for plan month n. */
   monthLabel(n: number): string {
     const { year, month } = this.parts();
     const index = year * 12 + (month - 1) + (n - 1);

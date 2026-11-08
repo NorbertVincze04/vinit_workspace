@@ -1,7 +1,7 @@
 <app-page-header title="Support" description="Tickets from salons and the time spent on them: included sessions, billable extra work, internal.">
   <div pageActions>
     <button appButton variant="primary" type="button" (click)="openNew()">
-      <app-icon name="plus" [size]="16" /> New ticket
+      <app-icon name="plus" [size]="16" /> {{ 'New ticket' | t }}
     </button>
   </div>
 </app-page-header>
@@ -20,7 +20,7 @@
         <app-empty-state heading="Loading…" text="Reading tickets from the VINIT server." />
       } @else if (!store.tickets().length) {
         <app-empty-state heading="No tickets yet" text="When a salon asks for something (a bug, a change, a question), open a ticket and log the time on it.">
-          <button appButton variant="primary" type="button" (click)="openNew()">New ticket</button>
+          <button appButton variant="primary" type="button" (click)="openNew()">{{ 'New ticket' | t }}</button>
         </app-empty-state>
       } @else if (!visible().length) {
         <app-empty-state heading="Nothing here" text="No ticket matches this filter." />

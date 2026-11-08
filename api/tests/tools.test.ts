@@ -5,7 +5,7 @@ import { db } from '../src/db/knex.js';
 import { APP_HEADER, signedIn } from './helpers.js';
 
 describe('protected tool endpoints', () => {
-  it.each(['/tasks', '/goals', '/finances/transactions', '/marketing/posts', '/roadmap', '/settings', '/files'])(
+  it.each(['/tasks', '/goals', '/finances/transactions', '/marketing/posts', '/marketing/years', '/roadmap', '/settings', '/files'])(
     'GET %s needs a session',
     async (path) => {
       expect((await request(createApp()).get(`/api/v1${path}`)).status).toBe(401);
@@ -158,6 +158,61 @@ describe('settings', () => {
     expect((await agent.put('/api/v1/settings/whatever').set(APP_HEADER).send({ value: 1 })).status).toBe(404);
     const res = await agent.get('/api/v1/settings');
     expect(res.body.values).toEqual({ 'plan.start': '2026-12', 'finances.rates': { eur: 4.97, usd: 4.6 } });
+  });
+
+});
+
+describe('marketing years', () => {
+  const month = { element: 'Product ad', theme: 'Waitlist and SMS', goal: '', keywords: ['SMS automat'], target: 4, where: 'Instagram', budget: 500 };
+  const strategy = {
+    objectives: ['Book demos'],
+    audience: { geographic: 'Cluj', demographic: '20–35', behavioral: '', psychographic: '' },
+    persona: { name: 'Andrei', age: '28', role: 'Barber', lifestyle: '', problem: '' },
+    positioning: { valueProposition: 'Own app', slogan: 'Brandul tău.', feature: '', advantage: '', benefit: '', pricing: '', distribution: '', competitors: '', launchOffer: '' },
+    launchBudget: 2000,
+    channels: [
+      { key: 'sales', label: 'Direct sales', target: 60, tactics: 'DMs' },
+      { key: 'ads', label: 'Paid ads', target: 40, tactics: '' },
+    ],
+    months: Array.from({ length: 12 }, () => month),
+  };
+
+  it('has Year 1 from the start and saves its strategy, rejecting a malformed one', async () => {
+    const { agent } = await signedIn();
+    const first = await agent.get('/api/v1/marketing/years');
+    expect(first.body.items).toEqual([expect.objectContaining({ year: 1, from: '2026-12', to: '2027-11', strategy: null, posts: 0 })]);
+
+    const put = (year: number, value: unknown) => agent.put(`/api/v1/marketing/years/${year}`).set(APP_HEADER).send({ strategy: value });
+    expect((await put(1, strategy)).body.item).toMatchObject({ year: 1, strategy });
+    expect((await agent.get('/api/v1/marketing/years')).body.items[0].strategy).toEqual(strategy);
+
+    expect((await put(1, { ...strategy, months: strategy.months.slice(0, 11) })).status).toBe(400);
+    expect((await put(1, { ...strategy, channels: [strategy.channels[0], strategy.channels[0]] })).status).toBe(400);
+    expect((await put(1, { ...strategy, channels: [] })).status).toBe(400);
+    expect((await put(1, { ...strategy, extra: true })).status).toBe(400);
+    expect((await put(3, strategy)).status).toBe(404);
+  });
+
+  it('adds the next year, keeps content per year and only removes an empty future last year', async () => {
+    const { agent } = await signedIn();
+    const added = await agent.post('/api/v1/marketing/years').set(APP_HEADER).send({ strategy: { ...strategy, launchBudget: 0 } });
+    expect(added.status).toBe(201);
+    expect(added.body.item).toMatchObject({ year: 2, from: '2027-12', to: '2028-11', strategy: { launchBudget: 0 } });
+    expect((await agent.get('/api/v1/marketing/years')).body.items.map((y: { year: number }) => y.year)).toEqual([1, 2]);
+
+    // Content belongs to a year (Year 1 when not given).
+    const post = (body: object) => agent.post('/api/v1/marketing/posts').set(APP_HEADER).send({ title: 'Reel', month: 1, ...body });
+    const y1 = (await post({})).body.item;
+    const y2 = (await post({ year: 2 })).body.item;
+    expect([y1.year, y2.year]).toEqual([1, 2]);
+    expect((await agent.get('/api/v1/marketing/years')).body.items.map((y: { posts: number }) => y.posts)).toEqual([1, 1]);
+
+    const remove = (year: number) => agent.delete(`/api/v1/marketing/years/${year}`).set(APP_HEADER);
+    expect((await remove(1)).status).toBe(409);
+    expect((await remove(2)).body.error.code).toBe('has_content');
+    await agent.delete(`/api/v1/marketing/posts/${y2.id}`).set(APP_HEADER);
+    expect((await remove(2)).status).toBe(204);
+    expect((await agent.get('/api/v1/marketing/years')).body.items.map((y: { year: number }) => y.year)).toEqual([1]);
   });
 });
 

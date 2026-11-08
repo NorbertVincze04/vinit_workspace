@@ -1,6 +1,7 @@
 import { todayISO } from '../../../core/utils/date';
 import { FieldDef, FormValues, SelectOption, asNumber, asString } from '../../../shared/ui';
 import { CHANNELS, ENTRY_KINDS, PRIORITIES, TICKET_STATUSES, TICKET_TYPES, Ticket } from './support.model';
+import { t } from '../../../core/i18n/i18n';
 
 const options = (list: readonly { value: string; label: string }[]): SelectOption[] => list.map(({ value, label }) => ({ value, label }));
 
@@ -36,7 +37,7 @@ export function ticketBody(v: FormValues, editing: boolean): Record<string, unkn
 export function timeFields(remaining: number | null, tickets: readonly Pick<Ticket, 'id' | 'number' | 'title'>[] | null): FieldDef[] {
   const kinds = ENTRY_KINDS.map((k) => ({
     value: k.value,
-    label: k.value === 'included_session' && remaining !== null ? `${k.label} (${remaining} left)` : k.label,
+    label: k.value === 'included_session' && remaining !== null ? t('{kind} ({n} left)', { kind: t(k.label), n: remaining }) : k.label,
   }));
   const fields: FieldDef[] = [
     {
@@ -48,8 +49,8 @@ export function timeFields(remaining: number | null, tickets: readonly Pick<Tick
       options: kinds,
       hint: 'Included sessions count per meeting. Billable time is charged per minute at 100 RON/h.',
     },
-    { key: 'minutes', label: 'Minutes', type: 'number', required: true, integer: true, min: 1, default: 30 },
-    { key: 'workedOn', label: 'Date', type: 'date', required: true, default: todayISO },
+    { key: 'minutes', label: 'Minutes', type: 'number', required: true, integer: true, min: 1, max: 1440, default: 30, hint: 'At most 24 hours (1440 minutes) per entry.' },
+    { key: 'workedOn', label: 'Date', type: 'date', required: true, default: todayISO, validate: (v) => (v > todayISO() ? 'That day is in the future.' : null) },
   ];
   if (tickets?.length) {
     fields.push({
@@ -60,7 +61,7 @@ export function timeFields(remaining: number | null, tickets: readonly Pick<Tick
       options: [{ value: '', label: 'No ticket' }, ...tickets.map((t) => ({ value: t.id, label: `T-${String(t.number).padStart(4, '0')} ${t.title}` }))],
     });
   }
-  fields.push({ key: 'description', label: 'What was done', type: 'textarea', span: 'full', maxLength: 2000 });
+  fields.push({ key: 'description', label: 'What was done', type: 'textarea', span: 'full', maxLength: 2000, placeholder: 'e.g. Changed the opening hours and added two barbers' });
   return fields;
 }
 

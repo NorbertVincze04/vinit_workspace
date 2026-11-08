@@ -71,7 +71,6 @@ export function backupTone(days: number | null, warnAfter: number, badAfter: num
   return days > warnAfter ? 'warn' : 'ok';
 }
 
-const isLink = (v: string): string | null => (/^https?:\/\/\S+$/.test(v) ? null : 'Enter a full link, starting with https://');
 /** Optional amount: empty stays empty (a number field would turn it into 0). */
 export const optionalAmount = (v: string): string | null => (/^\d{1,9}([.,]\d{1,2})?$/.test(v.trim()) ? null : 'Enter an amount like 25 or 2,50.');
 export const parseOptionalAmount = (v: unknown): number | null => {
@@ -83,9 +82,9 @@ const noRecurring = (v: FormValues): boolean => !v['recurringId'];
 export function serviceFields(recurring: readonly SelectOption[]): FieldDef[] {
   return [
     { key: 'name', label: 'Service', type: 'text', required: true, maxLength: 200, placeholder: 'e.g. Twilio SMS' },
-    { key: 'vendor', label: 'Vendor', type: 'text', maxLength: 200 },
+    { key: 'vendor', label: 'Vendor', type: 'text', maxLength: 200, placeholder: 'e.g. Twilio' },
     { key: 'category', label: 'Type', type: 'select', default: 'hosting', options: SERVICE_CATEGORIES },
-    { key: 'planName', label: 'Plan', type: 'text', maxLength: 200 },
+    { key: 'planName', label: 'Plan', type: 'text', maxLength: 200, placeholder: 'e.g. Pay as you go' },
     {
       key: 'recurringId',
       label: 'Cost from Finances',
@@ -108,8 +107,8 @@ export function serviceFields(recurring: readonly SelectOption[]): FieldDef[] {
       ],
     },
     { key: 'renewsOn', label: 'Renews on', type: 'date', hint: 'Shows up in the Calendar.' },
-    { key: 'dashboardUrl', label: 'Dashboard link', type: 'text', maxLength: 500, validate: isLink },
-    { key: 'statusUrl', label: 'Status page', type: 'text', maxLength: 500, validate: isLink },
+    { key: 'dashboardUrl', label: 'Dashboard link', type: 'url', maxLength: 500, placeholder: 'https://console.twilio.com' },
+    { key: 'statusUrl', label: 'Status page', type: 'url', maxLength: 500, placeholder: 'https://status.twilio.com' },
     {
       key: 'passwordManagerRef',
       label: 'Password manager entry',
@@ -120,7 +119,7 @@ export function serviceFields(recurring: readonly SelectOption[]): FieldDef[] {
       hint: 'Where the login is stored. Never type the password here.',
     },
     { key: 'active', label: 'In use', type: 'check', checkLabel: 'We pay for it now', default: true },
-    { key: 'notes', label: 'Notes', type: 'textarea', span: 'full' },
+    { key: 'notes', label: 'Notes', type: 'textarea', span: 'full', placeholder: 'e.g. Billed in USD on the company card' },
   ];
 }
 

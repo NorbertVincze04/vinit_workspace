@@ -3,7 +3,7 @@
   description="Everything that is due: taxes and funding you add, plus domain, SSL, contract, trial and minimum-term dates taken from the salons."
 >
   <div pageActions>
-    <button appButton variant="primary" type="button" (click)="openForm(null)"><app-icon name="plus" [size]="16" /> New deadline</button>
+    <button appButton variant="primary" type="button" (click)="openForm(null)"><app-icon name="plus" [size]="16" /> {{ 'New deadline' | t }}</button>
   </div>
 </app-page-header>
 
@@ -20,8 +20,8 @@
   @if (picked(); as p) {
     <div class="day-bar">
       <strong>{{ date(p, { weekday: 'long', day: 'numeric', month: 'long' }) }}</strong>
-      <button appButton variant="ghost" size="sm" type="button" (click)="picked.set(null)">All month</button>
-      <button appButton variant="primary" size="sm" type="button" (click)="newOn(p)"><app-icon name="plus" [size]="14" /> Add</button>
+      <button appButton variant="ghost" size="sm" type="button" (click)="picked.set(null)">{{ 'All month' | t }}</button>
+      <button appButton variant="primary" size="sm" type="button" (click)="newOn(p)"><app-icon name="plus" [size]="14" /> {{ 'Add' | t }}</button>
     </div>
   }
   <div class="agenda">
@@ -36,7 +36,7 @@
       </button>
     } @empty {
       @if (picked()) {
-        <p class="empty">Nothing on this day.</p>
+        <p class="empty">{{ 'Nothing on this day.' | t }}</p>
       } @else {
         <app-empty-state heading="Nothing due this month" text="Tap a day to add a deadline on it, or use New deadline." />
       }
@@ -54,7 +54,7 @@
         <app-status-pill [tone]="when(d).tone">{{ when(d).text }}</app-status-pill>
       </button>
     } @empty {
-      <p class="empty">Nothing due in the next 30 days.</p>
+      <p class="empty">{{ 'Nothing due in the next 30 days.' | t }}</p>
     }
   </app-panel>
 }
@@ -66,19 +66,19 @@
       <p class="notes">{{ d.notes }}</p>
     }
     @if (d.sourceType) {
-      <p class="muted small">This date comes from the salon's data: change it there (domain, contract or subscription).</p>
+      <p class="muted small">{{ 'This date comes from the salon\'s data: change it there (domain, contract or subscription).' | t }}</p>
     }
     <div dialogFooter class="footer">
       @if (!d.sourceType) {
-        <button appButton variant="ghost" type="button" (click)="dlg.close(); deleting.set(d)">Delete</button>
-        <button appButton variant="ghost" type="button" (click)="openForm(d)">Edit</button>
+        <button appButton variant="ghost" type="button" (click)="dlg.close(); deleting.set(d)">{{ 'Delete' | t }}</button>
+        <button appButton variant="ghost" type="button" (click)="openForm(d)">{{ 'Edit' | t }}</button>
       }
       <span class="spacer"></span>
       @if (d.status === 'open') {
-        <button appButton type="button" (click)="setStatus(d, 'dismissed', dlg)">Dismiss</button>
-        <button appButton variant="primary" type="button" (click)="markDone(d, dlg)">Done</button>
+        <button appButton type="button" (click)="setStatus(d, 'dismissed', dlg)">{{ 'Dismiss' | t }}</button>
+        <button appButton variant="primary" type="button" (click)="markDone(d, dlg)">{{ 'Done' | t }}</button>
       } @else {
-        <button appButton type="button" (click)="setStatus(d, 'open', dlg)">Open again</button>
+        <button appButton type="button" (click)="setStatus(d, 'open', dlg)">{{ 'Open again' | t }}</button>
       }
     </div>
   </app-dialog>
@@ -96,5 +96,5 @@
 }
 
 @if (deleting(); as d) {
-  <app-confirm-dialog heading="Delete deadline?" [message]="'“' + d.title + '” will be removed.'" cancelLabel="Keep it" (confirmed)="confirmDelete(d)" (closed)="deleting.set(null)" />
+  <app-confirm-dialog heading="Delete deadline?" [message]="'“{title}” will be removed.' | t: { title: d.title }" cancelLabel="Keep it" (confirmed)="confirmDelete(d)" (closed)="deleting.set(null)" />
 }

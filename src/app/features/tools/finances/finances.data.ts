@@ -1,6 +1,7 @@
 import { Frequency } from '../../../core/utils/date';
 import { ChartSeries } from '../../../shared/components';
 import { ChipOption, SelectOption } from '../../../shared/ui';
+import { t } from '../../../core/i18n/i18n';
 
 /** Reference lists for the Finances tool. */
 
@@ -80,5 +81,5 @@ export const CASH_FLOW_SERIES: readonly ChartSeries[] = [
 export const toOptions = (list: readonly string[]): SelectOption[] => list.map((v) => ({ value: v, label: v }));
 
 export function labelOf(list: readonly SelectOption[], value: string): string {
-  return list.find((o) => o.value === value)?.label ?? value;
+  return t(list.find((o) => o.value === value)?.label ?? value);
 }

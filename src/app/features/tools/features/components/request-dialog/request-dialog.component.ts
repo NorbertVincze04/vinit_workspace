@@ -3,37 +3,39 @@ import { RouterLink } from '@angular/router';
 import { apiError } from '../../../../../core/api/api.service';
 import { ToastService } from '../../../../../core/services/toast.service';
 import { formatDate } from '../../../../../core/utils/date';
-import { formatRon, plural } from '../../../../../core/utils/format';
+import { formatRon } from '../../../../../core/utils/format';
 import { ButtonComponent, DialogComponent, Fact, FactsComponent, StatusPillComponent } from '../../../../../shared/ui';
 import { LeadsStore } from '../../../leads/leads.store';
 import { SalonsStore } from '../../../salons/salons.store';
 import { ticketNo } from '../../../support/support.model';
 import { FeatureRequest, REQUEST_STATUSES, Vote, requestStatus } from '../../features.model';
 import { FeaturesStore } from '../../features.store';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
+import { countOf, t } from '../../../../../core/i18n/i18n';
 
 /** One request: status, roadmap link, who asked (salons and leads) and linked tickets. */
 @Component({
   selector: 'app-request-dialog',
   standalone: true,
-  imports: [DialogComponent, ButtonComponent, FactsComponent, StatusPillComponent, RouterLink],
+  imports: [TPipe, DialogComponent, ButtonComponent, FactsComponent, StatusPillComponent, RouterLink],
   template: `
     <app-dialog #dialog size="lg" [heading]="item()?.title ?? 'Feature request'" (closed)="closed.emit()">
       @if (item(); as r) {
         <div class="top">
           <label class="pick">
-            <span>Status</span>
+            <span>{{ 'Status' | t }}</span>
             <select class="input" (change)="setStatus($any($event.target))">
               @for (s of statuses; track s.value) {
-                <option [value]="s.value" [selected]="s.value === r.status">{{ s.label }}</option>
+                <option [value]="s.value" [selected]="s.value === r.status">{{ s.label | t }}</option>
               }
             </select>
           </label>
           <label class="pick">
-            <span>Roadmap step</span>
+            <span>{{ 'Roadmap step' | t }}</span>
             <select class="input" (change)="setStep($any($event.target).value)">
-              <option value="" [selected]="!r.roadmapStepId">None</option>
+              <option value="" [selected]="!r.roadmapStepId">{{ 'None' | t }}</option>
               @for (s of store.steps(); track s.id) {
-                <option [value]="s.id" [selected]="s.id === r.roadmapStepId">Year {{ s.year }} · {{ s.phase }} · {{ s.text }}</option>
+                <option [value]="s.id" [selected]="s.id === r.roadmapStepId">{{ 'Year' | t }} {{ s.year }} · {{ s.phase }} · {{ s.text }}</option>
               }
             </select>
           </label>
@@ -43,16 +45,16 @@ import { FeaturesStore } from '../../features.store';
           <p class="desc">{{ r.description }}</p>
         }
 
-        <h3>Who asked ({{ r.votes }})</h3>
+        <h3>{{ 'Who asked' | t }} ({{ r.votes }})</h3>
         <ul class="votes">
           @for (v of r.voteList ?? []; track v.id) {
             <li>
               @if (v.salonId) {
                 <a [routerLink]="['/tools/salons', v.salonId]" (click)="dialog.close()">{{ v.salonName }}</a>
-                <span class="muted">salon · {{ v.salonStatus }}</span>
+                <span class="muted">{{ 'salon' | t }} · {{ v.salonStatus }}</span>
               } @else {
                 <span>{{ v.leadName }}</span>
-                <span class="muted">lead · {{ v.leadStage }}</span>
+                <span class="muted">{{ 'lead' | t }} · {{ v.leadStage }}</span>
               }
               @if (v.note) {
                 <span class="note">“{{ v.note }}”</span>
@@ -60,12 +62,12 @@ import { FeaturesStore } from '../../features.store';
               <button class="remove" type="button" [attr.aria-label]="'Remove the vote of ' + (v.salonName || v.leadName)" (click)="unvote(v)">×</button>
             </li>
           } @empty {
-            <li class="muted">Nobody yet.</li>
+            <li class="muted">{{ 'Nobody yet.' | t }}</li>
           }
         </ul>
         <form class="add" (submit)="$event.preventDefault(); vote()">
-          <select class="input" aria-label="Salon or lead that asks for it" (change)="who.set($any($event.target).value)">
-            <option value="">Add a salon or lead…</option>
+          <select class="input" [attr.aria-label]="'Salon or lead that asks for it' | t" (change)="who.set($any($event.target).value)">
+            <option value="">{{ 'Add a salon or lead…' | t }}</option>
             <optgroup label="Salons">
               @for (s of salonOptions(); track s.id) {
                 <option [value]="'s:' + s.id">{{ s.name }}</option>
@@ -77,12 +79,12 @@ import { FeaturesStore } from '../../features.store';
               }
             </optgroup>
           </select>
-          <input class="input" maxlength="1000" placeholder="What they said (optional)" aria-label="Note" [value]="note()" (input)="note.set($any($event.target).value)" />
-          <button appButton size="sm" type="submit" [disabled]="!who()">Add</button>
+          <input class="input" maxlength="1000" [placeholder]="'What they said (optional)' | t" [attr.aria-label]="'Note' | t" [value]="note()" (input)="note.set($any($event.target).value)" />
+          <button appButton size="sm" type="submit" [disabled]="!who()">{{ 'Add' | t }}</button>
         </form>
 
         @if (r.ticketList?.length) {
-          <h3>Tickets</h3>
+          <h3>{{ 'Tickets' | t }}</h3>
           <ul class="votes">
             @for (t of r.ticketList; track t.id) {
               <li>{{ no(t.number) }} {{ t.title }} <span class="muted">· {{ t.salonName }} · {{ t.status }}</span></li>
@@ -90,13 +92,13 @@ import { FeaturesStore } from '../../features.store';
           </ul>
         }
       } @else {
-        <p class="muted">Loading…</p>
+        <p class="muted">{{ 'Loading…' | t }}</p>
       }
       <div dialogFooter class="footer">
         @if (item(); as r) {
-          <button appButton variant="ghost" type="button" (click)="remove.emit(r)">Delete</button>
+          <button appButton variant="ghost" type="button" (click)="remove.emit(r)">{{ 'Delete' | t }}</button>
           <span class="spacer"></span>
-          <button appButton type="button" (click)="edit.emit(r)">Edit</button>
+          <button appButton type="button" (click)="edit.emit(r)">{{ 'Edit' | t }}</button>
         }
       </div>
     </app-dialog>
@@ -151,8 +153,8 @@ export class RequestDialogComponent {
     if (!r) return [];
     const s = requestStatus(r.status);
     return [
-      { label: 'Status', value: s.label, tone: s.tone },
-      { label: 'Asked by', value: `${r.salonVotes} ${plural(r.salonVotes, 'salon', 'salons')} · ${r.votes - r.salonVotes} ${plural(r.votes - r.salonVotes, 'lead', 'leads')}` },
+      { label: 'Status', value: t(s.label), tone: s.tone },
+      { label: 'Asked by', value: `${countOf(r.salonVotes, 'salon', 'salons')} · ${countOf(r.votes - r.salonVotes, 'lead', 'leads')}` },
       { label: 'MRR behind it', value: formatRon(r.mrrBani / 100), hint: 'paying salons that asked' },
       { label: 'Shipped', value: formatDate(r.shippedOn) },
       { label: 'Added', value: formatDate(r.createdAt.slice(0, 10)) },
@@ -177,14 +179,14 @@ export class RequestDialogComponent {
     try {
       this.item.set(await this.store.get(id));
     } catch (e) {
-      this.toast.show(`Could not load the request: ${apiError(e).message}`, 6000);
+      this.toast.show(t('Could not load the request: {error}', { error: apiError(e).message }), 6000);
     }
   }
 
   protected async setStatus(select: HTMLSelectElement): Promise<void> {
     const r = this.item();
     if (!r || select.value === r.status) return;
-    await this.run(() => this.store.update(r.id, { status: select.value }), `Marked ${requestStatus(select.value).label.toLowerCase()}`);
+    await this.run(() => this.store.update(r.id, { status: select.value }), t('Marked {status}', { status: t(requestStatus(select.value).label).toLowerCase() }));
   }
 
   protected async setStep(stepId: string): Promise<void> {

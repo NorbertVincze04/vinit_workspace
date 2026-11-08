@@ -2,6 +2,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IconComponent, ProgressBarComponent, StatTone } from '../../ui';
+import { TPipe } from '../../../core/i18n/t.pipe';
 
 /**
  * Dashboard tile: label, figure, hint and optional progress. With a `route` the whole tile is a link.
@@ -10,7 +11,7 @@ import { IconComponent, ProgressBarComponent, StatTone } from '../../ui';
 @Component({
   selector: 'app-kpi-card',
   standalone: true,
-  imports: [NgTemplateOutlet, RouterLink, IconComponent, ProgressBarComponent],
+  imports: [TPipe, NgTemplateOutlet, RouterLink, IconComponent, ProgressBarComponent],
   template: `
     @if (route()) {
       <a class="tile is-link" [routerLink]="route()"><ng-container [ngTemplateOutlet]="body" /></a>
@@ -19,7 +20,7 @@ import { IconComponent, ProgressBarComponent, StatTone } from '../../ui';
     }
     <ng-template #body>
       <span class="label">
-        {{ label() }}
+        {{ label() | t }}
         @if (route()) {
           <app-icon class="go" name="arrow-right" [size]="14" />
         }
@@ -29,7 +30,7 @@ import { IconComponent, ProgressBarComponent, StatTone } from '../../ui';
         <app-progress-bar size="sm" [value]="percentValue()" [label]="label() + ' progress'" />
       }
       @if (hint()) {
-        <span class="hint">{{ hint() }}</span>
+        <span class="hint">{{ hint() | t }}</span>
       }
     </ng-template>
   `,

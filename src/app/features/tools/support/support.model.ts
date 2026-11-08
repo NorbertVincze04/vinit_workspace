@@ -1,4 +1,5 @@
 import { StatusTone } from '../../../shared/ui';
+import { t } from '../../../core/i18n/i18n';
 
 export type TicketType = 'bug' | 'change_request' | 'question';
 export type TicketStatus = 'open' | 'in_progress' | 'waiting_client' | 'resolved' | 'closed';
@@ -50,8 +51,8 @@ export const ENTRY_KINDS: readonly { value: EntryKind; label: string; hint: stri
 
 export const ticketStatus = (s: string) => TICKET_STATUSES.find((x) => x.value === s) ?? TICKET_STATUSES[0];
 export const priorityInfo = (p: string) => PRIORITIES.find((x) => x.value === p) ?? PRIORITIES[2];
-export const typeLabel = (t: string): string => TICKET_TYPES.find((x) => x.value === t)?.label ?? t;
-export const entryKindLabel = (k: string): string => ENTRY_KINDS.find((x) => x.value === k)?.label ?? k;
+export const typeLabel = (type: string): string => t(TICKET_TYPES.find((x) => x.value === type)?.label ?? type);
+export const entryKindLabel = (k: string): string => t(ENTRY_KINDS.find((x) => x.value === k)?.label ?? k);
 export const ticketNo = (n: number): string => `T-${String(n).padStart(4, '0')}`;
 
 /** "95 min" → "1h 35m". */

@@ -2,18 +2,19 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ToolDefinition } from '../../../../core/models';
 import { IconComponent } from '../../../../shared/ui';
+import { TPipe } from '../../../../core/i18n/t.pipe';
 
 /** Launcher tile for one workspace tool: icon, name and a one-line description. */
 @Component({
   selector: 'app-tool-tile',
   standalone: true,
-  imports: [RouterLink, IconComponent],
+  imports: [TPipe, RouterLink, IconComponent],
   template: `
     <a [routerLink]="tool().route">
       <span class="icon"><app-icon [name]="tool().icon" [size]="20" /></span>
       <span class="text">
-        <span class="name">{{ tool().title }}</span>
-        <span class="desc">{{ tool().description }}</span>
+        <span class="name">{{ tool().title | t }}</span>
+        <span class="desc">{{ tool().description | t }}</span>
       </span>
     </a>
   `,

@@ -1,11 +1,11 @@
 <div class="legend" aria-hidden="true">
   @for (s of series(); track s.key) {
-    <span><i class="swatch" [style.background]="s.color"></i>{{ s.label }}</span>
+    <span><i class="swatch" [style.background]="s.color"></i>{{ s.label | t }}</span>
   }
 </div>
 
 <div class="plot" #plot>
-  <svg [attr.viewBox]="'0 0 ' + W() + ' ' + H" role="img" [attr.aria-label]="ariaLabel()">
+  <svg [attr.viewBox]="'0 0 ' + W() + ' ' + H" role="img" [attr.aria-label]="ariaLabel() | t">
     @for (tick of ticks(); track $index; let first = $first) {
       <line class="grid" [class.base]="first" [attr.x1]="L" [attr.x2]="W() - R" [attr.y1]="tick.y" [attr.y2]="tick.y" />
       <text class="axis" text-anchor="end" [attr.x]="48" [attr.y]="tick.y + 4">{{ tick.label }}</text>
@@ -43,13 +43,13 @@
       <b>{{ g.title }}</b>
       @for (s of series(); track s.key) {
         <div class="row">
-          <span><i class="swatch" [style.background]="s.color"></i>{{ s.label }}</span>
+          <span><i class="swatch" [style.background]="s.color"></i>{{ s.label | t }}</span>
           <span>{{ valueOf(g, s.key) }}</span>
         </div>
       }
       @for (line of g.extra ?? []; track line.label) {
         <div class="row">
-          <span>{{ line.label }}</span>
+          <span>{{ line.label | t }}</span>
           <span>{{ line.value }}</span>
         </div>
       }
@@ -60,12 +60,12 @@
 <!-- Tables ignore width/overflow, so the visually hidden table sits inside a hidden div. -->
 <div class="sr-only">
 <table>
-  <caption>{{ ariaLabel() }}</caption>
+  <caption>{{ ariaLabel() | t }}</caption>
   <thead>
     <tr>
-      <th scope="col">Period</th>
+      <th scope="col">{{ 'Period' | t }}</th>
       @for (s of series(); track s.key) {
-        <th scope="col">{{ s.label }}</th>
+        <th scope="col">{{ s.label | t }}</th>
       }
     </tr>
   </thead>

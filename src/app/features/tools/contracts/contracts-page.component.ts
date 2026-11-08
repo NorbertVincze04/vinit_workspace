@@ -23,12 +23,14 @@ import { SalonsStore } from '../salons/salons.store';
 import { ContractDialogComponent } from './components/contract-dialog/contract-dialog.component';
 import { Contract, contractBody, contractFields, contractStatus, kindLabel } from './contracts.model';
 import { ContractsStore } from './contracts.store';
+import { TPipe } from '../../../core/i18n/t.pipe';
+import { t } from '../../../core/i18n/i18n';
 
 /** Contracts tool: who signed what, DPAs (GDPR), renewals, and which salons are missing paperwork. */
 @Component({
   selector: 'app-contracts-page',
   standalone: true,
-  imports: [
+  imports: [TPipe, 
     RouterLink,
     PageHeaderComponent,
     ButtonComponent,
@@ -74,10 +76,10 @@ export class ContractsPageComponent {
       .map((r) => ({
         ...r,
         problems: [
-          !r.contractSignedOn ? 'No signed contract' : '',
-          !r.dpaSignedOn ? 'No signed DPA' : '',
-          r.renewalOn ? `Renewal ${formatDate(r.renewalOn)}` : '',
-        ].filter(Boolean),
+          !r.contractSignedOn ? { text: t('No signed contract'), tone: 'bad' as const } : null,
+          !r.dpaSignedOn ? { text: t('No signed DPA'), tone: 'bad' as const } : null,
+          r.renewalOn ? { text: t('Renewal {date}', { date: formatDate(r.renewalOn) }), tone: 'warn' as const } : null,
+        ].filter((p) => p !== null),
       }))
       .filter((r) => r.problems.length),
   );

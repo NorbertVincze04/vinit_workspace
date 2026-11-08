@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, booleanAttribute, computed, input } from '@angular/core';
+import { TPipe } from '../../../core/i18n/t.pipe';
 
 /**
  * VINIT logo: the split "V" mark, optionally followed by the wordmark.
@@ -8,6 +9,7 @@ import { ChangeDetectionStrategy, Component, booleanAttribute, computed, input }
 @Component({
   selector: 'app-logo',
   standalone: true,
+  imports: [TPipe],
   template: `
     <svg class="mark" viewBox="0 0 74 72" aria-hidden="true" focusable="false">
       <path class="right" d="M56 0H72L41 72H36Z" />
@@ -15,7 +17,7 @@ import { ChangeDetectionStrategy, Component, booleanAttribute, computed, input }
       <circle class="left" cx="33" cy="7" r="5" />
     </svg>
     @if (wordmark()) {
-      <span class="word">VINIT</span>
+      <span class="word">{{ 'VINIT' | t }}</span>
     }
   `,
   styles: `

@@ -7,7 +7,7 @@ import { uuid } from '../../lib/schemas.js';
 
 /** Which entity types belong to which area of the workspace (same split as the sidebar groups). */
 export const AREAS: Record<string, readonly string[]> = {
-  sales: ['leads', 'marketing/posts', 'clients', 'import'],
+  sales: ['leads', 'marketing/posts', 'marketing/years', 'clients', 'import'],
   salons: ['salons', 'domains', 'onboardings', 'onboarding-steps', 'onboarding-template', 'tickets', 'time-entries', 'contracts', 'feature-requests'],
   money: ['subscriptions', 'payments', 'plans', 'promotions', 'kpis', 'finances/accounts', 'finances/holdings', 'finances/recurring', 'finances/transactions', 'finances/budgets'],
   planning: ['tasks', 'goals', 'roadmap', 'deadlines', 'setting'],

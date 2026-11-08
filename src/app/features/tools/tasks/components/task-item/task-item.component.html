@@ -4,10 +4,10 @@
     #textBox
     class="text"
     rows="1"
-    placeholder="Describe the task…"
-    aria-label="Task"
+    [placeholder]="'Describe the task…' | t"
+    [attr.aria-label]="'Task' | t"
     [class.is-done]="task().done"
-    [value]="task().text"
+    [value]="task().text | tc"
     [appAutosize]="task().text"
     (input)="onText($event)"
     (keydown.enter)="onEnter($event)"
@@ -18,7 +18,7 @@
     size="sm"
     iconOnly
     type="button"
-    aria-label="Task details"
+    [attr.aria-label]="'Task details' | t"
     [attr.aria-expanded]="expanded()"
     (click)="expandedChange.emit(!expanded())"
   >
@@ -29,15 +29,15 @@
 <div class="meta">
   <app-badge>{{ view().goalTag }}</app-badge>
   <app-badge [variant]="view().overdue ? 'danger' : 'outline'">
-    Due M{{ task().due }} · {{ view().dueLabel }}{{ view().overdue ? ' · overdue' : '' }}
+    {{ 'Due M' | t }}{{ task().due }} · {{ view().dueLabel }}{{ (view().overdue ? ' · overdue' : '') | t }}
   </app-badge>
   @if (task().prio === 'High') {
-    <app-badge variant="danger">High</app-badge>
+    <app-badge variant="danger">{{ 'High' | t }}</app-badge>
   } @else if (task().prio === 'Low') {
-    <app-badge variant="outline">Low</app-badge>
+    <app-badge variant="outline">{{ 'Low' | t }}</app-badge>
   }
   @if (task().owner !== 'Unassigned') {
-    <app-badge variant="outline">{{ task().owner }}</app-badge>
+    <app-badge variant="outline">{{ task().owner | t }}</app-badge>
   }
 </div>
 

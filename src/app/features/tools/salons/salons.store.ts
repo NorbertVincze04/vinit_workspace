@@ -15,6 +15,7 @@ import {
   SalonStatus,
   TimelineEntry,
 } from './salons.model';
+import { t } from '../../../core/i18n/i18n';
 
 type Row = Record<string, unknown>;
 
@@ -130,7 +131,7 @@ export class SalonsStore {
   /** Shows the server's message, then rethrows so the caller can stop. */
   private loud<T>(request: Promise<T>): Promise<T> {
     return request.catch((error: unknown) => {
-      this.toast.show(`Not saved: ${apiError(error).message}`, 6000);
+      this.toast.show(t('Not saved: {error}', { error: apiError(error).message }), 6000);
       throw error;
     });
   }

@@ -1,14 +1,14 @@
-<a class="back" routerLink="/tools/salons"><span aria-hidden="true">←</span> Salons</a>
+<a class="back" routerLink="/tools/salons"><span aria-hidden="true">←</span> {{ 'Salons' | t }}</a>
 
 @if (salon(); as s) {
   <app-page-header [title]="s.name" [description]="subtitle()">
     <div pageActions>
       <app-status-pill [tone]="status().tone">{{ status().label }}</app-status-pill>
-      <button appButton variant="primary" type="button" (click)="changeStatus()">Change status</button>
+      <button appButton variant="primary" type="button" (click)="changeStatus()">{{ 'Change status' | t }}</button>
       <app-menu ariaLabel="More salon actions">
-        <button appMenuItem type="button" (click)="editSalon()">Edit salon</button>
-        <button appMenuItem type="button" (click)="editClient()">Edit billing details</button>
-        <button appMenuItem tone="danger" type="button" (click)="deleting.set('salon')">Delete salon…</button>
+        <button appMenuItem type="button" (click)="editSalon()">{{ 'Edit salon' | t }}</button>
+        <button appMenuItem type="button" (click)="editClient()">{{ 'Edit billing details' | t }}</button>
+        <button appMenuItem tone="danger" type="button" (click)="deleting.set('salon')">{{ 'Delete salon…' | t }}</button>
       </app-menu>
     </div>
   </app-page-header>
@@ -20,7 +20,7 @@
       @case ('overview') {
         <div class="grid">
           <app-panel heading="Salon">
-            <button panelAction appButton variant="ghost" size="sm" type="button" (click)="editSalon()">Edit</button>
+            <button panelAction appButton variant="ghost" size="sm" type="button" (click)="editSalon()">{{ 'Edit' | t }}</button>
             <app-facts [items]="salonFacts()" />
             @if (s.notes) {
               <p class="notes">{{ s.notes }}</p>
@@ -28,18 +28,18 @@
           </app-panel>
 
           <app-panel heading="Billing (who pays)">
-            <button panelAction appButton variant="ghost" size="sm" type="button" (click)="editClient()">Edit</button>
+            <button panelAction appButton variant="ghost" size="sm" type="button" (click)="editClient()">{{ 'Edit' | t }}</button>
             <app-facts [items]="clientFacts()" />
           </app-panel>
 
           <app-panel heading="Domains" [meta]="(data()?.domains?.length ?? 0) + ''" [flush]="!!data()?.domains?.length">
-            <button panelAction appButton variant="ghost" size="sm" type="button" (click)="editDomain(null)">Add domain</button>
+            <button panelAction appButton variant="ghost" size="sm" type="button" (click)="editDomain(null)">{{ 'Add domain' | t }}</button>
             @for (d of data()?.domains ?? []; track d.id) {
               <div class="domain">
                 <div class="domain-main">
                   <a [href]="'https://' + d.domain" target="_blank" rel="noopener noreferrer">{{ d.domain }}</a>
                   @if (d.isPrimary) {
-                    <span class="tag">Primary</span>
+                    <span class="tag">{{ 'Primary' | t }}</span>
                   }
                 </div>
                 <div class="pills">
@@ -49,27 +49,27 @@
                 <p class="domain-sub">
                   {{ d.registrar || 'Registrar not set' }}
                   @if (d.expiresOn) {
-                    · expires {{ formatDate(d.expiresOn) }}{{ d.autoRenew ? ' (auto-renew)' : '' }}
+                    · {{ 'expires {date}' | t: { date: formatDate(d.expiresOn) } }}{{ d.autoRenew ? ' (' + ('auto-renew' | t) + ')' : '' }}
                   }
                   @if (d.passwordManagerRef) {
-                    · login: {{ d.passwordManagerRef }}
+                    · {{ 'login' | t }}: {{ d.passwordManagerRef }}
                   }
                 </p>
                 <div class="domain-actions">
-                  <button appButton variant="ghost" size="sm" type="button" (click)="editDomain(d)">Edit</button>
-                  <button appButton variant="ghost" size="sm" type="button" (click)="deleting.set(d)">Remove</button>
+                  <button appButton variant="ghost" size="sm" type="button" (click)="editDomain(d)">{{ 'Edit' | t }}</button>
+                  <button appButton variant="ghost" size="sm" type="button" (click)="deleting.set(d)">{{ 'Remove' | t }}</button>
                 </div>
               </div>
             } @empty {
-              <p class="muted small">No domain yet. Each salon gets its own (e.g. barberhouse.ro).</p>
+              <p class="muted small">{{ 'No domain yet. Each salon gets its own (e.g. barberhouse.ro).' | t }}</p>
             }
           </app-panel>
 
           @if (lead(); as l) {
             <app-panel heading="From the lead" [meta]="sourceLabel(l.source)">
-              <a panelAction routerLink="/tools/leads">Leads</a>
+              <a panelAction routerLink="/tools/leads">{{ 'Leads' | t }}</a>
               <p class="small muted">
-                First contact {{ formatDate(l.createdAt.slice(0, 10)) }}{{ l.sourceDetail ? ' · ' + l.sourceDetail : '' }}{{
+                {{ 'First contact' | t }} {{ formatDate(l.createdAt.slice(0, 10)) }}{{ l.sourceDetail ? ' · ' + l.sourceDetail : '' }}{{
                   l.ownerName ? ' · ' + l.ownerName : ''
                 }}{{ l.convertedAt ? ' · converted ' + formatDateTime(l.convertedAt) : '' }}
               </p>
@@ -94,7 +94,7 @@
 
           @if (features().length) {
             <app-panel heading="Asked for" [meta]="features().length + ''">
-              <a panelAction routerLink="/tools/features">Feature requests</a>
+              <a panelAction routerLink="/tools/features">{{ 'Feature requests' | t }}</a>
               <ul class="asked">
                 @for (f of features(); track f.id) {
                   <li>
@@ -115,7 +115,7 @@
                     @if (h.fromStatus) {
                       {{ statusOf(h.fromStatus).label }} →
                     } @else {
-                      Added as
+                      {{ 'Added as' | t }}
                     }
                     <strong>{{ statusOf(h.toStatus).label }}</strong>
                     @if (h.reason) {
@@ -139,7 +139,7 @@
             heading="No onboarding yet"
             text="Start it when the salon signs: it gets the checklist and the 48h clock, which starts when the client's materials arrive."
           >
-            <button appButton variant="primary" type="button" (click)="startOnboarding()">Start onboarding</button>
+            <button appButton variant="primary" type="button" (click)="startOnboarding()">{{ 'Start onboarding' | t }}</button>
           </app-empty-state>
         }
       }
@@ -160,7 +160,7 @@
                 <app-ledger-row>
                   <span class="cell-sub num">{{ formatDateTime(t.occurredAt) }}</span>
                   <div>
-                    <span>{{ t.summary }}</span>
+                    <span>{{ tr(t.summary) }}</span>
                     <span class="cell-sub">{{ activityLabel(t) }}</span>
                   </div>
                   <span class="cell-sub">{{ t.userName || 'System' }}</span>
@@ -178,7 +178,7 @@
   </div>
 } @else if (error()) {
   <app-empty-state heading="Could not open this salon" [text]="error()">
-    <a appButton routerLink="/tools/salons">Back to salons</a>
+    <a appButton routerLink="/tools/salons">{{ 'Back to salons' | t }}</a>
   </app-empty-state>
 } @else {
   <app-empty-state heading="Loading…" text="Reading the salon from the VINIT server." />

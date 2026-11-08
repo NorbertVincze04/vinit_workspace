@@ -12,6 +12,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { formatNumber, formatRon } from '../../../core/utils/format';
+import { TPipe } from '../../../core/i18n/t.pipe';
 
 export interface ChartSeries {
   key: string;
@@ -45,6 +46,7 @@ interface BarGeometry {
 @Component({
   selector: 'app-bar-chart',
   standalone: true,
+  imports: [TPipe],
   templateUrl: './bar-chart.component.html',
   styleUrl: './bar-chart.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,0 +1,37 @@
+/** The business plan's cost lines set up in Finances (Recurring) and Infra, plus the plans and offers. */
+export const COSTS_CONTENT: readonly (readonly [string, string])[] = [
+  // Finances › Recurring
+  ['Facebook / Instagram Ads', 'Reclame Facebook / Instagram'],
+  ['Business plan §2.5: 500 RON/month for recurring ad campaigns.', 'Planul de afaceri §2.5: 500 RON/lună pentru campanii recurente de reclame.'],
+  ['Accounting', 'Contabilitate'],
+  ['Lawyer', 'Avocat'],
+  ['Vercel (frontend hosting)', 'Vercel (găzduire frontend)'],
+  ['Railway (backend + PostgreSQL)', 'Railway (backend + PostgreSQL)'],
+  ['Twilio SMS (Premium reminders)', 'Twilio SMS (mementouri Premium)'],
+  ['≈1,500 SMS a month at ~0.20 RON each.', '≈1.500 SMS pe lună, la ~0,20 RON fiecare.'],
+  ['Electricity', 'Electricitate'],
+  ['Phone plan', 'Abonament telefon'],
+  ['Internet', 'Internet'],
+  ['Salaries (founder + marketing & sales)', 'Salarii (fondator + marketing și vânzări)'],
+  ['From month 7, when the team grows (business plan §3.3).', 'Din luna 7, când crește echipa (planul de afaceri §3.3).'],
+  ['Domain (vinit.ro)', 'Domeniu (vinit.ro)'],
+  ['Year 1 is paid from the initial investment; renews yearly.', 'Anul 1 se plătește din investiția inițială; se reînnoiește anual.'],
+  // Infra services
+  ['Frontend hosting', 'Găzduire frontend'],
+  ['Backend (Express) + PostgreSQL', 'Backend (Express) + PostgreSQL'],
+  ['Daily automatic backups (business plan §3.4).', 'Copii de siguranță automate zilnice (planul de afaceri §3.4).'],
+  ['SMS / WhatsApp reminders', 'Mementouri SMS / WhatsApp'],
+  ['Domain vinit.ro', 'Domeniul vinit.ro'],
+  ['Yearly registration', 'Înregistrare anuală'],
+  ['100 RON/year. Until launch: vinit.vincze-norbert.com', '100 RON/an. Până la lansare: vinit.vincze-norbert.com'],
+  ['Free', 'Gratuit'],
+  // Plans and offers (Subscriptions, salons)
+  ['Custom', 'Personalizat'],
+  ['Beta (free)', 'Beta (gratuit)'],
+  ['Referral', 'Recomandare'],
+  ['50% off', '50% reducere'],
+  ['First 50 salons: 3 months free. Beta salons do not count.', 'Primele 50 de saloane: 3 luni gratuite. Saloanele beta nu se pun la socoteală.'],
+  ['The 5 free beta salons of months 1–3.', 'Cele 5 saloane beta gratuite din lunile 1–3.'],
+  ['Bring a salon, get 3 months free (month-10 offer).', 'Aduci un salon, primești 3 luni gratuite (oferta din luna 10).'],
+  ['Offer used in the cold messages.', 'Oferta folosită în mesajele de prospectare.'],
+];

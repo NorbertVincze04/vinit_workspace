@@ -131,9 +131,11 @@ export const budgets: ResourceDef = {
 export const posts: ResourceDef = {
   name: 'marketing/posts',
   table: 'mkt_posts',
-  orderBy: [{ column: 'month' }, { column: 'createdAt' }],
+  orderBy: [{ column: 'year' }, { column: 'month' }, { column: 'createdAt' }],
   fields: z.object({
     title: text(300),
+    /** Plan year (see /marketing/years); month is 1–12 within it. */
+    year: z.number().int().min(1).max(50),
     month: z.number().int().min(1).max(12),
     week: z.number().int().min(0).max(4),
     date: optionalDate,

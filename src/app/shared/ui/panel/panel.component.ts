@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { TPipe } from '../../../core/i18n/t.pipe';
 
 /**
  * Titled card for a block of a page: heading, optional meta text / action on the right, body below.
@@ -10,11 +11,12 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 @Component({
   selector: 'app-panel',
   standalone: true,
+  imports: [TPipe],
   template: `
     <header>
-      <h2>{{ heading() }}</h2>
+      <h2>{{ heading() | t }}</h2>
       @if (meta()) {
-        <span class="meta">{{ meta() }}</span>
+        <span class="meta">{{ meta() | t }}</span>
       }
       <span class="action"><ng-content select="[panelAction]" /></span>
     </header>

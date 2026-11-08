@@ -22,12 +22,14 @@ import { PlansStore } from './plans.store';
 import { newSalonBody, newSalonFields } from './salons.fields';
 import { Salon } from './salons.model';
 import { SalonsStore } from './salons.store';
+import { TPipe } from '../../../core/i18n/t.pipe';
+import { t } from '../../../core/i18n/i18n';
 
 /** Salons tool: every salon (tenant) with its client, plan and status. Each row opens the salon's story. */
 @Component({
   selector: 'app-salons-page',
   standalone: true,
-  imports: [
+  imports: [TPipe, 
     PageHeaderComponent,
     ButtonComponent,
     IconComponent,
@@ -72,7 +74,7 @@ export class SalonsPageComponent {
   protected async save(values: FormValues): Promise<void> {
     try {
       const salon = await this.store.create(newSalonBody(values));
-      this.toast.show(`Added ${salon.name}`);
+      this.toast.show(t('Added {name}', { name: salon.name }));
       void this.router.navigate(['/tools/salons', salon.id]);
     } catch {
       /* toast shown by the store */

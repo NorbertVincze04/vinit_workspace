@@ -21,6 +21,10 @@ import { WeeklyRhythmComponent } from './components/weekly-rhythm/weekly-rhythm.
 import { PLAN_B } from './roadmap.data';
 import { PlanPhase, PlanStep, PlanYear, RoadmapStore, YearResults, phaseViews } from './roadmap.store';
 import { GOALS, goalBody, goalFields, goalRows, goalValue, goalValues, phaseBody, phaseFields, phaseValues, yearLabel } from './year-plan.model';
+import { TPipe } from '../../../core/i18n/t.pipe';
+import { countOf, t } from '../../../core/i18n/i18n';
+import { tc } from '../../../core/i18n/content';
+import { TcPipe } from '../../../core/i18n/tc.pipe';
 
 type Form =
   | { kind: 'goals'; year: PlanYear }
@@ -35,7 +39,7 @@ type Confirm = { kind: 'phase'; phase: PlanPhase } | { kind: 'step'; step: PlanS
 @Component({
   selector: 'app-roadmap-page',
   standalone: true,
-  imports: [
+  imports: [TcPipe, TPipe, 
     PageHeaderComponent,
     PanelComponent,
     CheckboxComponent,
@@ -72,7 +76,7 @@ export class RoadmapPageComponent {
   protected readonly drafts = signal<Record<string, string>>({});
 
   protected readonly yearOptions = computed(() =>
-    this.store.years().map((y) => ({ value: String(y.year), label: `Year ${y.year}${y.status === 'current' ? ' · now' : ''}` })),
+    this.store.years().map((y) => ({ value: String(y.year), label: t('Year {n}', { n: y.year }) + (y.status === 'current' ? ' · ' + t('now') : '') })),
   );
   protected readonly year = computed(() => {
     const n = Number(this.picked()) || this.store.currentYear();
@@ -117,13 +121,13 @@ export class RoadmapPageComponent {
 
   protected goalsMeta(y: PlanYear): string {
     const r = this.results();
-    if (y.status === 'past') return 'Final';
-    if (!r || r.months === 0) return `Starts ${yearLabel(y).split(' – ')[0]}`;
-    return `${r.months} of 12 months so far`;
+    if (y.status === 'past') return t('Final');
+    if (!r || r.months === 0) return t('Starts {month}', { month: yearLabel(y).split(' – ')[0] });
+    return t('{n} of 12 months so far', { n: r.months });
   }
 
   protected statusText(y: PlanYear): string {
-    return y.status === 'past' ? 'Ended' : y.status === 'current' ? 'This year' : 'Not started';
+    return t(y.status === 'past' ? 'Ended' : y.status === 'current' ? 'This year' : 'Not started');
   }
 
   // ---- years ----
@@ -147,17 +151,17 @@ export class RoadmapPageComponent {
   protected formValues(f: Form): FormValues {
     if (f.kind === 'goals') return goalValues(f.year);
     if (f.kind === 'phase') return f.phase ? phaseValues(f.phase) : {};
-    return { text: f.step.text };
+    return { text: tc(f.step.text) };
   }
 
   protected formHeading(f: Form): string {
-    if (f.kind === 'goals') return `Year ${f.year.year} goals`;
-    if (f.kind === 'phase') return f.phase ? `Edit ${f.phase.name}` : 'New phase';
-    return 'Edit step';
+    if (f.kind === 'goals') return t('Year {n} goals', { n: f.year.year });
+    if (f.kind === 'phase') return f.phase ? t('Edit {name}', { name: tc(f.phase.name) }) : t('New phase');
+    return t('Edit step');
   }
 
   protected formSub(f: Form): string {
-    return f.kind === 'goals' ? `${yearLabel(f.year)}. Leave a goal empty to keep the one from the year before.` : '';
+    return f.kind === 'goals' ? `${yearLabel(f.year)}. ${t('Leave a goal empty to keep the one from the year before.')}` : '';
   }
 
   protected async saveForm(v: FormValues): Promise<void> {
@@ -178,9 +182,9 @@ export class RoadmapPageComponent {
   }
 
   protected confirmText(c: Confirm): { heading: string; message: string } {
-    if (c.kind === 'phase') return { heading: `Remove ${c.phase.name}?`, message: `The phase and its ${c.phase.steps.length} steps will be removed.` };
-    if (c.kind === 'step') return { heading: 'Remove step?', message: `“${c.step.text}” will be removed.` };
-    return { heading: `Remove Year ${c.year.year}?`, message: 'Its goals and roadmap will be removed. It has not started yet.' };
+    if (c.kind === 'phase') return { heading: t('Remove {name}?', { name: tc(c.phase.name) }), message: t('The phase and its {steps} will be removed.', { steps: countOf(c.phase.steps.length, 'step', 'steps') }) };
+    if (c.kind === 'step') return { heading: t('Remove step?'), message: t('“{title}” will be removed.', { title: tc(c.step.text) }) };
+    return { heading: t('Remove Year {n}?', { n: c.year.year }), message: t('Its goals and roadmap will be removed. It has not started yet.') };
   }
 
   // ---- steps ----

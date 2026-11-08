@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation, input } from '@angular/core';
+import { TPipe } from '../../../core/i18n/t.pipe';
 
 /**
  * Ruled list with a header row. Rows are <app-ledger-row> elements (directly or inside your own row
@@ -13,11 +14,12 @@ import { ChangeDetectionStrategy, Component, ViewEncapsulation, input } from '@a
 @Component({
   selector: 'app-ledger',
   standalone: true,
+  imports: [TPipe],
   template: `
     @if (headers().length) {
       <div class="ledger-head" aria-hidden="true">
         @for (header of headers(); track $index) {
-          <span [class.cell-num]="numeric().includes($index)">{{ header }}</span>
+          <span [class.cell-num]="numeric().includes($index)">{{ header | t }}</span>
         }
       </div>
     }

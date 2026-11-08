@@ -17,21 +17,23 @@ import { TICKET_STATUSES, Ticket, TimeEntry, duration, priorityInfo, ticketNo, t
 import { SupportStore } from '../../support.store';
 import { FeaturesStore } from '../../../features/features.store';
 import { TimeListComponent } from '../time-list/time-list.component';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
+import { t } from '../../../../../core/i18n/i18n';
 
 /** A ticket opened: details, quick status change, time logged on it and "log time". */
 @Component({
   selector: 'app-ticket-dialog',
   standalone: true,
-  imports: [DialogComponent, ButtonComponent, FactsComponent, FormDialogComponent, TimeListComponent, RouterLink],
+  imports: [TPipe, DialogComponent, ButtonComponent, FactsComponent, FormDialogComponent, TimeListComponent, RouterLink],
   template: `
     <app-dialog #dialog size="lg" [heading]="heading()" [subheading]="ticket()?.title ?? ''" (closed)="closed.emit()">
       @if (ticket(); as t) {
         <div class="top">
           <label class="status">
-            <span>Status</span>
+            <span>{{ 'Status' | t }}</span>
             <select class="input" [value]="t.status" (change)="setStatus($any($event.target))">
               @for (s of statuses; track s.value) {
-                <option [value]="s.value" [selected]="s.value === t.status">{{ s.label }}</option>
+                <option [value]="s.value" [selected]="s.value === t.status">{{ s.label | t }}</option>
               }
             </select>
           </label>
@@ -42,30 +44,30 @@ import { TimeListComponent } from '../time-list/time-list.component';
           <p class="desc">{{ t.description }}</p>
         }
         @if (t.featureRequestId) {
-          <p class="fr">Feature request: <a routerLink="/tools/features" (click)="dialog.close()">{{ t.featureRequestTitle }}</a></p>
+          <p class="fr">{{ 'Feature request:' | t }} <a routerLink="/tools/features" (click)="dialog.close()">{{ t.featureRequestTitle }}</a></p>
         } @else if (t.type === 'change_request') {
           <p class="fr">
-            Other salons may want this too.
-            <button appButton size="sm" variant="ghost" type="button" (click)="toFeature()">Make it a feature request</button>
+            {{ 'Other salons may want this too.' | t }}
+            <button appButton size="sm" variant="ghost" type="button" (click)="toFeature()">{{ 'Make it a feature request' | t }}</button>
           </p>
         }
         <div class="time-head">
-          <h3>Time · {{ total() }}</h3>
-          <button appButton size="sm" type="button" (click)="openLog()">Log time</button>
+          <h3>{{ 'Time' | t }} · {{ total() }}</h3>
+          <button appButton size="sm" type="button" (click)="openLog()">{{ 'Log time' | t }}</button>
         </div>
         @if (entries(); as list) {
           <app-time-list [entries]="list" [showTicket]="false" (remove)="removeEntry($event)" />
         }
       } @else {
-        <p class="muted">Loading…</p>
+        <p class="muted">{{ 'Loading…' | t }}</p>
       }
       <div dialogFooter class="footer">
         @if (ticket(); as t) {
-          <button appButton variant="ghost" type="button" (click)="remove.emit(t)">Delete</button>
+          <button appButton variant="ghost" type="button" (click)="remove.emit(t)">{{ 'Delete' | t }}</button>
           <span class="spacer"></span>
-          <button appButton type="button" (click)="edit.emit(t)">Edit</button>
+          <button appButton type="button" (click)="edit.emit(t)">{{ 'Edit' | t }}</button>
           @if (t.status !== 'resolved' && t.status !== 'closed') {
-            <button appButton variant="primary" type="button" (click)="setStatusValue('resolved')">Mark resolved</button>
+            <button appButton variant="primary" type="button" (click)="setStatusValue('resolved')">{{ 'Mark resolved' | t }}</button>
           }
         }
       </div>
@@ -143,7 +145,7 @@ export class TicketDialogComponent {
       this.ticket.set(res.item);
       this.entries.set(res.entries);
     } catch (e) {
-      this.toast.show(`Could not load the ticket: ${apiError(e).message}`, 6000);
+      this.toast.show(t('Could not load the ticket: {error}', { error: apiError(e).message }), 6000);
     }
   }
 

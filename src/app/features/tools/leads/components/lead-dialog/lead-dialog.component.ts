@@ -13,6 +13,8 @@ import {
 } from '../../../../../shared/ui';
 import { ACTIVITY_KINDS, LEAD_STAGES, Lead, LeadActivity, LeadStage, OPEN_STAGES, kindLabel, lostLabel, sourceLabel, stageInfo } from '../../leads.model';
 import { LeadsStore } from '../../leads.store';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
+import { t } from '../../../../../core/i18n/i18n';
 
 /**
  * A lead's card opened: details, every contact so far, a quick "log a contact" box and the
@@ -22,7 +24,7 @@ import { LeadsStore } from '../../leads.store';
 @Component({
   selector: 'app-lead-dialog',
   standalone: true,
-  imports: [DialogComponent, ButtonComponent, FactsComponent, SegmentedComponent, StatusPillComponent, RouterLink],
+  imports: [TPipe, DialogComponent, ButtonComponent, FactsComponent, SegmentedComponent, StatusPillComponent, RouterLink],
   templateUrl: './lead-dialog.component.html',
   styleUrl: './lead-dialog.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -90,7 +92,7 @@ export class LeadDialogComponent {
     try {
       this.activities.set((await this.store.detail(id)).activities);
     } catch (e) {
-      this.toast.show(`Could not load the lead: ${apiError(e).message}`, 6000);
+      this.toast.show(t('Could not load the lead: {error}', { error: apiError(e).message }), 6000);
     }
   }
 

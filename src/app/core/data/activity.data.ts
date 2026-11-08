@@ -1,3 +1,4 @@
+import { t } from '../i18n/i18n';
 /** How activity-log entries read and where they lead (activity feed, salon timeline, Overview). */
 
 export interface ActivityEntry {
@@ -71,7 +72,7 @@ const ACTION: Record<string, string> = {
 export function activityLabel(entry: Pick<ActivityEntry, 'entityType' | 'action'>): string {
   const what = ENTITY[entry.entityType]?.label ?? entry.entityType;
   const did = ACTION[entry.action] ?? entry.action.replace(/^contact_/, 'contact: ').replace(/_/g, ' ');
-  return `${what} · ${did}`;
+  return `${t(what)} · ${t(did)}`;
 }
 
 /** Where an entry leads: the salon's tab when it belongs to a salon, else the tool. */

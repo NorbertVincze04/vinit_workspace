@@ -8,6 +8,7 @@ import { RoadmapStore } from '../../../tools/roadmap/roadmap.store';
 import { SalonsStore } from '../../../tools/salons/salons.store';
 import { BillingStore } from '../../../tools/subscriptions/billing.store';
 import { TasksStore } from '../../../tools/tasks/tasks.store';
+import { t } from '../../../../core/i18n/i18n';
 
 interface Kpi {
   label: string;
@@ -77,31 +78,31 @@ export class StatusGridComponent {
         value: `${active} / ${goal}`,
         hint:
           active < breakEven
-            ? `${breakEven - active} more to break-even`
+            ? t('{n} more to break-even', { n: breakEven - active })
             : active < goal
-              ? `Break-even reached · ${goal - active} to goal`
-              : `Year ${year} goal reached`,
+              ? t('Break-even reached · {n} to goal', { n: goal - active })
+              : t('Year {year} goal reached', { year }),
         percent: percent(active, goal),
         route: '/tools/salons',
       }),
       kpi({
         label: 'Monthly recurring revenue',
         value: formatRon(mrr),
-        hint: `${costsPercent}% of ${formatRon(monthlyCosts)} costs`,
+        hint: t('{pct}% of {costs} costs', { pct: costsPercent, costs: formatRon(monthlyCosts) }),
         percent: costsPercent,
         route: '/tools/subscriptions',
       }),
       kpi({
         label: 'Business result this month',
         value: formatRon(business.result, true),
-        hint: `${formatRon(business.income)} in · ${formatRon(business.expense)} out`,
+        hint: t('{income} in · {expense} out', { income: formatRon(business.income), expense: formatRon(business.expense) }),
         tone: business.result > 0 ? 'positive' : business.result < 0 ? 'negative' : 'default',
         route: '/tools/finances',
       }),
       kpi({
         label: 'Tasks done',
         value: `${tasks.done} / ${tasks.total}`,
-        hint: overdue ? `${overdue} overdue` : 'Nothing overdue',
+        hint: overdue ? t('{n} overdue', { n: overdue }) : t('Nothing overdue'),
         tone: overdue ? 'negative' : 'default',
         percent: tasks.percent,
         route: '/tools/tasks',
@@ -109,14 +110,14 @@ export class StatusGridComponent {
       kpi({
         label: 'Content published',
         value: `${content.published} / ${content.planned}`,
-        hint: `${content.appearances} appearances planned`,
+        hint: t('{n} appearances planned', { n: content.appearances }),
         percent: percent(content.published, content.planned),
         route: '/tools/marketing',
       }),
       kpi({
-        label: `Year ${year} roadmap`,
+        label: t('Year {year} roadmap', { year }),
         value: `${roadmap.done} / ${roadmap.total}`,
-        hint: phase ? `Current phase: ${phase.phase.name}` : 'All phases complete',
+        hint: phase ? t('Current phase: {phase}', { phase: t(phase.phase.name) }) : t('All phases complete'),
         percent: roadmap.percent,
         route: '/tools/roadmap',
       }),

@@ -1,10 +1,10 @@
 <app-page-header title="Roadmap" description="Each year's goals and roadmap. Past years show how they went.">
   <div pageActions>
     <app-backup-menu [store]="store" name="roadmap" />
-    <button appButton type="button" (click)="addYear()"><app-icon name="plus" [size]="16" /> Add Year {{ nextYear() }}</button>
+    <button appButton type="button" (click)="addYear()"><app-icon name="plus" [size]="16" /> {{ 'Add Year {n}' | t: { n: nextYear() } }}</button>
   </div>
   @if (year(); as y) {
-    <app-progress-summary [label]="'Year ' + y.year + ': ' + overall().done + ' of ' + overall().total + ' steps done'" [percent]="overall().percent" />
+    <app-progress-summary [label]="'Year {year}: {n} of {total} steps done' | t: { year: y.year, n: overall().done, total: overall().total }" [percent]="overall().percent" />
   }
 </app-page-header>
 
@@ -15,35 +15,35 @@
   </div>
 
   <!-- Goals: what was set, and what actually happened (so far). -->
-  <app-panel [heading]="'Year ' + y.year + ' goals'" [meta]="goalsMeta(y)">
-    <button panelAction appButton variant="ghost" size="sm" type="button" (click)="form.set({ kind: 'goals', year: y })">Edit goals</button>
+  <app-panel [heading]="'Year {n} goals' | t: { n: y.year }" [meta]="goalsMeta(y)">
+    <button panelAction appButton variant="ghost" size="sm" type="button" (click)="form.set({ kind: 'goals', year: y })">{{ 'Edit goals' | t }}</button>
     <div class="goal-groups">
       @for (group of groups; track group) {
         <section class="goal-group">
-          <h3>{{ group }}</h3>
+          <h3>{{ group | t }}</h3>
           <ul>
             @for (r of rowsOf(group); track r.def.key) {
               <li>
                 <div class="goal-head">
-                  <span class="goal-label" [title]="r.def.hint">{{ r.def.label }}</span>
+                  <span class="goal-label" [title]="r.def.hint | t">{{ r.def.label | t }}</span>
                   @if (r.status) {
-                    <app-status-pill [tone]="r.status.tone">{{ r.status.text }}</app-status-pill>
+                    <app-status-pill [tone]="r.status.tone">{{ r.status.text | t }}</app-status-pill>
                   }
                 </div>
                 <div class="goal-nums">
                   <span>
-                    <span class="muted">{{ r.def.atMost ? 'At most' : 'Goal' }}</span>
+                    <span class="muted">{{ (r.def.atMost ? 'At most' : 'Goal') | t }}</span>
                     @if (r.value !== null) {
                       <strong>{{ value(r.def.kind, r.value) }}</strong>
                       @if (r.set === null) {
-                        <span class="muted small">(from before)</span>
+                        <span class="muted small">{{ '(from before)' | t }}</span>
                       }
                     } @else {
-                      <span class="muted">not set</span>
+                      <span class="muted">{{ 'not set' | t }}</span>
                     }
                   </span>
                   @if (y.status !== 'future') {
-                    <span><span class="muted">Actual</span> <strong>{{ value(r.def.kind, r.actual) }}</strong></span>
+                    <span><span class="muted">{{ 'Actual' | t }}</span> <strong>{{ value(r.def.kind, r.actual) }}</strong></span>
                   }
                 </div>
                 @if (r.percent !== null) {
@@ -60,15 +60,15 @@
     }
     @if (results(); as res) {
       <p class="muted small">
-        {{ res.newPaying }} became paying, {{ res.churned }} left · {{ res.steps.done }} of {{ res.steps.total }} roadmap steps done
+        {{ '{paying} became paying, {churned} left · {done} of {total} roadmap steps done' | t: { paying: res.newPaying, churned: res.churned, done: res.steps.done, total: res.steps.total } }}
       </p>
     }
   </app-panel>
 
   <div class="bar page-section">
-    <h2 class="section-title">Year {{ y.year }} roadmap</h2>
+    <h2 class="section-title">{{ 'Year' | t }} {{ y.year }} {{ 'roadmap' | t }}</h2>
     <button appButton [variant]="editing() ? 'primary' : 'ghost'" size="sm" type="button" (click)="editing.set(!editing())">
-      {{ editing() ? 'Done editing' : 'Edit roadmap' }}
+      {{ (editing() ? 'Done editing' : 'Edit roadmap') | t }}
     </button>
   </div>
 
@@ -77,27 +77,27 @@
       <app-phase-card [phase]="view.phase" [done]="view.done" [total]="view.total" unit="steps" [current]="view.current">
         @if (editing()) {
           <div class="phase-actions">
-            <button appButton variant="ghost" size="sm" type="button" (click)="form.set({ kind: 'phase', year: y, phase: view.source })">Edit phase</button>
-            <button appButton variant="ghost" size="sm" type="button" (click)="confirm.set({ kind: 'phase', phase: view.source })">Remove</button>
+            <button appButton variant="ghost" size="sm" type="button" (click)="form.set({ kind: 'phase', year: y, phase: view.source })">{{ 'Edit phase' | t }}</button>
+            <button appButton variant="ghost" size="sm" type="button" (click)="confirm.set({ kind: 'phase', phase: view.source })">{{ 'Remove' | t }}</button>
           </div>
           <form class="add-step" (submit)="addStep(view.phase.id, $event)">
             <input
               class="input"
               type="text"
               maxlength="300"
-              placeholder="New step…"
-              [attr.aria-label]="'New step in ' + view.phase.name"
+              [placeholder]="'New step…' | t"
+              [attr.aria-label]="'New step in {name}' | t: { name: (view.phase.name | tc) }"
               [value]="draft(view.phase.id)"
               (input)="setDraft(view.phase.id, $any($event.target).value)"
             />
-            <button appButton size="sm" type="submit" [disabled]="!draft(view.phase.id).trim()">Add</button>
+            <button appButton size="sm" type="submit" [disabled]="!draft(view.phase.id).trim()">{{ 'Add' | t }}</button>
           </form>
         }
         <ul class="steps">
           @for (step of view.steps; track step.id) {
             <li [class.editable]="editing()">
               <app-checkbox variant="row" strike [checked]="step.done" (checkedChange)="store.setStep(step.id, $event)">
-                {{ step.text }}
+                {{ step.text | tc }}
               </app-checkbox>
               @if (editing()) {
                 <span class="step-actions">
@@ -107,23 +107,23 @@
               }
             </li>
           } @empty {
-            <li class="muted small">{{ editing() ? 'No steps yet: add the first one above.' : 'No steps yet. Use Edit roadmap to add some.' }}</li>
+            <li class="muted small">{{ (editing() ? 'No steps yet: add the first one above.' : 'No steps yet. Use Edit roadmap to add some.') | t }}</li>
           }
         </ul>
         @if (view.milestone) {
-          <p class="milestone"><span>Done when</span> {{ view.milestone }}</p>
+          <p class="milestone"><span>{{ 'Done when' | t }}</span> {{ view.milestone | tc }}</p>
         }
       </app-phase-card>
     } @empty {
-      <p class="muted">No phases yet. Use Edit roadmap, then Add phase.</p>
+      <p class="muted">{{ 'No phases yet. Use Edit roadmap, then Add phase.' | t }}</p>
     }
   </div>
 
   @if (editing()) {
     <div class="edit-bar">
-      <button appButton type="button" (click)="form.set({ kind: 'phase', year: y, phase: null })"><app-icon name="plus" [size]="16" /> Add phase</button>
+      <button appButton type="button" (click)="form.set({ kind: 'phase', year: y, phase: null })"><app-icon name="plus" [size]="16" /> {{ 'Add phase' | t }}</button>
       @if (isLast() && y.status === 'future') {
-        <button appButton variant="ghost" type="button" (click)="confirm.set({ kind: 'year', year: y })">Remove Year {{ y.year }}</button>
+        <button appButton variant="ghost" type="button" (click)="confirm.set({ kind: 'year', year: y })">{{ 'Remove Year {n}' | t: { n: y.year } }}</button>
       }
     </div>
   }
@@ -134,13 +134,13 @@
     <div class="extras page-section">
       <app-weekly-rhythm />
       <app-panel [heading]="planB.title">
-        <p>{{ planB.text }}</p>
-        <p class="muted small">{{ planB.note }}</p>
+        <p>{{ planB.text | t: planB.params }}</p>
+        <p class="muted small">{{ planB.note | t: planB.params }}</p>
       </app-panel>
     </div>
   }
 } @else if (!store.loaded()) {
-  <p class="muted">Loading…</p>
+  <p class="muted">{{ 'Loading…' | t }}</p>
 }
 
 @if (form(); as f) {

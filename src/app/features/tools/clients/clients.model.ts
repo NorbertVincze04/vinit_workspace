@@ -26,7 +26,7 @@ export interface Client extends Entity {
 
 export const CLIENT_KINDS: readonly SelectOption[] = [
   { value: 'company', label: 'Company' },
-  { value: 'person', label: 'Person' },
+  { value: 'person', label: 'Private person' },
 ];
 
 export const CLIENT_FIELD_MAP: FieldMap<Client> = {

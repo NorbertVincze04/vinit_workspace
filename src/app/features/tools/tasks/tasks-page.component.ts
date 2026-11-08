@@ -13,12 +13,14 @@ import { GoalsPanelComponent } from './components/goals-panel/goals-panel.compon
 import { TaskItemComponent } from './components/task-item/task-item.component';
 import { TaskToolbarComponent } from './components/task-toolbar/task-toolbar.component';
 import { TasksStore } from './tasks.store';
+import { TPipe } from '../../../core/i18n/t.pipe';
+import { t } from '../../../core/i18n/i18n';
 
 /** Tasks tool: Year-1 goals split into tasks across the four phases. */
 @Component({
   selector: 'app-tasks-page',
   standalone: true,
-  imports: [
+  imports: [TPipe, 
     PageHeaderComponent,
     ButtonComponent,
     IconComponent,
@@ -47,9 +49,9 @@ export class TasksPageComponent {
   protected readonly hint = computed(() => {
     const overdue = this.store.overdueCount();
     return (
-      `Showing ${this.store.shownCount()} of ${this.store.overall().total} tasks` +
-      (overdue ? ` · ${overdue} overdue` : '') +
-      ` · Month 1 = ${this.store.monthLabel(1)}`
+      t('Showing {n} of {total} tasks', { n: this.store.shownCount(), total: this.store.overall().total }) +
+      (overdue ? ' · ' + t('{n} overdue', { n: overdue }) : '') +
+      ' · ' + t('Month 1 = {month}', { month: this.store.monthLabel(1) })
     );
   });
 

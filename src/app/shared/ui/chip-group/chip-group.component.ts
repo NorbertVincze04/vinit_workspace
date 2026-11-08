@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
+import { TPipe } from '../../../core/i18n/t.pipe';
 
 export interface ChipOption {
   value: string;
@@ -14,11 +15,12 @@ export interface ChipOption {
 @Component({
   selector: 'app-chip-group',
   standalone: true,
+  imports: [TPipe],
   template: `
-    <div class="chips" role="group" [attr.aria-label]="label()">
+    <div class="chips" role="group" [attr.aria-label]="label() | t">
       @for (option of options(); track option.value) {
         <button type="button" class="chip" [attr.aria-pressed]="option.value === value()" (click)="value.set(option.value)">
-          {{ option.label }}
+          {{ option.label | t }}
           @if (option.count !== undefined) {
             <span class="n">{{ option.count }}</span>
           }

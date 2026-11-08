@@ -3,22 +3,24 @@ import { ToastService } from '../../../../../core/services/toast.service';
 import { ButtonComponent, DialogComponent } from '../../../../../shared/ui';
 import { STEP_CATEGORIES, StepCategory, TemplateItem } from '../../onboarding.model';
 import { OnboardingStore } from '../../onboarding.store';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
+import { TcPipe } from '../../../../../core/i18n/tc.pipe';
 
 /** Edit the checklist every new onboarding starts from (running onboardings keep their own). */
 @Component({
   selector: 'app-template-editor',
   standalone: true,
-  imports: [DialogComponent, ButtonComponent],
+  imports: [TcPipe, TPipe, DialogComponent, ButtonComponent],
   template: `
     <app-dialog #dialog size="lg" heading="Onboarding checklist" subheading="New onboardings start with these steps. Running ones keep theirs." (closed)="closed.emit()">
       @if (items(); as list) {
         <ol class="rows">
           @for (item of list; track $index; let i = $index) {
             <li>
-              <input class="input" maxlength="300" [attr.aria-label]="'Step ' + (i + 1)" [value]="item.title" (input)="set(i, 'title', $event)" />
+              <input class="input" maxlength="300" [attr.aria-label]="'Step {n}' | t: { n: i + 1 }" [value]="item.title | tc" (input)="set(i, 'title', $event)" />
               <select class="input" [attr.aria-label]="'Category of step ' + (i + 1)" (change)="set(i, 'category', $event)">
                 @for (c of categories; track c.value) {
-                  <option [value]="c.value" [selected]="c.value === item.category">{{ c.label }}</option>
+                  <option [value]="c.value" [selected]="c.value === item.category">{{ c.label | t }}</option>
                 }
               </select>
               <span class="moves">
@@ -29,16 +31,16 @@ import { OnboardingStore } from '../../onboarding.store';
             </li>
           }
         </ol>
-        <button appButton size="sm" type="button" (click)="add()">Add a step</button>
+        <button appButton size="sm" type="button" (click)="add()">{{ 'Add a step' | t }}</button>
       } @else {
-        <p class="muted">Loading…</p>
+        <p class="muted">{{ 'Loading…' | t }}</p>
       }
       @if (error()) {
         <p class="error" role="alert">{{ error() }}</p>
       }
       <div dialogFooter>
-        <button appButton type="button" (click)="dialog.close()">Cancel</button>
-        <button appButton variant="primary" type="button" [disabled]="!items()" (click)="save()">Save checklist</button>
+        <button appButton type="button" (click)="dialog.close()">{{ 'Cancel' | t }}</button>
+        <button appButton variant="primary" type="button" [disabled]="!items()" (click)="save()">{{ 'Save checklist' | t }}</button>
       </div>
     </app-dialog>
   `,

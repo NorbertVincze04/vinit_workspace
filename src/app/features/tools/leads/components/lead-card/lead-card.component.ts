@@ -1,11 +1,14 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { daysUntil, formatDate, formatDateTime } from '../../../../../core/utils/date';
 import { Lead, lostLabel, sourceLabel } from '../../leads.model';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
+import { t } from '../../../../../core/i18n/i18n';
 
 /** Kanban card: who, where, next step. */
 @Component({
   selector: 'app-lead-card',
   standalone: true,
+  imports: [TPipe],
   template: `
     <span class="name">{{ lead().businessName }}</span>
     @if (sub()) {
@@ -13,14 +16,14 @@ import { Lead, lostLabel, sourceLabel } from '../../leads.model';
     }
     <div class="meta">
       @if (lead().convertedSalonName) {
-        <span class="tag salon">Salon: {{ lead().convertedSalonName }}</span>
+        <span class="tag salon">{{ 'Salon' | t }}: {{ lead().convertedSalonName }}</span>
       } @else if (lead().stage === 'lost') {
         <span class="tag">{{ lost() }}</span>
       } @else if (followUp()) {
         <span class="tag" [class.late]="followUp()!.late" [class.today]="followUp()!.today">{{ followUp()!.text }}</span>
       }
       @if (demo()) {
-        <span class="tag">Demo {{ demo() }}</span>
+        <span class="tag">{{ 'Demo' | t }} {{ demo() }}</span>
       }
     </div>
   `,
@@ -47,7 +50,7 @@ export class LeadCardComponent {
     const l = this.lead();
     return [l.city, l.contactName, sourceLabel(l.source)].filter(Boolean).join(' · ');
   });
-  protected readonly lost = computed(() => `Lost: ${lostLabel(this.lead().lostReason)}`);
+  protected readonly lost = computed(() => t('Lost: {reason}', { reason: lostLabel(this.lead().lostReason) }));
   protected readonly demo = computed(() => {
     const l = this.lead();
     return l.demoAt && l.stage === 'demo_booked' ? formatDateTime(l.demoAt) : '';
@@ -56,7 +59,7 @@ export class LeadCardComponent {
     const d = this.lead().nextFollowUpOn;
     if (!d) return null;
     const days = daysUntil(d);
-    const text = days < 0 ? `Follow-up ${-days} d late` : days === 0 ? 'Follow up today' : `Follow up ${formatDate(d, { day: 'numeric', month: 'short' })}`;
+    const text = days < 0 ? t('Follow-up {n} d late', { n: -days }) : days === 0 ? t('Follow up today') : t('Follow up {date}', { date: formatDate(d, { day: 'numeric', month: 'short' }) });
     return { text, late: days < 0, today: days === 0 };
   });
 }

@@ -18,12 +18,14 @@ import { SCOPES, TX_TYPES } from '../../finances.data';
 import { Transaction } from '../../finances.model';
 import { FinancesStore } from '../../finances.store';
 import { AmountComponent } from '../amount/amount.component';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
+import { t } from '../../../../../core/i18n/i18n';
 
 /** Transactions tab: filters, totals and the ledger of entries. */
 @Component({
   selector: 'app-transactions-panel',
   standalone: true,
-  imports: [
+  imports: [TPipe, 
     TextFieldComponent,
     SelectFieldComponent,
     ChipGroupComponent,
@@ -68,8 +70,8 @@ export class TransactionsPanelComponent {
   protected readonly emptyHeading = computed(() => {
     const f = this.store.txFilters();
     return f.period === 'month' && !f.q && f.type === 'all'
-      ? `Nothing logged in ${monthName(this.store.month())}`
-      : 'No transactions match';
+      ? t('Nothing logged in {month}', { month: monthName(this.store.month()) })
+      : t('No transactions match');
   });
 
   protected setPeriod(value: string): void {

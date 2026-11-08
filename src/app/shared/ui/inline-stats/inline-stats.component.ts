@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { TPipe } from '../../../core/i18n/t.pipe';
 
 export interface InlineStat {
   label: string;
@@ -15,13 +16,14 @@ export interface InlineStat {
 @Component({
   selector: 'app-inline-stats',
   standalone: true,
+  imports: [TPipe],
   template: `
     @for (item of items(); track item.label) {
       <span>
-        {{ item.label }}
+        {{ item.label | t }}
         <strong [attr.data-tone]="item.tone || 'default'">{{ item.value }}</strong>
         @if (item.suffix) {
-          {{ item.suffix }}
+          {{ item.suffix | t }}
         }
       </span>
     }

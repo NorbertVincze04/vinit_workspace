@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { ToastService } from '../../../core/services/toast.service';
 import { toLocalDateTime } from '../../../core/utils/date';
 import { parseCsv } from '../../../core/utils/file';
-import { plural } from '../../../core/utils/format';
 import {
   ButtonComponent,
   ChipGroupComponent,
@@ -35,6 +34,8 @@ import { LOST_FIELDS, convertBody, convertFields, leadBody, leadFields } from '.
 import { ImportPreview, leadsFromTable } from './leads.import';
 import { Lead, LeadStage } from './leads.model';
 import { LeadsStore } from './leads.store';
+import { TPipe } from '../../../core/i18n/t.pipe';
+import { countOf, t } from '../../../core/i18n/i18n';
 
 type Form =
   | { kind: 'lead'; lead: Lead | null; fields: FieldDef[]; values: FormValues }
@@ -45,7 +46,7 @@ type Form =
 @Component({
   selector: 'app-leads-page',
   standalone: true,
-  imports: [
+  imports: [TPipe, 
     PageHeaderComponent,
     ButtonComponent,
     IconComponent,
@@ -139,7 +140,7 @@ export class LeadsPageComponent {
         this.detail()?.refresh();
       } else {
         const lead = await this.store.create(leadBody(values, true));
-        this.toast.show(`Added ${lead.businessName}`);
+        this.toast.show(t('Added {name}', { name: lead.businessName }));
       }
     } catch {
       /* toast shown by the store */
@@ -157,7 +158,7 @@ export class LeadsPageComponent {
       .sort((a, b) => a.stagePosition - b.stagePosition);
     const { lead, stage } = drop;
     if (stage !== lead.stage && lead.convertedSalonId) {
-      this.toast.show(`${lead.businessName} is already a salon: its stage follows the salon's status.`, 6000);
+      this.toast.show(t("{name} is already a salon: its stage follows the salon's status.", { name: lead.businessName }), 6000);
       return;
     }
     if (stage === 'trial' || stage === 'paying') {
@@ -185,7 +186,7 @@ export class LeadsPageComponent {
       lostNote: asString(values['lostNote']),
     });
     if (ok) {
-      this.toast.show(`${f.lead.businessName} marked lost`);
+      this.toast.show(t('{name} marked lost', { name: f.lead.businessName }));
       this.detail()?.refresh();
     }
   }
@@ -204,7 +205,7 @@ export class LeadsPageComponent {
     if (f?.kind !== 'convert') return;
     try {
       const salonId = await this.store.convert(f.lead.id, convertBody(values));
-      this.toast.show(`${f.lead.businessName} is now a salon`);
+      this.toast.show(t('{name} is now a salon', { name: f.lead.businessName }));
       this.openId.set(null);
       void this.router.navigate(['/tools/salons', salonId]);
     } catch {
@@ -218,7 +219,7 @@ export class LeadsPageComponent {
     try {
       await this.store.remove(lead.id);
       this.openId.set(null);
-      this.toast.show(`Deleted ${lead.businessName}`);
+      this.toast.show(t('Deleted {name}', { name: lead.businessName }));
     } catch {
       /* toast shown */
     }
@@ -248,8 +249,8 @@ export class LeadsPageComponent {
     if (!p) return;
     try {
       const res = await this.store.importRows(p.rows);
-      const skipped = res.skipped.length ? `, ${res.skipped.length} already on the board` : '';
-      this.toast.show(`Imported ${res.created} ${plural(res.created, 'lead', 'leads')}${skipped}`, 6000);
+      const skipped = res.skipped.length ? ', ' + t('{n} already on the board', { n: res.skipped.length }) : '';
+      this.toast.show(t('Imported {leads}', { leads: countOf(res.created, 'lead', 'leads') }) + skipped, 6000);
       dialog.close();
     } catch {
       /* toast shown */

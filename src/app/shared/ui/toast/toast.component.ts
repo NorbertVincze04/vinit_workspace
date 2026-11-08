@@ -1,14 +1,16 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ToastService } from '../../../core/services/toast.service';
+import { TPipe } from '../../../core/i18n/t.pipe';
 
 /** Renders ToastService messages at the bottom of the screen. Place once, in the app shell. */
 @Component({
   selector: 'app-toast',
   standalone: true,
+  imports: [TPipe],
   template: `
     <div role="status" aria-live="polite">
       @if (toast.message(); as message) {
-        <p class="toast">{{ message }}</p>
+        <p class="toast">{{ message | t }}</p>
       }
     </div>
   `,

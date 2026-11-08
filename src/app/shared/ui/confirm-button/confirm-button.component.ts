@@ -9,6 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { ButtonComponent, ButtonSize, ButtonVariant } from '../button/button.component';
+import { TPipe } from '../../../core/i18n/t.pipe';
 
 /**
  * Two-click button for destructive actions: the first click arms it, the second confirms.
@@ -18,13 +19,13 @@ import { ButtonComponent, ButtonSize, ButtonVariant } from '../button/button.com
 @Component({
   selector: 'app-confirm-button',
   standalone: true,
-  imports: [ButtonComponent],
+  imports: [TPipe, ButtonComponent],
   template: `
     <button appButton type="button" [size]="size()" [iconOnly]="iconOnly()"
       [variant]="armed() ? 'danger' : variant()"
-      [attr.aria-label]="ariaLabel() ? (armed() ? 'Click again to confirm: ' + ariaLabel() : ariaLabel()) : null"
+      [attr.aria-label]="ariaLabel() ? (armed() ? ('Click again to confirm' | t) + ': ' + (ariaLabel() | t) : (ariaLabel() | t)) : null"
       (click)="onClick()">
-      {{ armed() ? confirmLabel() : label() }}
+      {{ (armed() ? confirmLabel() : label()) | t }}
     </button>
   `,
   styles: ':host { display: inline-flex; }',

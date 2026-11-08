@@ -22,6 +22,6 @@
   (valueChange)="filtersChange.emit({ owner: $event })"
 />
 <app-checkbox [checked]="filters().hideDone" (checkedChange)="filtersChange.emit({ hideDone: $event })">
-  Hide done
+  {{ 'Hide done' | t }}
 </app-checkbox>
 <app-plan-start-field class="push" />

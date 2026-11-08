@@ -7,12 +7,14 @@ import { ButtonComponent, DialogComponent, Fact, FactsComponent } from '../../..
 import { Contract, contractStatus, kindLabel } from '../../contracts.model';
 import { ContractsStore } from '../../contracts.store';
 import { Attachment, AttachmentsComponent } from '../attachments/attachments.component';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
+import { t } from '../../../../../core/i18n/i18n';
 
 /** One contract: its dates, its files (signed PDF…), edit and delete. */
 @Component({
   selector: 'app-contract-dialog',
   standalone: true,
-  imports: [DialogComponent, ButtonComponent, FactsComponent, AttachmentsComponent, RouterLink],
+  imports: [TPipe, DialogComponent, ButtonComponent, FactsComponent, AttachmentsComponent, RouterLink],
   template: `
     <app-dialog #dialog size="lg" [heading]="heading()" [subheading]="item()?.salonName ?? ''" (closed)="closed.emit()">
       @if (item(); as c) {
@@ -20,19 +22,19 @@ import { Attachment, AttachmentsComponent } from '../attachments/attachments.com
         @if (c.notes) {
           <p class="notes">{{ c.notes }}</p>
         }
-        <h3>Files</h3>
+        <h3>{{ 'Files' | t }}</h3>
         <app-attachments [files]="files()" [contractId]="c.id" [salonId]="c.salonId" empty="No file yet: attach the signed PDF." (changed)="refresh()" />
-        <p class="small"><a [routerLink]="['/tools/salons', c.salonId]" [queryParams]="{ tab: 'contracts' }" (click)="dialog.close()">Open {{ c.salonName }} →</a></p>
+        <p class="small"><a [routerLink]="['/tools/salons', c.salonId]" [queryParams]="{ tab: 'contracts' }" (click)="dialog.close()">{{ 'Open' | t }} {{ c.salonName }} →</a></p>
       } @else {
-        <p class="muted">Loading…</p>
+        <p class="muted">{{ 'Loading…' | t }}</p>
       }
       <div dialogFooter class="footer">
         @if (item(); as c) {
-          <button appButton variant="ghost" type="button" (click)="remove.emit(c)">Delete</button>
+          <button appButton variant="ghost" type="button" (click)="remove.emit(c)">{{ 'Delete' | t }}</button>
           <span class="spacer"></span>
-          <button appButton type="button" (click)="edit.emit(c)">Edit</button>
+          <button appButton type="button" (click)="edit.emit(c)">{{ 'Edit' | t }}</button>
           @if (c.status === 'draft' || c.status === 'sent') {
-            <button appButton variant="primary" type="button" (click)="sign(c)">Mark signed today</button>
+            <button appButton variant="primary" type="button" (click)="sign(c)">{{ 'Mark signed today' | t }}</button>
           }
         }
       </div>
@@ -98,7 +100,7 @@ export class ContractDialogComponent {
       this.item.set(res.item);
       this.files.set(res.files);
     } catch (e) {
-      this.toast.show(`Could not load the contract: ${apiError(e).message}`, 6000);
+      this.toast.show(t('Could not load the contract: {error}', { error: apiError(e).message }), 6000);
     }
   }
 

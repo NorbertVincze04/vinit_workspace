@@ -2,6 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { ApiService, apiError } from '../../../core/api/api.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { MonthKpis, Targets } from './kpis.model';
+import { t } from '../../../core/i18n/i18n';
 
 /** KPIs computed by the server from the history (closed months come from frozen snapshots). */
 @Injectable({ providedIn: 'root' })
@@ -25,7 +26,7 @@ export class KpisStore {
       this.targets.set(one.targets);
       this.history.set(many.items);
     } catch (error) {
-      this.toast.show(`Could not load the KPIs: ${apiError(error).message}`, 6000);
+      this.toast.show(t('Could not load the KPIs: {error}', { error: apiError(error).message }), 6000);
     } finally {
       this.loading.set(false);
     }
@@ -38,7 +39,7 @@ export class KpisStore {
       this.toast.show('Month recomputed');
       await this.load(month);
     } catch (error) {
-      this.toast.show(`Not recomputed: ${apiError(error).message}`, 6000);
+      this.toast.show(t('Not recomputed: {error}', { error: apiError(error).message }), 6000);
     }
   }
 }

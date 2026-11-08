@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
 import { ChipOption } from '../chip-group/chip-group.component';
+import { TPipe } from '../../../core/i18n/t.pipe';
 
 /**
  * Underlined tab bar (with optional counts). Render the matching panel yourself with @switch.
@@ -8,11 +9,12 @@ import { ChipOption } from '../chip-group/chip-group.component';
 @Component({
   selector: 'app-tabs',
   standalone: true,
+  imports: [TPipe],
   template: `
-    <div class="tabs" role="tablist" [attr.aria-label]="label()">
+    <div class="tabs" role="tablist" [attr.aria-label]="label() | t">
       @for (option of options(); track option.value) {
         <button type="button" role="tab" class="tab" [attr.aria-selected]="option.value === value()" (click)="value.set(option.value)">
-          {{ option.label }}
+          {{ option.label | t }}
           @if (option.count !== undefined) {
             <span class="n">{{ option.count }}</span>
           }

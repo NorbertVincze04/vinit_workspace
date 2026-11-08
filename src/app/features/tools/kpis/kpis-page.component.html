@@ -3,7 +3,7 @@
     <app-month-switcher [(value)]="month" />
     @if (!isCurrent()) {
       <app-menu ariaLabel="More KPI actions">
-        <button appMenuItem type="button" (click)="store.rebuild(month())">Recompute {{ monthName(month()) }}</button>
+        <button appMenuItem type="button" (click)="store.rebuild(month())">{{ 'Recompute' | t }} {{ monthName(month()) }}</button>
       </app-menu>
     }
   </div>
@@ -17,15 +17,15 @@
   </div>
   <p class="note">
     @if (k.snapshot) {
-      {{ monthName(k.month) }} is closed: these figures were frozen when it ended (⋯ › Recompute after fixing old data).
+      {{ monthName(k.month) }} {{ 'is closed: these figures were frozen when it ended (⋯ › Recompute after fixing old data).' | t }}
     } @else {
-      Live figures, computed from the history. Retention = salons still with us ÷ salons paying at the start of the period.
+      {{ 'Live figures, computed from the history. Retention = salons still with us ÷ salons paying at the start of the period.' | t }}
     }
   </p>
 
   @if (isCurrent()) {
     <app-panel class="page-section" heading="Pipeline now" [meta]="'leads by stage'">
-      <a panelAction routerLink="/tools/leads">Leads</a>
+      <a panelAction routerLink="/tools/leads">{{ 'Leads' | t }}</a>
       <div class="pipeline">
         @for (s of pipeline(); track s.label) {
           <span>{{ s.label }} <strong>{{ s.count }}</strong></span>

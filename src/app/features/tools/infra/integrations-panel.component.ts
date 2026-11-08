@@ -4,6 +4,9 @@ import { ApiService, apiError } from '../../../core/api/api.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { formatDateTime } from '../../../core/utils/date';
 import { ButtonComponent, PanelComponent, StatusPillComponent } from '../../../shared/ui';
+import { TPipe } from '../../../core/i18n/t.pipe';
+import { t } from '../../../core/i18n/i18n';
+import { translateServer } from '../../../core/i18n/server-messages';
 
 interface Integration {
   id: string;
@@ -35,7 +38,7 @@ const STATE: Record<Integration['state'], { label: string; tone: 'ok' | 'info' |
 @Component({
   selector: 'app-integrations-panel',
   standalone: true,
-  imports: [RouterLink, PanelComponent, StatusPillComponent, ButtonComponent],
+  imports: [TPipe, RouterLink, PanelComponent, StatusPillComponent, ButtonComponent],
   template: `
     <app-panel heading="Integrations" meta="Credentials only in .env">
       <ul class="list">
@@ -43,12 +46,12 @@ const STATE: Record<Integration['state'], { label: string; tone: 'ok' | 'info' |
           <li>
             <div class="head">
               <strong>{{ i.name }}</strong>
-              <app-status-pill [tone]="state(i).tone">{{ state(i).label }}</app-status-pill>
+              <app-status-pill [tone]="state(i).tone">{{ state(i).label | t }}</app-status-pill>
             </div>
-            <span class="muted small">{{ i.purpose }}</span>
-            <span class="small">{{ i.note }}</span>
+            <span class="muted small">{{ tr(i.purpose) }}</span>
+            <span class="small">{{ tr(i.note) }}</span>
             @if (i.missing.length) {
-              <span class="vars small">Needs in .env: @for (v of i.missing; track v) {<code>{{ v }}</code>}</span>
+              <span class="vars small">{{ 'Needs in .env:' | t }} @for (v of i.missing; track v) {<code>{{ v }}</code>}</span>
             }
           </li>
         }
@@ -56,22 +59,22 @@ const STATE: Record<Integration['state'], { label: string; tone: 'ok' | 'info' |
 
       <div class="uptime">
         <div class="bar">
-          <strong>Salon sites</strong>
-          <button appButton type="button" [disabled]="checking()" (click)="check()">{{ checking() ? 'Checking…' : 'Check now' }}</button>
+          <strong>{{ 'Salon sites' | t }}</strong>
+          <button appButton type="button" [disabled]="checking()" (click)="check()">{{ (checking() ? 'Checking…' : 'Check now') | t }}</button>
         </div>
         @if (uptime(); as u) {
           <p class="muted small">{{ summary() }} · {{ when(u.checkedAt) }}</p>
           <ul class="rows">
             @for (r of u.items; track r.salonId) {
               <li>
-                <app-status-pill [tone]="r.ok ? 'ok' : 'bad'">{{ r.ok ? 'Up' : 'Down' }}</app-status-pill>
+                <app-status-pill [tone]="r.ok ? 'ok' : 'bad'">{{ (r.ok ? 'Up' : 'Down') | t }}</app-status-pill>
                 <a [routerLink]="['/tools/salons', r.salonId]">{{ r.salonName }}</a>
                 <span class="muted small">{{ r.domain }} · {{ r.ok ? r.ms + ' ms' : (r.status ?? r.error) }}</span>
               </li>
             }
           </ul>
         } @else {
-          <p class="muted small">Opens the primary domain of every trial and active salon from this PC.</p>
+          <p class="muted small">{{ 'Opens the primary domain of every trial and active salon from this PC.' | t }}</p>
         }
       </div>
     </app-panel>
@@ -93,6 +96,8 @@ const STATE: Record<Integration['state'], { label: string; tone: 'ok' | 'info' |
 export class IntegrationsPanelComponent {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
+  /** The server describes the integrations in English. */
+  protected readonly tr = translateServer;
 
   protected readonly items = signal<Integration[]>([]);
   protected readonly uptime = signal<{ checkedAt: string; items: UptimeRow[] } | null>(null);
@@ -102,9 +107,9 @@ export class IntegrationsPanelComponent {
 
   protected readonly summary = computed(() => {
     const rows = this.uptime()?.items ?? [];
-    if (!rows.length) return 'No trial or active salon has a primary domain yet';
+    if (!rows.length) return t('No trial or active salon has a primary domain yet');
     const down = rows.filter((r) => !r.ok).length;
-    return down ? `${down} of ${rows.length} down` : `All ${rows.length} up`;
+    return down ? t('{n} of {total} down', { n: down, total: rows.length }) : t('All {n} up', { n: rows.length });
   });
 
   constructor() {
@@ -119,7 +124,7 @@ export class IntegrationsPanelComponent {
     try {
       this.uptime.set(await this.api.write('POST', '/integrations/uptime/check'));
     } catch (error) {
-      this.toast.show(`Could not check the sites: ${apiError(error).message}`, 6000);
+      this.toast.show(t('Could not check the sites: {error}', { error: apiError(error).message }), 6000);
     } finally {
       this.checking.set(false);
     }

@@ -1,15 +1,15 @@
 <app-card padding="lg">
   <div class="top">
     <div class="intro">
-      <h2 class="title-md">Salons on the platform</h2>
+      <h2 class="title-md">{{ 'Salons on the platform' | t }}</h2>
       @if (live()) {
-        <p class="muted small">Paying salons, counted live from Subscriptions (active and past due).</p>
+        <p class="muted small">{{ 'Paying salons, counted live from Subscriptions (active and past due).' | t }}</p>
       } @else {
-        <p class="muted small">Paying salons only. Update this when a salon signs.</p>
+        <p class="muted small">{{ 'Paying salons only. Update this when a salon signs.' | t }}</p>
       }
     </div>
     @if (live()) {
-      <a class="live-count" routerLink="/tools/subscriptions" aria-label="Paying salons, open Subscriptions">{{ count() }}</a>
+      <a class="live-count" routerLink="/tools/subscriptions" [attr.aria-label]="'Paying salons, open Subscriptions' | t">{{ count() }}</a>
     } @else {
       <app-number-stepper
         label="number of paying salons"
@@ -22,13 +22,13 @@
   </div>
 
   <div class="track">
-    <span class="mark be" [style.left.%]="breakEvenPct()">Break-even · {{ breakEven() }}</span>
+    <span class="mark be" [style.left.%]="breakEvenPct()">{{ 'Break-even' | t }} · {{ breakEven() }}</span>
     <span class="tick" [style.left.%]="breakEvenPct()" aria-hidden="true"></span>
     <app-progress-bar size="md" [value]="progress()" [label]="'Paying salons towards the Year ' + year() + ' goal'" />
     @for (mark of marks(); track mark.label) {
       <span class="mark below" [style.left.%]="mark.pct">{{ mark.label }}</span>
     }
-    <span class="mark below end">Goal · {{ goal() }}</span>
+    <span class="mark below end">{{ 'Goal' | t }} · {{ goal() }}</span>
   </div>
 
   <div class="stats">

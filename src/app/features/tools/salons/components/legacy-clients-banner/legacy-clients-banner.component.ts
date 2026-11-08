@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { apiError } from '../../../../../core/api/api.service';
 import { ToastService } from '../../../../../core/services/toast.service';
-import { plural } from '../../../../../core/utils/format';
 import { ButtonComponent, ConfirmDialogComponent, PanelComponent } from '../../../../../shared/ui';
 import { LegacyClientsService } from '../../legacy-clients.service';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
+import { countOf, t } from '../../../../../core/i18n/i18n';
 
 /**
  * Shown (Overview, Salons) while this browser still has records of the old Clients tool that were
@@ -12,20 +13,18 @@ import { LegacyClientsService } from '../../legacy-clients.service';
 @Component({
   selector: 'app-legacy-clients-banner',
   standalone: true,
-  imports: [PanelComponent, ButtonComponent, ConfirmDialogComponent],
+  imports: [TPipe, PanelComponent, ButtonComponent, ConfirmDialogComponent],
   template: `
     @if (visible()) {
       <app-panel heading="Old Clients list in this browser" [meta]="meta()">
         <p>
-          The old Clients tool saved its list in this browser. Move it to the server once: leads and demos become
-          <strong>Leads</strong>; beta, active and paused salons become a <strong>salon</strong> with its client and
-          subscription. Add each client's business address afterwards (the old list had none).
+          {{ 'The old Clients tool saved its list in this browser. Move it to the server once: leads and demos become leads; beta, active and paused salons become a salon with its client and subscription. Add each client\'s business address afterwards (the old list had none).' | t }}
         </p>
         <div class="actions">
           <button appButton variant="primary" type="button" [disabled]="busy()" (click)="confirming.set(true)">
-            {{ busy() ? 'Moving…' : 'Move clients to the server' }}
+            {{ (busy() ? 'Moving…' : 'Move clients to the server') | t }}
           </button>
-          <button appButton variant="ghost" type="button" [disabled]="busy()" (click)="hidden.set(true)">Not now</button>
+          <button appButton variant="ghost" type="button" [disabled]="busy()" (click)="hidden.set(true)">{{ 'Not now' | t }}</button>
         </div>
       </app-panel>
     }
@@ -64,7 +63,7 @@ export class LegacyClientsBannerComponent {
   });
   protected readonly meta = computed(() => {
     const { leads, salons } = this.counts();
-    return [leads ? `${leads} ${plural(leads, 'lead', 'leads')}` : '', salons ? `${salons} ${plural(salons, 'salon', 'salons')}` : ''].filter(Boolean).join(' and ');
+    return [leads ? countOf(leads, 'lead', 'leads') : '', salons ? countOf(salons, 'salon', 'salons') : ''].filter(Boolean).join(' ' + t('and') + ' ');
   });
 
   protected async move(): Promise<void> {
@@ -72,10 +71,10 @@ export class LegacyClientsBannerComponent {
     try {
       const r = await this.legacy.move();
       const notes = r.notes.length ? ` ${r.notes.join('; ')}.` : '';
-      const address = r.needsAddress ? ` Add the business address of ${r.needsAddress} ${plural(r.needsAddress, 'client', 'clients')} (Clients › Address missing).` : '';
-      this.toast.show(`Moved: ${r.leads} ${plural(r.leads, 'lead', 'leads')}, ${r.salons} ${plural(r.salons, 'salon', 'salons')}.${address}${notes}`, 10_000);
+      const address = r.needsAddress ? ' ' + t('Add the business address of {clients} (Clients › Address missing).', { clients: countOf(r.needsAddress, 'client', 'clients') }) : '';
+      this.toast.show(t('Moved: {leads}, {salons}.', { leads: countOf(r.leads, 'lead', 'leads'), salons: countOf(r.salons, 'salon', 'salons') }) + address + notes, 10_000);
     } catch (error) {
-      this.toast.show(`The move did not finish: ${apiError(error).message} Nothing was changed.`, 9000);
+      this.toast.show(t('The move did not finish: {error} Nothing was changed.', { error: apiError(error).message }), 9000);
     } finally {
       this.busy.set(false);
     }

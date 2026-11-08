@@ -1,5 +1,5 @@
 <div class="brand-row">
-  <a class="brand" routerLink="/" aria-label="VINIT Workspace, overview" (click)="navigate.emit()">
+  <a class="brand" routerLink="/" [attr.aria-label]="'VINIT Workspace, overview' | t" (click)="navigate.emit()">
     <app-logo [size]="24" />
     <span class="brand-name">VINIT <span class="brand-sub">Workspace</span></span>
   </a>
@@ -7,11 +7,11 @@
 </div>
 <button type="button" class="search-btn" (click)="openSearch()">
   <app-icon name="search" [size]="16" />
-  <span>Search</span>
+  <span>{{ 'Search' | t }}</span>
   <kbd>Ctrl K</kbd>
 </button>
 
-<nav class="nav" aria-label="Workspace">
+<nav class="nav" [attr.aria-label]="'Workspace' | t">
   <a
     class="link"
     [routerLink]="overview.route"
@@ -21,15 +21,15 @@
     (click)="navigate.emit()"
   >
     <app-icon [name]="overview.icon" [size]="18" />
-    {{ overview.label }}
+    {{ overview.label | t }}
   </a>
   <a class="link" [routerLink]="activity.route" routerLinkActive="is-active" ariaCurrentWhenActive="page" (click)="navigate.emit()">
     <app-icon [name]="activity.icon" [size]="18" />
-    {{ activity.label }}
+    {{ activity.label | t }}
   </a>
 
   @for (group of groups; track group.id) {
-    <p class="group" [id]="'nav-' + group.id">{{ group.title }}</p>
+    <p class="group" [id]="'nav-' + group.id">{{ group.title | t }}</p>
     <ul [attr.aria-labelledby]="'nav-' + group.id">
       @for (link of group.links; track link.route) {
         <li>
@@ -41,7 +41,7 @@
             (click)="navigate.emit()"
           >
             <app-icon [name]="link.icon" [size]="18" />
-            {{ link.label }}
+            {{ link.label | t }}
           </a>
         </li>
       }
@@ -52,21 +52,29 @@
 <div class="foot">
   <p class="save" [class.failed]="save().failed" [title]="save().detail" role="status">
     <span class="dot" aria-hidden="true"></span>
-    {{ save().text }}
+    {{ save().text | t }}
   </p>
+  <div class="lang" role="group" [attr.aria-label]="'Language' | t">
+    <span class="lang-label">{{ 'Language' | t }}</span>
+    @for (l of languages; track l.value) {
+      <button type="button" [attr.aria-pressed]="l.value === currentLang" [attr.lang]="l.value" [title]="l.name" (click)="switchLang(l.value)">
+        {{ l.short }}
+      </button>
+    }
+  </div>
   <button
     type="button"
     class="link"
-    [attr.aria-label]="theme.effective() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'"
+    [attr.aria-label]="(theme.effective() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme') | t"
     (click)="theme.toggle()"
   >
     <app-icon [name]="theme.effective() === 'dark' ? 'sun' : 'moon'" [size]="18" />
-    {{ theme.effective() === 'dark' ? 'Light mode' : 'Dark mode' }}
+    {{ (theme.effective() === 'dark' ? 'Light mode' : 'Dark mode') | t }}
   </button>
   @if (auth.user(); as user) {
-    <button type="button" class="link" [attr.aria-label]="'Sign out ' + user.fullName" (click)="auth.logout()">
+    <button type="button" class="link" [attr.aria-label]="('Sign out' | t) + ' ' + user.fullName" (click)="auth.logout()">
       <app-icon name="log-out" [size]="18" />
-      <span class="who">Sign out <span class="muted">· {{ user.fullName }}</span></span>
+      <span class="who">{{ 'Sign out' | t }} <span class="muted">· {{ user.fullName }}</span></span>
     </button>
   }
 </div>

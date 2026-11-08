@@ -6,6 +6,8 @@ import { downloadBlob } from '../../../../../core/utils/file';
 import { ButtonComponent } from '../../../../../shared/ui';
 import { MAX_FILE_BYTES, formatBytes } from '../../../files/files.model';
 import { FilesStore } from '../../../files/files.store';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
+import { countOf, t } from '../../../../../core/i18n/i18n';
 
 export interface Attachment {
   id: string;
@@ -22,7 +24,7 @@ export interface Attachment {
 @Component({
   selector: 'app-attachments',
   standalone: true,
-  imports: [ButtonComponent],
+  imports: [TPipe, ButtonComponent],
   template: `
     <ul>
       @for (f of files(); track f.id) {
@@ -30,17 +32,17 @@ export interface Attachment {
           <button class="name" type="button" (click)="download(f)">{{ f.name }}</button>
           <span class="muted">{{ size(f.sizeBytes) }} · {{ date(f.createdAt) }}</span>
           @if (confirming() === f.id) {
-            <span class="confirm">Remove? <button type="button" class="yes" (click)="remove(f)">Yes</button><button type="button" (click)="confirming.set(null)">No</button></span>
+            <span class="confirm">{{ 'Remove?' | t }} <button type="button" class="yes" (click)="remove(f)">{{ 'Yes' | t }}</button><button type="button" (click)="confirming.set(null)">{{ 'No' | t }}</button></span>
           } @else {
             <button class="x" type="button" [attr.aria-label]="'Remove ' + f.name" (click)="confirming.set(f.id)">×</button>
           }
         </li>
       } @empty {
-        <li class="muted">{{ empty() }}</li>
+        <li class="muted">{{ empty() | t }}</li>
       }
     </ul>
     <input #picker type="file" hidden multiple (change)="upload($event)" />
-    <button appButton size="sm" type="button" [disabled]="busy()" (click)="picker.click()">{{ busy() ? 'Uploading…' : 'Attach files' }}</button>
+    <button appButton size="sm" type="button" [disabled]="busy()" (click)="picker.click()">{{ (busy() ? 'Uploading…' : 'Attach files') | t }}</button>
   `,
   styles: `
     :host { display: grid; gap: 10px; justify-items: start; }
@@ -80,7 +82,7 @@ export class AttachmentsComponent {
     let added = 0;
     for (const file of picked) {
       if (file.size > MAX_FILE_BYTES) {
-        this.toast.show(`${file.name} is larger than 50 MB.`, 6000);
+        this.toast.show(t('{name} is larger than 50 MB.', { name: file.name }), 6000);
         continue;
       }
       try {
@@ -92,7 +94,7 @@ export class AttachmentsComponent {
     }
     this.busy.set(false);
     if (added) {
-      this.toast.show(`Attached ${added} ${added === 1 ? 'file' : 'files'}`);
+      this.toast.show(t('Attached {files}', { files: countOf(added, 'file', 'files') }));
       this.changed.emit();
     }
   }
@@ -107,10 +109,10 @@ export class AttachmentsComponent {
     this.confirming.set(null);
     try {
       await this.store.delete(f.id);
-      this.toast.show(`Removed ${f.name}`);
+      this.toast.show(t('Removed {name}', { name: f.name }));
       this.changed.emit();
     } catch (error) {
-      this.toast.show(`Not removed: ${apiError(error).message}`, 6000);
+      this.toast.show(t('Not removed: {error}', { error: apiError(error).message }), 6000);
     }
   }
 }

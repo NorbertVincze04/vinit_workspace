@@ -7,6 +7,7 @@ import { FinancesStore } from '../finances/finances.store';
 import { PlansStore } from '../salons/plans.store';
 import { SalonsStore } from '../salons/salons.store';
 import { BillingWarning, LIVE, MrrPoint, PAYMENT_FIELD_MAP, Payment, SUBSCRIPTION_FIELD_MAP, Subscription } from './billing.model';
+import { t } from '../../../core/i18n/i18n';
 
 type Row = Record<string, unknown>;
 
@@ -123,7 +124,7 @@ export class BillingStore {
 
   private loud<T>(request: Promise<T>): Promise<T> {
     return request.catch((error: unknown) => {
-      this.toast.show(`Not saved: ${apiError(error).message}`, 6000);
+      this.toast.show(t('Not saved: {error}', { error: apiError(error).message }), 6000);
       throw error;
     });
   }

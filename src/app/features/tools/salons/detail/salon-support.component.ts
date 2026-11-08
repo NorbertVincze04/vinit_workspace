@@ -20,40 +20,42 @@ import { TimeListComponent } from '../../support/components/time-list/time-list.
 import { ticketBody, ticketFields, timeBody, timeFields } from '../../support/support.fields';
 import { OPEN_STATUSES, SalonSupport, Ticket, TimeEntry, duration, ticketNo } from '../../support/support.model';
 import { SupportStore } from '../../support/support.store';
+import { TPipe } from '../../../../core/i18n/t.pipe';
+import { t } from '../../../../core/i18n/i18n';
 
 /** Salon page tab: included sessions left, unbilled extra work, tickets and logged time. */
 @Component({
   selector: 'app-salon-support',
   standalone: true,
-  imports: [PanelComponent, ButtonComponent, MeterComponent, LedgerComponent, FormDialogComponent, ConfirmDialogComponent, TicketRowComponent, TicketDialogComponent, TimeListComponent],
+  imports: [TPipe, PanelComponent, ButtonComponent, MeterComponent, LedgerComponent, FormDialogComponent, ConfirmDialogComponent, TicketRowComponent, TicketDialogComponent, TimeListComponent],
   template: `
     @if (support(); as s) {
       <div class="grid">
         <app-panel heading="Included sessions" [meta]="s.sessions.planName ?? 'No plan'">
           <div class="big">
-            <strong>{{ s.sessions.remaining }}</strong> of {{ s.sessions.included }} left
+            <strong>{{ s.sessions.remaining }}</strong> {{ 'of {total} left' | t: { total: s.sessions.included } }}
           </div>
-          <app-meter [value]="usedPercent()" [label]="s.sessions.used + ' of ' + s.sessions.included + ' included sessions used'" />
+          <app-meter [value]="usedPercent()" [label]="'{used} of {total} included sessions used' | t: { used: s.sessions.used, total: s.sessions.included }" />
           <p class="small muted">
-            Counted per meeting ({{ s.sessions.sessionMinutes }} min each, one-time per contract). Used {{ s.sessions.used }}, {{ dur(s.sessions.sessionMinutesUsed) }} in total.
+            {{ 'Counted per meeting ({min} min each, one-time per contract). Used {used}, {time} in total.' | t: { min: s.sessions.sessionMinutes, used: s.sessions.used, time: dur(s.sessions.sessionMinutesUsed) } }}
           </p>
         </app-panel>
 
         <app-panel heading="Extra work" meta="100 RON/h, exact minutes">
           <div class="big">
-            <strong>{{ money(s.sessions.unbilledBani / 100) }}</strong> not billed yet
+            <strong>{{ money(s.sessions.unbilledBani / 100) }}</strong> {{ 'not billed yet' | t }}
           </div>
           <p class="small muted">
-            {{ dur(s.sessions.unbilledMinutes) }} unbilled · {{ dur(s.sessions.billableMinutes) }} billable in total · {{ dur(s.sessions.internalMinutes) }} internal
+            {{ '{unbilled} unbilled · {billable} billable in total · {internal} internal' | t: { unbilled: dur(s.sessions.unbilledMinutes), billable: dur(s.sessions.billableMinutes), internal: dur(s.sessions.internalMinutes) } }}
           </p>
           @if (s.sessions.unbilledBani > 0) {
-            <button appButton size="sm" type="button" (click)="billing.set(true)">Bill extra work</button>
+            <button appButton size="sm" type="button" (click)="billing.set(true)">{{ 'Bill extra work' | t }}</button>
           }
         </app-panel>
       </div>
 
-      <app-panel class="block" heading="Tickets" [meta]="openCount() + ' open'" [flush]="s.tickets.length > 0">
-        <button panelAction appButton variant="ghost" size="sm" type="button" (click)="newTicket()">New ticket</button>
+      <app-panel class="block" heading="Tickets" [meta]="'{n} open' | t: { n: openCount() }" [flush]="s.tickets.length > 0">
+        <button panelAction appButton variant="ghost" size="sm" type="button" (click)="newTicket()">{{ 'New ticket' | t }}</button>
         @if (s.tickets.length) {
           <app-ledger [headers]="['Ticket', 'Priority', 'Status', 'Time']" [numeric]="[3]" columns="minmax(0, 2.4fr) 100px 150px 80px">
             @for (t of s.tickets; track t.id) {
@@ -61,12 +63,12 @@ import { SupportStore } from '../../support/support.store';
             }
           </app-ledger>
         } @else {
-          <p class="small muted pad">No tickets for this salon.</p>
+          <p class="small muted pad">{{ 'No tickets for this salon.' | t }}</p>
         }
       </app-panel>
 
       <app-panel class="block" heading="Time" [meta]="dur(totalMinutes())">
-        <button panelAction appButton variant="ghost" size="sm" type="button" (click)="logTime()">Log time</button>
+        <button panelAction appButton variant="ghost" size="sm" type="button" (click)="logTime()">{{ 'Log time' | t }}</button>
         <app-time-list [entries]="s.entries" (remove)="removeEntry($event)" />
       </app-panel>
     }
@@ -142,7 +144,7 @@ export class SalonSupportComponent {
     this.form.set({
       kind: 'ticket',
       ticket,
-      title: `Edit ${ticketNo(ticket.number)}`,
+      title: t('Edit {ticket}', { ticket: ticketNo(ticket.number) }),
       save: 'Save ticket',
       fields: ticketFields(null, this.team.options(), true),
       values: { ...toFormValues(ticket), assigneeId: ticket.assigneeId ?? '' },
@@ -167,8 +169,8 @@ export class SalonSupportComponent {
         this.toast.show('Ticket saved');
         this.openId.set(null);
       } else {
-        const t = await this.store.createTicket({ ...ticketBody(v, false), salonId: this.salonId() });
-        this.toast.show(`${ticketNo(t.number)} opened`);
+        const created = await this.store.createTicket({ ...ticketBody(v, false), salonId: this.salonId() });
+        this.toast.show(t('{ticket} opened', { ticket: ticketNo(created.number) }));
       }
       this.changed.emit();
     } catch {
@@ -179,7 +181,7 @@ export class SalonSupportComponent {
   protected async bill(): Promise<void> {
     try {
       const amount = await this.store.billExtraWork(this.salonId());
-      this.toast.show(`Payment of ${formatMoney(amount)} created`);
+      this.toast.show(t('Payment of {amount} created', { amount: formatMoney(amount) }));
       this.changed.emit();
     } catch {
       /* toast shown */

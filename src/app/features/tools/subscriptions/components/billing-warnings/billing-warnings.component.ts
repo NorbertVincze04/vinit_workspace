@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { StatusPillComponent } from '../../../../../shared/ui';
 import { BillingWarning } from '../../billing.model';
+import { translateServer } from '../../../../../core/i18n/server-messages';
+import { TPipe } from '../../../../../core/i18n/t.pipe';
 
 const TONE = { bad: 'bad', warn: 'warn', info: 'info' } as const;
 const LABEL: Record<string, string> = {
@@ -18,17 +20,17 @@ const LABEL: Record<string, string> = {
 @Component({
   selector: 'app-billing-warnings',
   standalone: true,
-  imports: [RouterLink, StatusPillComponent],
+  imports: [TPipe, RouterLink, StatusPillComponent],
   template: `
     <ul>
       @for (w of warnings(); track $index) {
         <li>
-          <app-status-pill [tone]="tone[w.severity]">{{ label[w.kind] || w.kind }}</app-status-pill>
+          <app-status-pill [tone]="tone[w.severity]">{{ (label[w.kind] || w.kind) | t }}</app-status-pill>
           <span class="text">
             @if (w.salonId && showSalon()) {
               <a [routerLink]="['/tools/salons', w.salonId]">{{ w.salonName }}</a>:
             }
-            {{ w.message }}
+            {{ tr(w.message) }}
           </span>
         </li>
       }
@@ -48,4 +50,6 @@ export class BillingWarningsComponent {
   readonly showSalon = input(true);
   protected readonly tone = TONE;
   protected readonly label = LABEL;
+  /** Warnings are written by the server in English. */
+  protected readonly tr = translateServer;
 }

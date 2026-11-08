@@ -11,6 +11,7 @@ import { isMonthKey } from '../utils/date';
 import { FileStorageService } from './file-storage.service';
 import { PlanCalendarService } from './plan-calendar.service';
 import { StorageService } from './storage.service';
+import { t } from '../i18n/i18n';
 
 /** What this browser still holds from before the server existed. */
 export interface LocalDataSummary {
@@ -108,7 +109,7 @@ export class LocalDataService {
       try {
         const blob = await this.fileBytes.get(meta.id);
         if (!blob) {
-          result.files.skipped.push(`${meta.name}: not stored in this browser any more`);
+          result.files.skipped.push(t('{name}: not stored in this browser any more', { name: meta.name }));
           continue;
         }
         await this.files.send(blob, { id: meta.id, name: meta.name, createdAt: meta.createdAt });

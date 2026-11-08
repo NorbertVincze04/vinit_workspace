@@ -3,7 +3,7 @@
   iconOnly
   size="lg"
   type="button"
-  [attr.aria-label]="'Decrease ' + label()"
+  [attr.aria-label]="('Decrease' | t) + ' ' + (label() | t)"
   [disabled]="value() <= min()"
   (click)="step(-1)"
 >
@@ -16,7 +16,7 @@
   [min]="min()"
   [max]="max()"
   [value]="value()"
-  [attr.aria-label]="label()"
+  [attr.aria-label]="label() | t"
   (change)="onInput($event)"
 />
 <button
@@ -24,7 +24,7 @@
   iconOnly
   size="lg"
   type="button"
-  [attr.aria-label]="'Increase ' + label()"
+  [attr.aria-label]="('Increase' | t) + ' ' + (label() | t)"
   [disabled]="value() >= max()"
   (click)="step(1)"
 >
