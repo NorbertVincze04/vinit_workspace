@@ -6,9 +6,27 @@
 
 .phases {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(290px, 100%), 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
-  align-items: start;
+  align-items: stretch;
+}
+@media (max-width: 900px) {
+  .phases {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .phases {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.more {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 6px;
 }
 
 .tasks {

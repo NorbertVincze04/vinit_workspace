@@ -272,4 +272,10 @@ export const COMMON: Record<string, string> = {
   uploaded: 'încărcat',
   done: 'finalizat',
   dismissed: 'ignorat',
+  'Open navigation': 'Deschide navigarea',
+  'Close navigation': 'Închide navigarea',
+  'Show archived pages': 'Arată paginile arhivate',
+  'Back to the pages': 'Înapoi la pagini',
+  'Check now': 'Verifică acum',
+  'Checking…': 'Se verifică…',
 };

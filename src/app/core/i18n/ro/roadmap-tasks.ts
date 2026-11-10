@@ -104,6 +104,8 @@ export const ROADMAP_TASKS: Record<string, string> = {
   'Showing {n} of {total} tasks': 'Se afișează {n} din {total} sarcini',
   'Month 1 = {month}': 'Luna 1 = {month}',
   'Add task': 'Adaugă sarcină',
+  'See more': 'Vezi mai multe',
+  'See less': 'Vezi mai puține',
   'Describe the task…': 'Descrie sarcina…',
   'Delete task': 'Șterge sarcina',
   'Click again to delete': 'Apasă din nou pentru a șterge',

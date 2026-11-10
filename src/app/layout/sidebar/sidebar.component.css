@@ -6,8 +6,23 @@
   padding: 14px 12px;
   background: var(--surface);
   border-right: 1px solid var(--line);
+  box-sizing: border-box;
+  overflow-x: hidden;
   overflow-y: auto;
+  scrollbar-width: none; /* still scrolls; keeps left and right padding equal */
   overscroll-behavior: contain;
+}
+:host > *,
+.nav,
+ul,
+.link,
+.search-btn,
+.foot,
+.lang,
+.save {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .brand-row {

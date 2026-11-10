@@ -27,7 +27,7 @@
       </button>
       @if (column.visible.length) {
         <ul class="tasks">
-          @for (view of column.visible; track view.task.id) {
+          @for (view of column.visible.slice(0, limitOf(column.phase.id)); track view.task.id) {
             <li>
               <app-task-item
                 [view]="view"
@@ -42,6 +42,20 @@
             </li>
           }
         </ul>
+        @if (column.visible.length > limitOf(column.phase.id) || limitOf(column.phase.id) > 5) {
+          <div class="more">
+            @if (column.visible.length > limitOf(column.phase.id)) {
+              <button appButton variant="ghost" size="sm" type="button" (click)="showMore(column.phase.id)">
+                {{ 'See more' | t }} ({{ column.visible.length - limitOf(column.phase.id) }})
+              </button>
+            }
+            @if (limitOf(column.phase.id) > 5) {
+              <button appButton variant="ghost" size="sm" type="button" (click)="showLess(column.phase.id)">
+                {{ 'See less' | t }}
+              </button>
+            }
+          </div>
+        }
       } @else {
         <p class="none">{{ (column.total ? 'No tasks match the filters.' : 'No tasks yet.') | t }}</p>
       }

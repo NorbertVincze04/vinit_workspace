@@ -72,10 +72,11 @@ const SHOWN = 8;
     :host { display: block; min-width: 0; }
     app-panel { height: 100%; }
     ul { list-style: none; padding: 0; margin: 0; }
-    li { display: grid; grid-template-columns: 130px minmax(0, 1fr); align-items: center; gap: 10px; padding: 10px 18px;
+    li { display: grid; grid-template-columns: 175px minmax(0, 1fr); align-items: center; gap: 12px; padding: 10px 18px;
       border-top: 1px solid var(--line); }
     li:first-child { border-top: 0; }
-    li app-status-pill { justify-self: start; }
+    /* A long tag (e.g. Romanian "Test de restaurare") wraps inside its column instead of running into the text. */
+    li app-status-pill { justify-self: start; max-width: 100%; white-space: normal; line-height: 1.3; }
     .main { display: grid; min-width: 0; color: inherit; text-decoration: none; }
     .main:hover .name { color: var(--main); text-decoration: underline; }
     .name { font-weight: 500; overflow-wrap: anywhere; }

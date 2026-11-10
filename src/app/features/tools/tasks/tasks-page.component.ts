@@ -46,6 +46,23 @@ export class TasksPageComponent {
   protected readonly newTaskId = signal<string | null>(null);
   protected readonly resetting = signal(false);
 
+  private readonly pageSize = 5;
+  /** How many tasks each column shows (UI state only). */
+  private readonly limits = signal<Partial<Record<PhaseId, number>>>({});
+
+  protected limitOf(id: PhaseId): number {
+    return this.limits()[id] ?? this.pageSize;
+  }
+
+  /** Back to the first 5 tasks. */
+  protected showLess(id: PhaseId): void {
+    this.limits.update((l) => ({ ...l, [id]: this.pageSize }));
+  }
+
+  protected showMore(id: PhaseId): void {
+    this.limits.update((l) => ({ ...l, [id]: (l[id] ?? this.pageSize) + this.pageSize }));
+  }
+
   protected readonly hint = computed(() => {
     const overdue = this.store.overdueCount();
     return (
@@ -66,6 +83,7 @@ export class TasksPageComponent {
 
   protected addTask(phaseId: PhaseId): void {
     const id = this.store.addTask(phaseId);
+    this.limits.update((l) => ({ ...l, [phaseId]: Number.MAX_SAFE_INTEGER })); // keep the new task visible
     this.setExpanded(id, true);
     this.newTaskId.set(id);
   }

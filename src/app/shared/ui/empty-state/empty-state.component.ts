@@ -23,7 +23,7 @@ import { TPipe } from '../../../core/i18n/t.pipe';
       background: var(--surface); border: 1px dashed var(--line-strong); border-radius: var(--radius-lg); }
     h3 { font-size: 15px; }
     p { max-width: 52ch; color: var(--muted); }
-    .actions { margin-top: 12px; }
+    .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 12px; }
     .actions:empty { display: none; }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
