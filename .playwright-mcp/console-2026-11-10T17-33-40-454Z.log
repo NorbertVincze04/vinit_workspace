@@ -1,0 +1,238 @@
+[     273ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:19324
+[     442ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'plan.start')
+    at http://localhost:4200/chunk-6VPWGCCC.js:35:26
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:158)
+    at Object.onInvoke (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5813:25)
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:46)
+    at ZoneImpl.run (http://localhost:4200/polyfills.js:97:35)
+    at http://localhost:4200/polyfills.js:2005:30
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:171)
+    at http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:49
+    at AsyncStackTaggingZoneSpec.onInvokeTask (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:30)
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:54) @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5920
+[     443ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'finances.rates')
+    at http://localhost:4200/chunk-6VPWGCCC.js:35:26
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:158)
+    at Object.onInvoke (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5813:25)
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:46)
+    at ZoneImpl.run (http://localhost:4200/polyfills.js:97:35)
+    at http://localhost:4200/polyfills.js:2005:30
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:171)
+    at http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:49
+    at AsyncStackTaggingZoneSpec.onInvokeTask (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:30)
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:54) @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5920
+[     477ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'pct')
+    at Object.computation (http://localhost:4200/chunk-XQ2KHRWT.js:650:17)
+    at Object.producerRecomputeValue (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:244:25)
+    at producerUpdateValueVersion (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:87:8)
+    at consumerPollProducersForChange (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:143:5)
+    at detectChangesInView (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9664:47)
+    at detectChangesInViewIfAttached (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9654:3)
+    at detectChangesInComponent (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9648:3)
+    at detectChangesInChildComponents (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9691:5)
+    at detectChangesInView (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9680:7)
+    at detectChangesInViewIfAttached (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9654:3) @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5920
+[    1178ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:19324
+[    1368ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'plan.start')
+    at http://localhost:4200/chunk-6VPWGCCC.js:35:26
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:158)
+    at Object.onInvoke (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5813:25)
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:46)
+    at ZoneImpl.run (http://localhost:4200/polyfills.js:97:35)
+    at http://localhost:4200/polyfills.js:2005:30
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:171)
+    at http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:49
+    at AsyncStackTaggingZoneSpec.onInvokeTask (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:30)
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:54) @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5920
+[    1368ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'finances.rates')
+    at http://localhost:4200/chunk-6VPWGCCC.js:35:26
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:158)
+    at Object.onInvoke (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5813:25)
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:46)
+    at ZoneImpl.run (http://localhost:4200/polyfills.js:97:35)
+    at http://localhost:4200/polyfills.js:2005:30
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:171)
+    at http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:49
+    at AsyncStackTaggingZoneSpec.onInvokeTask (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:30)
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:54) @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5920
+[    1383ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'pct')
+    at Object.computation (http://localhost:4200/chunk-XQ2KHRWT.js:650:17)
+    at Object.producerRecomputeValue (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:244:25)
+    at producerUpdateValueVersion (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:87:8)
+    at consumerPollProducersForChange (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:143:5)
+    at detectChangesInView (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9664:47)
+    at detectChangesInViewIfAttached (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9654:3)
+    at detectChangesInComponent (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9648:3)
+    at detectChangesInChildComponents (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9691:5)
+    at detectChangesInView (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9680:7)
+    at detectChangesInViewIfAttached (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9654:3) @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5920
+[   27496ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:19324
+[   27651ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'plan.start')
+    at http://localhost:4200/chunk-EZ3SG45F.js:35:26
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:158)
+    at Object.onInvoke (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5813:25)
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:46)
+    at ZoneImpl.run (http://localhost:4200/polyfills.js:97:35)
+    at http://localhost:4200/polyfills.js:2005:30
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:171)
+    at http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:49
+    at AsyncStackTaggingZoneSpec.onInvokeTask (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:30)
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:54) @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5920
+[   27651ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'finances.rates')
+    at http://localhost:4200/chunk-EZ3SG45F.js:35:26
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:158)
+    at Object.onInvoke (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5813:25)
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:46)
+    at ZoneImpl.run (http://localhost:4200/polyfills.js:97:35)
+    at http://localhost:4200/polyfills.js:2005:30
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:171)
+    at http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:49
+    at AsyncStackTaggingZoneSpec.onInvokeTask (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:30)
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:54) @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5920
+[   27676ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'pct')
+    at Object.computation (http://localhost:4200/chunk-2UEFN3H3.js:650:17)
+    at Object.producerRecomputeValue (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:244:25)
+    at producerUpdateValueVersion (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:87:8)
+    at consumerPollProducersForChange (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:143:5)
+    at detectChangesInView (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9664:47)
+    at detectChangesInViewIfAttached (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9654:3)
+    at detectChangesInComponent (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9648:3)
+    at detectChangesInChildComponents (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9691:5)
+    at detectChangesInView (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9680:7)
+    at detectChangesInViewIfAttached (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9654:3) @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5920
+[   32211ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:19324
+[   32357ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'plan.start')
+    at http://localhost:4200/chunk-EZ3SG45F.js:35:26
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:158)
+    at Object.onInvoke (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5813:25)
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:46)
+    at ZoneImpl.run (http://localhost:4200/polyfills.js:97:35)
+    at http://localhost:4200/polyfills.js:2005:30
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:171)
+    at http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:49
+    at AsyncStackTaggingZoneSpec.onInvokeTask (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:30)
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:54) @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5920
+[   32357ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'finances.rates')
+    at http://localhost:4200/chunk-EZ3SG45F.js:35:26
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:158)
+    at Object.onInvoke (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5813:25)
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:46)
+    at ZoneImpl.run (http://localhost:4200/polyfills.js:97:35)
+    at http://localhost:4200/polyfills.js:2005:30
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:171)
+    at http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:49
+    at AsyncStackTaggingZoneSpec.onInvokeTask (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:30)
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:54) @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5920
+[   32382ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'pct')
+    at Object.computation (http://localhost:4200/chunk-2UEFN3H3.js:650:17)
+    at Object.producerRecomputeValue (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:244:25)
+    at producerUpdateValueVersion (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:87:8)
+    at consumerPollProducersForChange (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:143:5)
+    at detectChangesInView (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9664:47)
+    at detectChangesInViewIfAttached (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9654:3)
+    at detectChangesInComponent (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9648:3)
+    at detectChangesInChildComponents (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9691:5)
+    at detectChangesInView (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9680:7)
+    at detectChangesInViewIfAttached (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9654:3) @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5920
+[   33074ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:19324
+[   33285ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'plan.start')
+    at http://localhost:4200/chunk-EZ3SG45F.js:35:26
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:158)
+    at Object.onInvoke (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5813:25)
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:46)
+    at ZoneImpl.run (http://localhost:4200/polyfills.js:97:35)
+    at http://localhost:4200/polyfills.js:2005:30
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:171)
+    at http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:49
+    at AsyncStackTaggingZoneSpec.onInvokeTask (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:30)
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:54) @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5920
+[   33285ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'finances.rates')
+    at http://localhost:4200/chunk-EZ3SG45F.js:35:26
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:158)
+    at Object.onInvoke (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5813:25)
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:46)
+    at ZoneImpl.run (http://localhost:4200/polyfills.js:97:35)
+    at http://localhost:4200/polyfills.js:2005:30
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:171)
+    at http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:49
+    at AsyncStackTaggingZoneSpec.onInvokeTask (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:30)
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:54) @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5920
+[   33311ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'pct')
+    at Object.computation (http://localhost:4200/chunk-2UEFN3H3.js:650:17)
+    at Object.producerRecomputeValue (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:244:25)
+    at producerUpdateValueVersion (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:87:8)
+    at consumerPollProducersForChange (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:143:5)
+    at detectChangesInView (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9664:47)
+    at detectChangesInViewIfAttached (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9654:3)
+    at detectChangesInComponent (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9648:3)
+    at detectChangesInChildComponents (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9691:5)
+    at detectChangesInView (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9680:7)
+    at detectChangesInViewIfAttached (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9654:3) @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5920
+[   34453ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:19324
+[   34595ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'plan.start')
+    at http://localhost:4200/chunk-EZ3SG45F.js:35:26
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:158)
+    at Object.onInvoke (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5813:25)
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:46)
+    at ZoneImpl.run (http://localhost:4200/polyfills.js:97:35)
+    at http://localhost:4200/polyfills.js:2005:30
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:171)
+    at http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:49
+    at AsyncStackTaggingZoneSpec.onInvokeTask (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:30)
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:54) @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5920
+[   34595ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'finances.rates')
+    at http://localhost:4200/chunk-EZ3SG45F.js:35:26
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:158)
+    at Object.onInvoke (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5813:25)
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:46)
+    at ZoneImpl.run (http://localhost:4200/polyfills.js:97:35)
+    at http://localhost:4200/polyfills.js:2005:30
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:171)
+    at http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:49
+    at AsyncStackTaggingZoneSpec.onInvokeTask (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:30)
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:54) @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5920
+[   34617ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'pct')
+    at Object.computation (http://localhost:4200/chunk-2UEFN3H3.js:650:17)
+    at Object.producerRecomputeValue (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:244:25)
+    at producerUpdateValueVersion (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:87:8)
+    at consumerPollProducersForChange (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:143:5)
+    at detectChangesInView (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9664:47)
+    at detectChangesInViewIfAttached (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9654:3)
+    at detectChangesInComponent (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9648:3)
+    at detectChangesInChildComponents (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9691:5)
+    at detectChangesInView (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9680:7)
+    at detectChangesInViewIfAttached (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9654:3) @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5920
+[   35367ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:19324
+[   35519ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'plan.start')
+    at http://localhost:4200/chunk-EZ3SG45F.js:35:26
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:158)
+    at Object.onInvoke (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5813:25)
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:46)
+    at ZoneImpl.run (http://localhost:4200/polyfills.js:97:35)
+    at http://localhost:4200/polyfills.js:2005:30
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:171)
+    at http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:49
+    at AsyncStackTaggingZoneSpec.onInvokeTask (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:30)
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:54) @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5920
+[   35520ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'finances.rates')
+    at http://localhost:4200/chunk-EZ3SG45F.js:35:26
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:158)
+    at Object.onInvoke (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5813:25)
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:46)
+    at ZoneImpl.run (http://localhost:4200/polyfills.js:97:35)
+    at http://localhost:4200/polyfills.js:2005:30
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:171)
+    at http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:49
+    at AsyncStackTaggingZoneSpec.onInvokeTask (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5612:30)
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:54) @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5920
+[   35545ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'pct')
+    at Object.computation (http://localhost:4200/chunk-2UEFN3H3.js:650:17)
+    at Object.producerRecomputeValue (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:244:25)
+    at producerUpdateValueVersion (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:87:8)
+    at consumerPollProducersForChange (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:143:5)
+    at detectChangesInView (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9664:47)
+    at detectChangesInViewIfAttached (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9654:3)
+    at detectChangesInComponent (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9648:3)
+    at detectChangesInChildComponents (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9691:5)
+    at detectChangesInView (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9680:7)
+    at detectChangesInViewIfAttached (http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:9654:3) @ http://localhost:4200/@fs/C:/Dashboard/Projects/Entrepreneurship/Universal%20Salon%20SAAS/vinit_workpage/.angular/cache/18.2.21/vinit_workpage/vite/deps/chunk-IZGC3QKB.js?v=e1026212:5920

@@ -52,7 +52,7 @@ const PATTERNS: [RegExp, (m: RegExpMatchArray) => string][] = [
   [/^(.+): onboarding is over (\d+)h$/, (m) => t('{salon}: onboarding is over {h}h', { salon: m[1], h: m[2] })],
   [/^(.+): onboarding blocked$/, (m) => t('{salon}: onboarding blocked', { salon: m[1] })],
   [/^Follow up (.+)$/, (m) => t('Follow up {name}', { name: m[1] })],
-  [/^Was due (\d{4}-\d{2}-\d{2})(?: at (\S+))?$/, (m) => t('Was due {date}', { date: d(m[1]) }) + at(m[2])],
+  [/^Was due (\d{4}-\d{2}-\d{2})(?: (?:at )?(\d{1,2}:\d{2}))?$/, (m) => t('Was due {date}', { date: d(m[1]) }) + at(m[2])],
   [/^Due today(?: at (\S+))?$/, (m) => t('Due today') + at(m[1])],
   [/^Due tomorrow(?: at (\S+))?$/, (m) => t('Due tomorrow') + at(m[1])],
   [/^Due in (\d+) days \((\S+?)(?: at (\S+))?\)$/, (m) => t('Due in {days} ({date})', { days: countOf(Number(m[1]), 'day', 'days'), date: d(m[2]) + at(m[3]) })],

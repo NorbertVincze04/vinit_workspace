@@ -193,7 +193,7 @@ export const DASHBOARD: Record<string, string> = {
   'Subscription is past due': 'Abonamentul este restant',
   'Trial ended on {date}: convert it or follow up': 'Perioada gratuită s-a încheiat pe {date}: convertește-o sau revino',
   'Trial ends on {date}': 'Perioada gratuită se încheie pe {date}',
-  '{amount} RON was due on {date}': '{amount} RON erau scadenți pe {date}',
+  '{amount} RON was due on {date}': '{amount} RON, scadent pe {date}',
   'Minimum term ends on {date}: time to talk about renewal': 'Perioada minimă se încheie pe {date}: e momentul să discutați reînnoirea',
   'Salon is {status} but has no subscription': 'Salonul este „{status}”, dar nu are abonament',
   'All {n} Early Bird places are taken': 'Toate cele {n} locuri Early Bird sunt ocupate',

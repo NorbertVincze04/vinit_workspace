@@ -15,7 +15,7 @@ import { translateServer } from '../../core/i18n/server-messages';
     <button
       type="button"
       class="bell"
-      [attr.aria-label]="service.unread() ? service.unread() + ' unread notifications' : 'Notifications'"
+      [attr.aria-label]="service.unread() ? ('{n} unread notifications' | t: { n: service.unread() }) : ('Notifications' | t)"
       (click)="openPanel()"
     >
       <app-icon name="bell" [size]="18" />
@@ -25,7 +25,7 @@ import { translateServer } from '../../core/i18n/server-messages';
     </button>
 
     @if (open()) {
-      <app-dialog #dlg heading="Notifications" [subheading]="service.unread() ? service.unread() + ' unread' : 'All read'" (closed)="open.set(false)">
+      <app-dialog #dlg heading="Notifications" [subheading]="service.unread() ? ('{n} unread' | t: { n: service.unread() }) : ('All read' | t)" (closed)="open.set(false)">
         @if (service.items().length) {
           <ul>
             @for (n of service.items(); track n.id) {
@@ -37,7 +37,7 @@ import { translateServer } from '../../core/i18n/server-messages';
                   }
                   <span class="when">{{ when(n.createdAt) }}</span>
                 </button>
-                <button type="button" class="x" [attr.aria-label]="'Dismiss: ' + n.title" (click)="service.dismiss(n)">×</button>
+                <button type="button" class="x" [attr.aria-label]="('Dismiss' | t) + ': ' + tr(n.title)" (click)="service.dismiss(n)">×</button>
               </li>
             }
           </ul>
